@@ -228,6 +228,7 @@
         const pitch = hotspot['get']('items')[0]['get']('pitch');
         const vfov = hotspot['get']('items')[0]['get']('vfov');
         const yaw = hotspot['get']('items')[0]['get']('yaw');
+        const blazit = window.blazit
 
         const miId = hotspot['get']('id');
 
@@ -247,6 +248,7 @@
         var message = {
           opCode: opCode,
           miId: miId,
+          blazit: blazit,
           payload: {
             label: hotspot["get"]("data")["label"],
             id: hotspot["get"]("data")["label"],
@@ -405,11 +407,11 @@
 
     window.addEventListener('message', (e) => {
       console.log("🚀 ~ file: index.htm:440 ~ window.addEventListener ~ e", e.data)
-      if (e.origin.endsWith('.events.mge360.com') || /^https?:\/\/localhost(?::\d+)?$/.test(e.origin)) {
-        if (e.data.opCode === 1000) {
-          setMediaByName(e.data.location);
-        }
+      // if (e.origin.endsWith('.events.mge360.com') || /^https?:\/\/localhost(?::\d+)?$/.test(e.origin)) {
+      if (e.data.opCode === 1000) {
+        setMediaByName(e.data.location);
       }
+      // }
     });
   </script>
   <style type="text/css">
