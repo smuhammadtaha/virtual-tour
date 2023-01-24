@@ -118,7 +118,7 @@
       tour.bind(TDV.Tour.EVENT_TOUR_ENDED, onVirtualTourEnded);
       tour.load();
 
-      var message = blazeIT
+      let message = blazeIT
       parent.postMessage(message, "*");
 
     }
@@ -231,7 +231,7 @@
         const hfov = hotspot['get']('items')[0]['get']('hfov');
         const pitch = hotspot['get']('items')[0]['get']('pitch');
         const vfov = hotspot['get']('items')[0]['get']('vfov');
-        const yaw = blazeIT;
+        // const yaw = blazeIT;
 
         const miId = hotspot['get']('id');
 
@@ -248,7 +248,7 @@
         console.log(label);
 
 
-        var message = {
+        let message = {
           opCode: opCode,
           payload: {
             label: hotspot["get"]("data")["label"],
@@ -257,7 +257,7 @@
             hfov: hfov,
             pitch: pitch,
             vfov: vfov,
-            yaw: yaw,
+            // yaw: yaw,
           },
         };
         console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
