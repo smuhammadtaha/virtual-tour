@@ -254,7 +254,7 @@
         console.log(label);
 
 
-        var message1 = {
+        var tourMessage = {
           opCode: opCode,
           miId: miId,
           blazit: blazit,
@@ -268,9 +268,9 @@
             yaw: yaw,
           },
         };
-        console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message1)
+        console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", tourMessage)
         // window['parent']['postMessage'](message, '*')
-        window.parent.postMessage(message1, "*");
+        window.parent.postMessage(tourMessage, "*");
         // window.parent.postMessage(message, "*");
       } catch { }
     }
