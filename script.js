@@ -1,1389 +1,1630 @@
-if (!Object['hasOwnProperty']('values')) {
-  Object['values'] = function (c) {
-    return Object['keys'](c)['map'](function (d) {
+if (!Object["hasOwnProperty"]("values")) {
+  Object["values"] = function (c) {
+    return Object["keys"](c)["map"](function (d) {
       return c[d];
     });
   };
 }
-if (!String['prototype']['startsWith']) {
-  String['prototype']['startsWith'] = function (e, f) {
+if (!String["prototype"]["startsWith"]) {
+  String["prototype"]["startsWith"] = function (e, f) {
     f = f || 0x0;
-    return this['indexOf'](e, f) === f;
+    return this["indexOf"](e, f) === f;
   };
 }
-TDV['EventDispatcher'] = function () {
-  this['_handlers'] = {};
+TDV["EventDispatcher"] = function () {
+  this["_handlers"] = {};
 };
-TDV['EventDispatcher']['prototype']['bind'] = function (g, h) {
-  if (!(g in this['_handlers'])) this['_handlers'][g] = [];
-  this['_handlers'][g]['push'](h);
+TDV["EventDispatcher"]["prototype"]["bind"] = function (g, h) {
+  if (!(g in this["_handlers"])) this["_handlers"][g] = [];
+  this["_handlers"][g]["push"](h);
 };
-TDV['EventDispatcher']['prototype']['unbind'] = function (i, j) {
-  if (i in this['_handlers']) {
-    var k = this['_handlers'][i]['indexOf'](j);
-    if (k != -0x1) this['_handlers'][i]['splice'](k, 0x1);
+TDV["EventDispatcher"]["prototype"]["unbind"] = function (i, j) {
+  if (i in this["_handlers"]) {
+    var k = this["_handlers"][i]["indexOf"](j);
+    if (k != -0x1) this["_handlers"][i]["splice"](k, 0x1);
   }
 };
-TDV['EventDispatcher']['prototype']['createNewEvent'] = function (l) {
-  if (typeof Event === 'function') return new Event(l);
-  var m = document['createEvent']('Event');
-  m['initEvent'](l, !![], !![]);
+TDV["EventDispatcher"]["prototype"]["createNewEvent"] = function (l) {
+  if (typeof Event === "function") return new Event(l);
+  var m = document["createEvent"]("Event");
+  m["initEvent"](l, !![], !![]);
   return m;
 };
-TDV['EventDispatcher']['prototype']['dispatchEvent'] = function (n) {
-  if (n['type'] in this['_handlers']) {
-    var o = this['_handlers'][n['type']];
-    for (var p = 0x0; p < o['length']; ++p) {
-      o[p]['call'](window, n);
-      if (n['defaultPrevented']) break;
+TDV["EventDispatcher"]["prototype"]["dispatchEvent"] = function (n) {
+  if (n["type"] in this["_handlers"]) {
+    var o = this["_handlers"][n["type"]];
+    for (var p = 0x0; p < o["length"]; ++p) {
+      o[p]["call"](window, n);
+      if (n["defaultPrevented"]) break;
     }
   }
 };
-TDV['Tour'] = function (q, r) {
-  TDV['EventDispatcher']['call'](this);
-  this['player'] = undefined;
-  this['_settings'] = q;
-  this['_devicesUrl'] = r;
-  this['_playersPlayingTmp'] = [];
-  this['_isInitialized'] = ![];
-  this['_isPaused'] = ![];
-  this['_isRemoteSession'] = ![];
-  this['_orientation'] = undefined;
-  this['_lockedOrientation'] = undefined;
-  this['_device'] = undefined;
-  Object['defineProperty'](this, 'isInitialized', {
-    'get': function () {
-      return this['_isInitialized'];
-    }
+TDV["Tour"] = function (q, r) {
+  TDV["EventDispatcher"]["call"](this);
+  this["player"] = undefined;
+  this["_settings"] = q;
+  this["_devicesUrl"] = r;
+  this["_playersPlayingTmp"] = [];
+  this["_isInitialized"] = ![];
+  this["_isPaused"] = ![];
+  this["_isRemoteSession"] = ![];
+  this["_orientation"] = undefined;
+  this["_lockedOrientation"] = undefined;
+  this["_device"] = undefined;
+  Object["defineProperty"](this, "isInitialized", {
+    get: function () {
+      return this["_isInitialized"];
+    },
   });
-  Object['defineProperty'](this, 'isPaused', {
-    'get': function () {
-      return this['_isPaused'];
-    }
+  Object["defineProperty"](this, "isPaused", {
+    get: function () {
+      return this["_isPaused"];
+    },
   });
-  this['_setupRemote']();
+  this["_setupRemote"]();
 };
-TDV['Tour']['DEVICE_GENERAL'] = 'general';
-TDV['Tour']['DEVICE_MOBILE'] = 'mobile';
-TDV['Tour']['DEVICE_IPAD'] = 'ipad';
-TDV['Tour']['DEVICE_VR'] = 'vr';
-TDV['Tour']['EVENT_TOUR_INITIALIZED'] = 'tourInitialized';
-TDV['Tour']['EVENT_TOUR_LOADED'] = 'tourLoaded';
-TDV['Tour']['EVENT_TOUR_ENDED'] = 'tourEnded';
-TDV['Tour']['prototype'] = new TDV['EventDispatcher']();
-TDV['Tour']['prototype']['dispose'] = function () {
-  if (!this['player']) return;
-  if (this['_onHashChange']) {
-    window['removeEventListener']('hashchange', this['_onHashChange']);
-    this['_onHashChange'] = undefined;
+TDV["Tour"]["DEVICE_GENERAL"] = "general";
+TDV["Tour"]["DEVICE_MOBILE"] = "mobile";
+TDV["Tour"]["DEVICE_IPAD"] = "ipad";
+TDV["Tour"]["DEVICE_VR"] = "vr";
+TDV["Tour"]["EVENT_TOUR_INITIALIZED"] = "tourInitialized";
+TDV["Tour"]["EVENT_TOUR_LOADED"] = "tourLoaded";
+TDV["Tour"]["EVENT_TOUR_ENDED"] = "tourEnded";
+TDV["Tour"]["prototype"] = new TDV["EventDispatcher"]();
+TDV["Tour"]["prototype"]["dispose"] = function () {
+  if (!this["player"]) return;
+  if (this["_onHashChange"]) {
+    window["removeEventListener"]("hashchange", this["_onHashChange"]);
+    this["_onHashChange"] = undefined;
   }
-  if (this['_onKeyUp']) {
-    document['removeEventListener']('keyup', this['_onKeyUp']);
-    this['_onKeyUp'] = undefined;
+  if (this["_onKeyUp"]) {
+    document["removeEventListener"]("keyup", this["_onKeyUp"]);
+    this["_onKeyUp"] = undefined;
   }
-  if (this['_onBeforeUnload']) {
-    window['removeEventListener']('beforeunload', this['_onBeforeUnload']);
-    this['_onBeforeUnload'] = undefined;
+  if (this["_onBeforeUnload"]) {
+    window["removeEventListener"]("beforeunload", this["_onBeforeUnload"]);
+    this["_onBeforeUnload"] = undefined;
   }
-  var s = this['_getRootPlayer']();
+  var s = this["_getRootPlayer"]();
   if (s !== undefined) {
-    s['stopTextToSpeech']();
+    s["stopTextToSpeech"]();
+    s["stopGlobalAudios"]();
   }
-  this['player']['delete']();
-  this['player'] = undefined;
-  this['_isInitialized'] = ![];
-  window['currentGlobalAudios'] = undefined;
-  window['pauseGlobalAudiosState'] = undefined;
-  window['currentPanoramasWithCameraChanged'] = undefined;
-  window['overlaysDispatched'] = undefined;
+  this["player"]["delete"]();
+  this["player"] = undefined;
+  this["_isInitialized"] = ![];
+  window["currentGlobalAudios"] = undefined;
+  window["pauseGlobalAudiosState"] = undefined;
+  window["currentPanoramasWithCameraChanged"] = undefined;
+  window["overlaysDispatched"] = undefined;
 };
-TDV['Tour']['prototype']['load'] = function () {
-  if (this['player']) return;
+TDV["Tour"]["prototype"]["load"] = function () {
+  if (this["player"]) return;
   var t = function (v) {
-    if (v['name'] == 'begin') {
-      var w = v['data']['source']['get']('camera');
-      if (w && w['get']('initialSequence') && w['get']('initialSequence')['get']('movements')['length'] > 0x0) return;
+    if (v["name"] == "begin") {
+      var w = v["data"]["source"]["get"]("camera");
+      if (
+        w &&
+        w["get"]("initialSequence") &&
+        w["get"]("initialSequence")["get"]("movements")["length"] > 0x0
+      )
+        return;
     }
-    if (v['sourceClassName'] == 'MediaAudio' || this['_isInitialized']) return;
-    this['_isInitialized'] = !![];
-    u['unbind']('preloadMediaShow', t, this, !![]);
-    u['unbindOnObjectsOf']('PlayListItem', 'begin', t, this, !![]);
-    u['unbind']('stateChange', t, this, !![]);
-    if (this['_isPaused']) this['pause']();
-    window['parent']['postMessage'](TDV['Tour']['EVENT_TOUR_LOADED'], '*');
-    this['dispatchEvent'](this['createNewEvent'](TDV['Tour']['EVENT_TOUR_LOADED']));
+    if (v["sourceClassName"] == "MediaAudio" || this["_isInitialized"]) return;
+    this["_isInitialized"] = !![];
+    u["unbind"]("preloadMediaShow", t, this, !![]);
+    u["unbindOnObjectsOf"]("PlayListItem", "begin", t, this, !![]);
+    u["unbind"]("stateChange", t, this, !![]);
+    if (this["_isPaused"]) this["pause"]();
+    window["parent"]["postMessage"](TDV["Tour"]["EVENT_TOUR_LOADED"], "*");
+    this["dispatchEvent"](
+      this["createNewEvent"](TDV["Tour"]["EVENT_TOUR_LOADED"])
+    );
   };
-  this['_setup']();
-  this['_settings']['set'](TDV['PlayerSettings']['SCRIPT_URL'], this['_currentScriptUrl']);
-  var u = this['player'] = TDV['PlayerAPI']['create'](this['_settings']);
-  u['bind']('preloadMediaShow', t, this, !![]);
-  u['bind']('stateChange', t, this, !![]);
-  u['bindOnObjectsOf']('PlayListItem', 'begin', t, this, !![]);
-  u['bindOnObject']('rootPlayer', 'start', function (x) {
-    var y = x['data']['source'];
-    y['get']('data')['tour'] = this;
-    var z = window['navigator']['language'] || window['navigator']['userLanguage'] || 'en';
-    var A = y['get']('data')['locales'] || {};
-    var B = y['get']('data')['defaultLocale'] || z;
-    var C = this['locManager'] = new TDV['Tour']['LocaleManager'](y, A, B, this['_settings']['get'](TDV['PlayerSettings']['QUERY_STRING_PARAMETERS']));
-    y['get']('data')['localeManager'] = C;
-    var D = function () {
-      var O = y['get']('data');
-      if (!('updateText' in O)) {
-        O['updateText'] = function (S) {
-          var T = S[0x0]['split']('.');
-          if (T['length'] == 0x2) {
-            var U = C['trans']['apply'](C, S);
-            var V = S[0x1] || y;
-            if (typeof V == 'string') {
-              var W = V['split']('.');
-              V = y[W['shift']()];
-              for (var X = 0x0; X < W['length'] - 0x1; ++X) {
-                if (V != undefined) V = 'get' in V ? V['get'](W[X]) : V[W[X]];
+  this["_setup"]();
+  this["_settings"]["set"](
+    TDV["PlayerSettings"]["SCRIPT_URL"],
+    this["_currentScriptUrl"]
+  );
+  var u = (this["player"] = TDV["PlayerAPI"]["create"](this["_settings"]));
+  u["bind"]("preloadMediaShow", t, this, !![]);
+  u["bind"]("stateChange", t, this, !![]);
+  u["bindOnObjectsOf"]("PlayListItem", "begin", t, this, !![]);
+  u["bindOnObject"](
+    "rootPlayer",
+    "start",
+    function (x) {
+      var y = x["data"]["source"];
+      y["get"]("data")["tour"] = this;
+      var z =
+        window["navigator"]["language"] ||
+        window["navigator"]["userLanguage"] ||
+        "en";
+      var A = y["get"]("data")["locales"] || {};
+      var B = y["get"]("data")["defaultLocale"] || z;
+      var C = (this["locManager"] = new TDV["Tour"]["LocaleManager"](
+        y,
+        A,
+        B,
+        this["_settings"]["get"](
+          TDV["PlayerSettings"]["QUERY_STRING_PARAMETERS"]
+        )
+      ));
+      y["get"]("data")["localeManager"] = C;
+      var D = function () {
+        var O = y["get"]("data");
+        if (!("updateText" in O)) {
+          O["updateText"] = function (S) {
+            var T = S[0x0]["split"](".");
+            if (T["length"] == 0x2) {
+              var U = C["trans"]["apply"](C, S);
+              var V = S[0x1] || y;
+              if (typeof V == "string") {
+                var W = V["split"](".");
+                V = y[W["shift"]()];
+                for (var X = 0x0; X < W["length"] - 0x1; ++X) {
+                  if (V != undefined) V = "get" in V ? V["get"](W[X]) : V[W[X]];
+                }
+                if (V != undefined) {
+                  var Y = W[W["length"] - 0x1];
+                  if (Array["isArray"](V)) {
+                    for (var Z = 0x0; Z < V["length"]; ++Z) {
+                      this["setValue"](V[Z], Y, U);
+                    }
+                  } else this["setValue"](V, Y, U);
+                }
+              } else {
+                V = V[T[0x0]];
+                this["setValue"](V, T[0x1], U);
               }
-              if (V != undefined) {
-                var Y = W[W['length'] - 0x1];
-                if (Array['isArray'](V)) {
-                  for (var Z = 0x0; Z < V['length']; ++Z) {
-                    this['setValue'](V[Z], Y, U);
-                  }
-                } else this['setValue'](V, Y, U);
-              }
-            } else {
-              V = V[T[0x0]];
-              this['setValue'](V, T[0x1], U);
             }
+          }["bind"](y);
+        }
+        var P = O["translateObjs"];
+        var Q = O["updateText"];
+        var R = function () {
+          for (var a0 in P) {
+            Q(P[a0]);
           }
-        }['bind'](y);
-      }
-      var P = O['translateObjs'];
-      var Q = O['updateText'];
-      var R = function () {
-        for (var a0 in P) {
-          Q(P[a0]);
-        }
+        };
+        R();
+        R();
       };
-      R();
-      R();
-    };
-    this['locManager']['bind'](TDV['Tour']['LocaleManager']['EVENT_LOCALE_CHANGED'], D['bind'](this));
-    var E = this['_getParams'](location['search']['substr'](0x1));
-    E = y['mixObject'](E, this['_getParams'](location['hash']['substr'](0x1)));
-    var F = E['language'];
-    if (!F || !this['locManager']['hasLocale'](E['language'])) {
-      if (y['get']('data')['forceDefaultLocale']) F = B;
-      else F = z;
-    }
-    this['setLocale'](F);
-    var G = y['getByClassName']('HotspotPanoramaOverlay');
-    for (var I = 0x0, J = G['length']; I < J; ++I) {
-      var K = G[I];
-      var L = K['get']('data');
-      if (!L) K['set']('data', L = {});
-      L['defaultEnabledValue'] = K['get']('enabled');
-    }
-    this['_setMediaFromURL'](E);
-    this['_updateParams'](E, ![]);
-    if (this['isMobile']() && typeof this['_devicesUrl'][this['_device']] == 'object') {
-      var M = function () {
-        if (!y['isCardboardViewMode']() && this['_getOrientation']() != this['_orientation']) {
-          this['reload']();
-          return !![];
+      this["locManager"]["bind"](
+        TDV["Tour"]["LocaleManager"]["EVENT_LOCALE_CHANGED"],
+        D["bind"](this)
+      );
+      var E = this["_getParams"](location["search"]["substr"](0x1));
+      E = y["mixObject"](
+        E,
+        this["_getParams"](location["hash"]["substr"](0x1))
+      );
+      var F = E["language"];
+      if (!F || !this["locManager"]["hasLocale"](E["language"])) {
+        if (y["get"]("data")["forceDefaultLocale"]) F = B;
+        else F = z;
+      }
+      this["setLocale"](F);
+      var G = y["getByClassName"]("HotspotPanoramaOverlay");
+      for (var I = 0x0, J = G["length"]; I < J; ++I) {
+        var K = G[I];
+        var L = K["get"]("data");
+        if (!L) K["set"]("data", (L = {}));
+        L["defaultEnabledValue"] = K["get"]("enabled");
+      }
+      this["_setMediaFromURL"](E);
+      this["_updateParams"](E, ![]);
+      if (
+        this["isMobile"]() &&
+        typeof this["_devicesUrl"][this["_device"]] == "object"
+      ) {
+        var M = function () {
+          if (
+            !y["isCardboardViewMode"]() &&
+            this["_getOrientation"]() != this["_orientation"]
+          ) {
+            this["reload"](!![]);
+            return !![];
+          }
+          return ![];
+        };
+        if (M["call"](this)) return;
+        var N = y["getByClassName"]("PanoramaPlayer");
+        for (var I = 0x0; I < N["length"]; ++I) {
+          N[I]["bind"]("viewModeChange", M, this);
         }
-        return ![];
+        y["bind"]("orientationChange", M, this);
+      }
+      this["_onHashChange"] = function () {
+        var a1 = this["_getParams"](location["hash"]["substr"](0x1));
+        this["_setMediaFromURL"](a1, ![]);
+        this["_updateParams"](a1, !![]);
+      }["bind"](this);
+      this["_onKeyUp"] = function (a2) {
+        if (
+          a2["ctrlKey"] &&
+          a2["shiftKey"] &&
+          a2["key"]["toLowerCase"]() == "u"
+        ) {
+          this["updateDeepLink"]();
+          y["copyToClipboard"](location["href"]);
+        }
+      }["bind"](this);
+      this["_onBeforeUnload"] = function (a3) {
+        y["stopTextToSpeech"]();
       };
-      if (M['call'](this)) return;
-      var N = y['getByClassName']('PanoramaPlayer');
-      for (var I = 0x0; I < N['length']; ++I) {
-        N[I]['bind']('viewModeChange', M, this);
-      }
-      y['bind']('orientationChange', M, this);
-    }
-    this['_onHashChange'] = function () {
-      var a1 = this['_getParams'](location['hash']['substr'](0x1));
-      this['_setMediaFromURL'](a1, ![]);
-      this['_updateParams'](a1, !![]);
-    }['bind'](this);
-    this['_onKeyUp'] = function (a2) {
-      if (a2['ctrlKey'] && a2['shiftKey'] && a2['key']['toLowerCase']() == 'u') {
-        this['updateDeepLink']();
-        y['copyToClipboard'](location['href']);
-      }
-    }['bind'](this);
-    this['_onBeforeUnload'] = function (a3) {
-      y['stopTextToSpeech']();
-    };
-    window['addEventListener']('hashchange', this['_onHashChange']);
-    window['addEventListener']('beforeunload', this['_onBeforeUnload']);
-    document['addEventListener']('keyup', this['_onKeyUp']);
-    y['bind']('tourEnded', function () {
-      this['dispatchEvent'](this['createNewEvent'](TDV['Tour']['EVENT_TOUR_ENDED']));
-    }, this, !![]);
-    y['bind']('mute_changed', function () {
-      if (this['get']('mute')) this['stopTextToSpeech']();
-    }, y, !![]);
-    this['dispatchEvent'](this['createNewEvent'](TDV['Tour']['EVENT_TOUR_INITIALIZED']));
-  }, this, !![]);
-  window['addEventListener']('message', function (a4) {
-    var a5 = a4['data'];
-    if (a5 == 'pauseTour') a5 = 'pause';
-    else if (a5 == 'resumeTour') a5 = 'resume';
-    else return;
-    this[a5]['apply'](this);
-  }['bind'](this));
+      window["addEventListener"]("hashchange", this["_onHashChange"]);
+      window["addEventListener"]("beforeunload", this["_onBeforeUnload"]);
+      document["addEventListener"]("keyup", this["_onKeyUp"]);
+      y["bind"](
+        "tourEnded",
+        function () {
+          this["dispatchEvent"](
+            this["createNewEvent"](TDV["Tour"]["EVENT_TOUR_ENDED"])
+          );
+        },
+        this,
+        !![]
+      );
+      y["bind"](
+        "mute_changed",
+        function () {
+          if (this["get"]("mute")) this["stopTextToSpeech"]();
+        },
+        y,
+        !![]
+      );
+      this["dispatchEvent"](
+        this["createNewEvent"](TDV["Tour"]["EVENT_TOUR_INITIALIZED"])
+      );
+    },
+    this,
+    !![]
+  );
+  window["addEventListener"](
+    "message",
+    function (a4) {
+      var a5 = a4["data"];
+      if (a5 == "pauseTour") a5 = "pause";
+      else if (a5 == "resumeTour") a5 = "resume";
+      else return;
+      this[a5]["apply"](this);
+    }["bind"](this)
+  );
 };
-TDV['Tour']['prototype']['pause'] = function () {
-  this['_isPaused'] = !![];
-  if (!this['_isInitialized']) return;
+TDV["Tour"]["prototype"]["pause"] = function () {
+  this["_isPaused"] = !![];
+  if (!this["_isInitialized"]) return;
   var a6 = function (af) {
-    var ag = af['source'];
-    if (!this['_isPaused']) ag['unbind']('stateChange', a6, this);
-    else if (ag['get']('state') == 'playing') {
-      ag['pause']();
+    var ag = af["source"];
+    if (!this["_isPaused"]) ag["unbind"]("stateChange", a6, this);
+    else if (ag["get"]("state") == "playing") {
+      ag["pause"]();
     }
   };
-  var a7 = this['player']['getByClassName']('PlayList');
-  for (var a8 = 0x0, a9 = a7['length']; a8 < a9; a8++) {
+  var a7 = this["player"]["getByClassName"]("PlayList");
+  for (var a8 = 0x0, a9 = a7["length"]; a8 < a9; a8++) {
     var aa = a7[a8];
-    var ab = aa['get']('selectedIndex');
+    var ab = aa["get"]("selectedIndex");
     if (ab != -0x1) {
-      var ac = aa['get']('items')[ab];
-      var ad = ac['get']('player');
-      if (ad && ad['pause']) {
-        if (ad['get']('state') != 'playing') ad['bind']('stateChange', a6, this);
-        else ad['pause']();
-        this['_playersPlayingTmp']['push'](ad);
+      var ac = aa["get"]("items")[ab];
+      var ad = ac["get"]("player");
+      if (ad && ad["pause"]) {
+        if (ad["get"]("state") != "playing")
+          ad["bind"]("stateChange", a6, this);
+        else ad["pause"]();
+        this["_playersPlayingTmp"]["push"](ad);
       }
     }
   }
-  var ae = this['_getRootPlayer']();
-  ae['pauseGlobalAudios']();
-  ae['quizPauseTimer']();
+  var ae = this["_getRootPlayer"]();
+  ae["pauseGlobalAudios"]();
+  ae["quizPauseTimer"]();
 };
-TDV['Tour']['prototype']['resume'] = function () {
-  this['_isPaused'] = ![];
-  if (!this['_isInitialized']) return;
-  while (this['_playersPlayingTmp']['length']) {
-    var ah = this['_playersPlayingTmp']['pop']();
-    ah['play']();
+TDV["Tour"]["prototype"]["resume"] = function () {
+  this["_isPaused"] = ![];
+  if (!this["_isInitialized"]) return;
+  while (this["_playersPlayingTmp"]["length"]) {
+    var ah = this["_playersPlayingTmp"]["pop"]();
+    ah["play"]();
   }
-  var ai = this['_getRootPlayer']();
-  ai['resumeGlobalAudios']();
-  ai['quizResumeTimer']();
+  var ai = this["_getRootPlayer"]();
+  ai["resumeGlobalAudios"]();
+  ai["quizResumeTimer"]();
 };
-TDV['Tour']['prototype']['reload'] = function () {
-  this['_orientation'] = this['_getOrientation']();
-  this['updateDeepLink']();
-  this['dispose']();
-  this['load']();
+TDV["Tour"]["prototype"]["reload"] = function (aj) {
+  this["_orientation"] = this["_getOrientation"]();
+  if (aj) this["updateDeepLink"]();
+  this["dispose"]();
+  this["load"]();
 };
-TDV['Tour']['prototype']['setMediaByIndex'] = function (aj) {
-  var ak = this['_getRootPlayer']();
-  if (ak !== undefined) {
-    return ak['setMainMediaByIndex'](aj);
-  }
-};
-TDV['Tour']['prototype']['setMediaByName'] = function (al) {
-  var am = this['_getRootPlayer']();
-  if (am !== undefined) {
-    return am['setMainMediaByName'](al);
+TDV["Tour"]["prototype"]["setMediaByIndex"] = function (ak) {
+  var al = this["_getRootPlayer"]();
+  if (al !== undefined) {
+    return al["setMainMediaByIndex"](ak);
   }
 };
-TDV['Tour']['prototype']['triggerOverlayByName'] = function (an, ao, ap) {
-  var aq = this['_getRootPlayer']();
-  if (!ap) ap = 'click';
-  if (aq !== undefined && ap) {
-    var ar = aq['getPanoramaOverlayByName'](an, ao);
-    if (ar) {
-      aq['triggerOverlay'](ar, ap);
+TDV["Tour"]["prototype"]["setMediaByName"] = function (am) {
+  var an = this["_getRootPlayer"]();
+  if (an !== undefined) {
+    return an["setMainMediaByName"](am);
+  }
+};
+TDV["Tour"]["prototype"]["triggerOverlayByName"] = function (ao, ap, aq) {
+  var ar = this["_getRootPlayer"]();
+  if (!aq) aq = "click";
+  if (ar !== undefined && aq) {
+    var as = ar["getPanoramaOverlayByName"](ao, ap);
+    if (as) {
+      ar["triggerOverlay"](as, aq);
     }
   }
 };
-TDV['Tour']['prototype']['focusOverlayByName'] = function (as, at) {
-  var au = this['_getRootPlayer']();
-  if (au !== undefined) {
-    var av = au['getPanoramaOverlayByName'](as['get']('media'), at);
-    if (av) {
-      var aw = av['get']('class');
-      var ax = aw == 'VideoPanoramaOverlay' || aw == 'QuadVideoPanoramaOverlay' ? av : av['get']('items')[0x0];
-      var ay, az;
-      aw = ax['get']('class');
-      if (aw == 'QuadVideoPanoramaOverlay' || aw == 'QuadHotspotPanoramaOverlayImage') {
-        var aA = ax['get']('vertices');
-        var aB = 0x0,
-          aC = aA['length'];
-        ay = 0x0;
+TDV["Tour"]["prototype"]["focusOverlayByName"] = function (at, au) {
+  var av = this["_getRootPlayer"]();
+  if (av !== undefined) {
+    var aw = av["getPanoramaOverlayByName"](at["get"]("media"), au);
+    if (aw) {
+      var ax = aw["get"]("class");
+      var ay =
+        ax == "VideoPanoramaOverlay" || ax == "QuadVideoPanoramaOverlay"
+          ? aw
+          : aw["get"]("items")[0x0];
+      var az, aA;
+      ax = ay["get"]("class");
+      if (
+        ax == "QuadVideoPanoramaOverlay" ||
+        ax == "QuadHotspotPanoramaOverlayImage"
+      ) {
+        var aB = ay["get"]("vertices");
+        var aC = 0x0,
+          aD = aB["length"];
         az = 0x0;
-        while (aB < aC) {
-          var aD = aA[aB++];
-          var aE = aD['get']('yaw');
-          if (aE < 0x0) aE += 0x168;
-          ay += aE;
-          az += aD['get']('pitch');
+        aA = 0x0;
+        while (aC < aD) {
+          var aE = aB[aC++];
+          var aF = aE["get"]("yaw");
+          if (aF < 0x0) aF += 0x168;
+          az += aF;
+          aA += aE["get"]("pitch");
         }
-        ay /= 0x4;
         az /= 0x4;
-        if (ay > 0xb4) ay -= 0x168;
+        aA /= 0x4;
+        if (az > 0xb4) az -= 0x168;
       } else {
-        ay = ax['get']('yaw');
-        az = ax['get']('pitch');
+        az = ay["get"]("yaw");
+        aA = ay["get"]("pitch");
       }
-      var aF = au['getPlayListWithItem'](as);
-      if (aF) {
-        var aG = function () {
-          au['setPanoramaCameraWithSpot'](aF, as, ay, az);
+      var aG = av["getPlayListWithItem"](at);
+      if (aG) {
+        var aH = function () {
+          av["setPanoramaCameraWithSpot"](aG, at, az, aA);
         };
-        if (!this['_isInitialized']) {
-          var aH = function () {
-            as['unbind']('begin', aH, this);
-            aG();
+        if (!this["_isInitialized"]) {
+          var aI = function () {
+            at["unbind"]("begin", aI, this);
+            aH();
           };
-          as['bind']('begin', aH, this);
+          at["bind"]("begin", aI, this);
         } else {
-          aG();
+          aH();
         }
       }
     }
   }
 };
-TDV['Tour']['prototype']['setComponentsVisibilityByTags'] = function (aI, aJ, aK) {
-  var aL = this['_getRootPlayer']();
-  if (aL !== undefined) {
-    var aM = aL['getComponentsByTags'](aI, aK);
-    for (var aN = 0x0, aO = aM['length']; aN < aO; ++aN) {
-      aM[aN]['set']('visible', aJ);
+TDV["Tour"]["prototype"]["setComponentsVisibilityByTags"] = function (
+  aJ,
+  aK,
+  aL
+) {
+  var aM = this["_getRootPlayer"]();
+  if (aM !== undefined) {
+    var aN = aM["getComponentsByTags"](aJ, aL);
+    for (var aO = 0x0, aP = aN["length"]; aO < aP; ++aO) {
+      aN[aO]["set"]("visible", aK);
     }
   }
 };
-TDV['Tour']['prototype']['setOverlaysVisibilityByTags'] = function (aP, aQ, aR) {
-  var aS = this['_getRootPlayer']();
-  if (aS !== undefined) {
-    var aT = aS['getOverlaysByTags'](aP, aR);
-    aS['setOverlaysVisibility'](aT, aQ);
+TDV["Tour"]["prototype"]["setOverlaysVisibilityByTags"] = function (
+  aQ,
+  aR,
+  aS
+) {
+  var aT = this["_getRootPlayer"]();
+  if (aT !== undefined) {
+    var aU = aT["getOverlaysByTags"](aQ, aS);
+    aT["setOverlaysVisibility"](aU, aR);
   }
 };
-TDV['Tour']['prototype']['setOverlaysVisibilityByName'] = function (aU, aV) {
-  var aW = this['_getRootPlayer']();
-  if (aW !== undefined) {
-    var aX = aW['getActiveMediaWithViewer'](aW['getMainViewer']());
-    var aY = [];
-    for (var aZ = 0x0, b0 = aU['length']; aZ < b0; ++aZ) {
-      var b1 = aW['getPanoramaOverlayByName'](aX, aU[aZ]);
-      if (b1) aY['push'](b1);
+TDV["Tour"]["prototype"]["setOverlaysVisibilityByName"] = function (aV, aW) {
+  var aX = this["_getRootPlayer"]();
+  if (aX !== undefined) {
+    var aY = aX["getActiveMediaWithViewer"](aX["getMainViewer"]());
+    var aZ = [];
+    for (var b0 = 0x0, b1 = aV["length"]; b0 < b1; ++b0) {
+      var b2 = aX["getPanoramaOverlayByName"](aY, aV[b0]);
+      if (b2) aZ["push"](b2);
     }
-    aW['setOverlaysVisibility'](aY, aV);
+    aX["setOverlaysVisibility"](aZ, aW);
   }
 };
-TDV['Tour']['prototype']['updateDeepLink'] = function () {
-  var b2 = this['_getRootPlayer']();
-  if (b2 !== undefined) {
-    b2['updateDeepLink'](!![], !![], !![]);
+TDV["Tour"]["prototype"]["updateDeepLink"] = function () {
+  var b3 = this["_getRootPlayer"]();
+  if (b3 !== undefined) {
+    b3["updateDeepLink"](!![], !![], !![]);
   }
 };
-TDV['Tour']['prototype']['setLocale'] = function (b3) {
-  var b4 = this['_getRootPlayer']();
-  if (b4 !== undefined && this['locManager'] !== undefined) {
-    this['locManager']['setLocale'](b3);
+TDV["Tour"]["prototype"]["setLocale"] = function (b4) {
+  var b5 = this["_getRootPlayer"]();
+  if (b5 !== undefined && this["locManager"] !== undefined) {
+    this["locManager"]["setLocale"](b4);
   }
 };
-TDV['Tour']['prototype']['getLocale'] = function () {
-  var b5 = this['_getRootPlayer']();
-  return b5 !== undefined && this['locManager'] !== undefined ? this['locManager']['currentLocaleID'] : undefined;
+TDV["Tour"]["prototype"]["getLocale"] = function () {
+  var b6 = this["_getRootPlayer"]();
+  return b6 !== undefined && this["locManager"] !== undefined
+    ? this["locManager"]["currentLocaleID"]
+    : undefined;
 };
-TDV['Tour']['prototype']['isMobile'] = function () {
-  return TDV['PlayerAPI']['mobile'];
+TDV["Tour"]["prototype"]["isMobile"] = function () {
+  return TDV["PlayerAPI"]["mobile"];
 };
-TDV['Tour']['prototype']['isIPhone'] = function () {
-  return TDV['PlayerAPI']['device'] == TDV['PlayerAPI']['DEVICE_IPHONE'];
+TDV["Tour"]["prototype"]["isIPhone"] = function () {
+  return TDV["PlayerAPI"]["device"] == TDV["PlayerAPI"]["DEVICE_IPHONE"];
 };
-TDV['Tour']['prototype']['isIPad'] = function () {
-  return TDV['PlayerAPI']['device'] == TDV['PlayerAPI']['DEVICE_IPAD'];
+TDV["Tour"]["prototype"]["isIPad"] = function () {
+  return TDV["PlayerAPI"]["device"] == TDV["PlayerAPI"]["DEVICE_IPAD"];
 };
-TDV['Tour']['prototype']['isIOS'] = function () {
-  return this['isIPad']() || this['isIPhone']();
+TDV["Tour"]["prototype"]["isIOS"] = function () {
+  return this["isIPad"]() || this["isIPhone"]();
 };
-TDV['Tour']['prototype']['isMobileApp'] = function () {
-  return navigator['userAgent']['indexOf']('App/TDV') != -0x1;
+TDV["Tour"]["prototype"]["isMobileApp"] = function () {
+  return navigator["userAgent"]["indexOf"]("App/TDV") != -0x1;
 };
-TDV['Tour']['prototype']['getNotchValue'] = function () {
-  var b6 = document['documentElement'];
-  b6['style']['setProperty']('--notch-top', 'env(safe-area-inset-top)');
-  b6['style']['setProperty']('--notch-right', 'env(safe-area-inset-right)');
-  b6['style']['setProperty']('--notch-bottom', 'env(safe-area-inset-bottom)');
-  b6['style']['setProperty']('--notch-left', 'env(safe-area-inset-left)');
-  var b7 = window['getComputedStyle'](b6);
-  return parseInt(b7['getPropertyValue']('--notch-top') || '0', 0xa) || parseInt(b7['getPropertyValue']('--notch-right') || '0', 0xa) || parseInt(b7['getPropertyValue']('--notch-bottom') || '0', 0xa) || parseInt(b7['getPropertyValue']('--notch-left') || '0', 0xa);
+TDV["Tour"]["prototype"]["getNotchValue"] = function () {
+  var b7 = document["documentElement"];
+  b7["style"]["setProperty"]("--notch-top", "env(safe-area-inset-top)");
+  b7["style"]["setProperty"]("--notch-right", "env(safe-area-inset-right)");
+  b7["style"]["setProperty"]("--notch-bottom", "env(safe-area-inset-bottom)");
+  b7["style"]["setProperty"]("--notch-left", "env(safe-area-inset-left)");
+  var b8 = window["getComputedStyle"](b7);
+  return (
+    parseInt(b8["getPropertyValue"]("--notch-top") || "0", 0xa) ||
+    parseInt(b8["getPropertyValue"]("--notch-right") || "0", 0xa) ||
+    parseInt(b8["getPropertyValue"]("--notch-bottom") || "0", 0xa) ||
+    parseInt(b8["getPropertyValue"]("--notch-left") || "0", 0xa)
+  );
 };
-TDV['Tour']['prototype']['hasNotch'] = function () {
-  return this['getNotchValue']() > 0x0;
+TDV["Tour"]["prototype"]["hasNotch"] = function () {
+  return this["getNotchValue"]() > 0x0;
 };
-TDV['Tour']['prototype']['_getOrientation'] = function () {
-  var b8 = this['_getRootPlayer']();
-  if (b8) {
-    return b8['get']('orientation');
-  } else if (this['_lockedOrientation']) {
-    return this['_lockedOrientation'];
+TDV["Tour"]["prototype"]["_getOrientation"] = function () {
+  var b9 = this["_getRootPlayer"]();
+  if (b9) {
+    return b9["get"]("orientation");
+  } else if (this["_lockedOrientation"]) {
+    return this["_lockedOrientation"];
   } else {
-    return TDV['PlayerAPI']['getOrientation']();
+    return TDV["PlayerAPI"]["getOrientation"]();
   }
 };
-TDV['Tour']['prototype']['_getParams'] = function (b9) {
-  var ba = {};
-  b9['split']('&')['forEach'](function (bb) {
-    var bc = bb['split']('=')[0x0],
-      bd = decodeURIComponent(bb['split']('=')[0x1]);
-    ba[bc['toLowerCase']()] = bd;
+TDV["Tour"]["prototype"]["_getParams"] = function (ba) {
+  var bb = {};
+  ba["split"]("&")["forEach"](function (bc) {
+    var bd = bc["split"]("=")[0x0],
+      be = decodeURIComponent(bc["split"]("=")[0x1]);
+    bb[bd["toLowerCase"]()] = be;
   });
-  return ba;
+  return bb;
 };
-TDV['Tour']['prototype']['_getRootPlayer'] = function () {
-  return this['player'] !== undefined ? this['player']['getById']('rootPlayer') : undefined;
+TDV["Tour"]["prototype"]["_getRootPlayer"] = function () {
+  return this["player"] !== undefined
+    ? this["player"]["getById"]("rootPlayer")
+    : undefined;
 };
-TDV['Tour']['prototype']['_setup'] = function () {
-  if (!this['_orientation']) this['_orientation'] = this['_getOrientation']();
-  this['_device'] = this['_getDevice']();
-  this['_currentScriptUrl'] = this['_getScriptUrl']();
-  if (this['isMobile']()) {
-    var be = document['getElementById']('metaViewport');
-    if (be) {
-      var bf = this['_devicesUrl'][this['_device']];
-      var bg = 0x1;
-      if (typeof bf == 'object' && this['_orientation'] in bf && this['_orientation'] == TDV['PlayerAPI']['ORIENTATION_LANDSCAPE'] || this['_device'] == TDV['Tour']['DEVICE_GENERAL']) {
-        bg = be['getAttribute']('data-tdv-general-scale') || 0.5;
+TDV["Tour"]["prototype"]["_setup"] = function () {
+  if (!this["_orientation"]) this["_orientation"] = this["_getOrientation"]();
+  this["_device"] = this["_getDevice"]();
+  this["_currentScriptUrl"] = this["_getScriptUrl"]();
+  if (this["isMobile"]()) {
+    var bf = document["getElementById"]("metaViewport");
+    if (bf) {
+      var bg = this["_devicesUrl"][this["_device"]];
+      var bh = 0x1;
+      if (
+        (typeof bg == "object" &&
+          this["_orientation"] in bg &&
+          this["_orientation"] == TDV["PlayerAPI"]["ORIENTATION_LANDSCAPE"]) ||
+        this["_device"] == TDV["Tour"]["DEVICE_GENERAL"]
+      ) {
+        bh = bf["getAttribute"]("data-tdv-general-scale") || 0.5;
       }
-      var bh = be['getAttribute']('content');
-      bh = bh['replace'](/initial-scale=(\d+(\.\d+)?)/, function (bi, bj) {
-        return 'initial-scale=' + bg;
+      var bi = bf["getAttribute"]("content");
+      bi = bi["replace"](/initial-scale=(\d+(\.\d+)?)/, function (bj, bk) {
+        return "initial-scale=" + bh;
       });
-      be['setAttribute']('content', bh);
+      bf["setAttribute"]("content", bi);
     }
   }
 };
-TDV['Tour']['prototype']['_getScriptUrl'] = function () {
-  var bk = this['_devicesUrl'][this['_device']];
-  if (typeof bk == 'object') {
-    if (this['_orientation'] in bk) {
-      bk = bk[this['_orientation']];
+TDV["Tour"]["prototype"]["_getScriptUrl"] = function () {
+  var bl = this["_devicesUrl"][this["_device"]];
+  if (typeof bl == "object") {
+    if (this["_orientation"] in bl) {
+      bl = bl[this["_orientation"]];
     }
-  }
-  return bk;
-};
-TDV['Tour']['prototype']['_getDevice'] = function () {
-  var bl = TDV['Tour']['DEVICE_GENERAL'];
-  if (!this['_isRemoteSession'] && this['isMobile']()) {
-    if (this['isIPad']() && TDV['Tour']['DEVICE_IPAD'] in this['_devicesUrl']) bl = TDV['Tour']['DEVICE_IPAD'];
-    else if (TDV['Tour']['DEVICE_MOBILE'] in this['_devicesUrl']) bl = TDV['Tour']['DEVICE_MOBILE'];
   }
   return bl;
 };
-TDV['Tour']['prototype']['_setMediaFromURL'] = function (bm) {
-  var bn = this['_getRootPlayer']();
-  var bo = bn['getActivePlayerWithViewer'](bn['getMainViewer']());
-  var bp = bo ? bn['getMediaFromPlayer'](bo) : undefined;
-  var bq = undefined;
-  if ('media' in bm) {
-    var br = bm['media'];
-    var bs = Number(br);
-    bq = isNaN(bs) ? this['setMediaByName'](br) : this['setMediaByIndex'](bs - 0x1);
-  } else if ('media-index' in bm) {
-    bq = this['setMediaByIndex'](parseInt(bm['media-index']) - 0x1);
-  } else if ('media-name' in bm) {
-    bq = this['setMediaByName'](bm['media-name']);
+TDV["Tour"]["prototype"]["_getDevice"] = function () {
+  var bm = TDV["Tour"]["DEVICE_GENERAL"];
+  if (!this["_isRemoteSession"] && this["isMobile"]()) {
+    if (this["isIPad"]() && TDV["Tour"]["DEVICE_IPAD"] in this["_devicesUrl"])
+      bm = TDV["Tour"]["DEVICE_IPAD"];
+    else if (TDV["Tour"]["DEVICE_MOBILE"] in this["_devicesUrl"])
+      bm = TDV["Tour"]["DEVICE_MOBILE"];
   }
-  if (bq == undefined) {
-    bq = this['setMediaByIndex'](0x0);
+  return bm;
+};
+TDV["Tour"]["prototype"]["_setMediaFromURL"] = function (bn) {
+  var bo = this["_getRootPlayer"]();
+  var bp = bo["getActivePlayerWithViewer"](bo["getMainViewer"]());
+  var bq = bp ? bo["getMediaFromPlayer"](bp) : undefined;
+  var br = undefined;
+  if ("media" in bn) {
+    var bs = bn["media"];
+    var bt = Number(bs);
+    br = isNaN(bt)
+      ? this["setMediaByName"](bs)
+      : this["setMediaByIndex"](bt - 0x1);
+  } else if ("media-index" in bn) {
+    br = this["setMediaByIndex"](parseInt(bn["media-index"]) - 0x1);
+  } else if ("media-name" in bn) {
+    br = this["setMediaByName"](bn["media-name"]);
   }
-  if (bq != undefined) {
-    var bt = bq['get']('player');
-    var bu = function () {
-      if ('trigger-overlay-name' in bm) {
-        this['triggerOverlayByName'](bq['get']('media'), bm['trigger-overlay-name'], bm['trigger-overlay-event']);
+  if (br == undefined) {
+    br = this["setMediaByIndex"](0x0);
+  }
+  if (br != undefined) {
+    var bu = br["get"]("player");
+    var bv = function () {
+      if ("trigger-overlay-name" in bn) {
+        this["triggerOverlayByName"](
+          br["get"]("media"),
+          bn["trigger-overlay-name"],
+          bn["trigger-overlay-event"]
+        );
       }
-      if ('focus-overlay-name' in bm) {
-        this['focusOverlayByName'](bq, bm['focus-overlay-name']);
-      } else if ('yaw' in bm || 'pitch' in bm) {
-        var by = parseFloat(bm['yaw']) || undefined;
-        var bz = parseFloat(bm['pitch']) || undefined;
-        var bA = bn['getPlayListWithItem'](bq);
-        if (bA) bn['setPanoramaCameraWithSpot'](bA, bq, by, bz);
+      if ("focus-overlay-name" in bn) {
+        this["focusOverlayByName"](br, bn["focus-overlay-name"]);
+      } else if ("yaw" in bn || "pitch" in bn) {
+        var bz = parseFloat(bn["yaw"]) || undefined;
+        var bA = parseFloat(bn["pitch"]) || undefined;
+        var bB = bo["getPlayListWithItem"](br);
+        if (bB) bo["setPanoramaCameraWithSpot"](bB, br, bz, bA);
       }
-    }['bind'](this);
-    if (bt) {
-      var bv = bt['get']('viewerArea') == bn['getMainViewer']();
-      var bw = bn['getMediaFromPlayer'](bt);
-      if (bv && bp == bq['get']('media') || !bv && bw == bq['get']('media')) {
-        bu();
-        return bq != undefined;
+    }["bind"](this);
+    if (bu) {
+      var bw = bu["get"]("viewerArea") == bo["getMainViewer"]();
+      var bx = bo["getMediaFromPlayer"](bu);
+      if (
+        (bw && bq == br["get"]("media")) ||
+        (!bw && bx == br["get"]("media"))
+      ) {
+        bv();
+        return br != undefined;
       }
     }
-    var bx = function () {
-      bq['unbind']('begin', bx, this);
-      bu();
+    var by = function () {
+      br["unbind"]("begin", by, this);
+      bv();
     };
-    bq['bind']('begin', bx, bn);
+    br["bind"]("begin", by, bo);
   }
-  return bq != undefined;
+  return br != undefined;
 };
-TDV['Tour']['prototype']['_setupRemote'] = function () {
-  if (this['isMobile']() && TDV['Remote'] != undefined) {
-    var bB = function () {
-      var bC = undefined;
-      var bD = function () {
-        var bG = this['_getRootPlayer']();
-        bC = bG['get']('lockedOrientation');
-        bG['set']('lockedOrientation', this['_lockedOrientation']);
-      }['bind'](this);
-      this['_isRemoteSession'] = !![];
-      this['_lockedOrientation'] = TDV['PlayerAPI']['ORIENTATION_LANDSCAPE'];
-      if (this['_device'] != TDV['Tour']['DEVICE_GENERAL']) {
-        var bE = function () {
-          bD();
-          this['unbind'](TDV['Tour']['EVENT_TOUR_INITIALIZED'], bE);
-        }['bind'](this);
-        this['bind'](TDV['Tour']['EVENT_TOUR_INITIALIZED'], bE);
-        this['reload']();
+TDV["Tour"]["prototype"]["_setupRemote"] = function () {
+  if (this["isMobile"]() && TDV["Remote"] != undefined) {
+    var bC = function () {
+      var bD = undefined;
+      var bE = function () {
+        var bH = this["_getRootPlayer"]();
+        bD = bH["get"]("lockedOrientation");
+        bH["set"]("lockedOrientation", this["_lockedOrientation"]);
+      }["bind"](this);
+      this["_isRemoteSession"] = !![];
+      this["_lockedOrientation"] = TDV["PlayerAPI"]["ORIENTATION_LANDSCAPE"];
+      if (this["_device"] != TDV["Tour"]["DEVICE_GENERAL"]) {
+        var bF = function () {
+          bE();
+          this["unbind"](TDV["Tour"]["EVENT_TOUR_INITIALIZED"], bF);
+        }["bind"](this);
+        this["bind"](TDV["Tour"]["EVENT_TOUR_INITIALIZED"], bF);
+        this["reload"](!![]);
       } else {
-        bD();
+        bE();
       }
-      var bF = function () {
-        this['_isRemoteSession'] = ![];
-        this['_getRootPlayer']()['set']('lockedOrientation', bC);
-        TDV['Remote']['unbind'](TDV['Remote']['EVENT_CALL_END'], bF);
-        var bH = this['_getScriptUrl']();
-        if (this['_currentScriptUrl'] != bH) this['reload']();
-      }['bind'](this);
-      TDV['Remote']['bind'](TDV['Remote']['EVENT_CALL_END'], bF);
-    }['bind'](this);
-    TDV['Remote']['bind'](TDV['Remote']['EVENT_CALL_BEGIN'], bB);
+      var bG = function () {
+        this["_isRemoteSession"] = ![];
+        this["_getRootPlayer"]()["set"]("lockedOrientation", bD);
+        TDV["Remote"]["unbind"](TDV["Remote"]["EVENT_CALL_END"], bG);
+        var bI = this["_getScriptUrl"]();
+        if (this["_currentScriptUrl"] != bI) this["reload"](!![]);
+      }["bind"](this);
+      TDV["Remote"]["bind"](TDV["Remote"]["EVENT_CALL_END"], bG);
+    }["bind"](this);
+    TDV["Remote"]["bind"](TDV["Remote"]["EVENT_CALL_BEGIN"], bC);
   }
 };
-TDV['Tour']['prototype']['_updateParams'] = function (bI, bJ) {
-  if (bJ && 'language' in bI) {
-    var bK = bI['language'];
-    if (this['locManager']['hasLocale'](bK)) {
-      this['setLocale'](bK);
+TDV["Tour"]["prototype"]["_updateParams"] = function (bJ, bK) {
+  if (bK && "language" in bJ) {
+    var bL = bJ["language"];
+    if (this["locManager"]["hasLocale"](bL)) {
+      this["setLocale"](bL);
     }
   }
-  var bL = function (bM, bN, bO) {
-    var bP = bN['split'](',');
-    for (var bQ = 0x0, bR = bP['length']; bQ < bR; ++bQ) {
-      bM['call'](this, bP[bQ]['split']('+'), bO, 'and');
+  var bM = function (bN, bO, bP) {
+    var bQ = bO["split"](",");
+    for (var bR = 0x0, bS = bQ["length"]; bR < bS; ++bR) {
+      bN["call"](this, bQ[bR]["split"]("+"), bP, "and");
     }
   };
-  if ('hide-components-tags' in bI || 'hct' in bI) bL['call'](this, this['setComponentsVisibilityByTags'], bI['hide-components-tags'] || bI['hct'], ![]);
-  if ('show-components-tags' in bI || 'sct' in bI) bL['call'](this, this['setComponentsVisibilityByTags'], bI['show-components-tags'] || bI['sct'], !![]);
-  if ('hide-overlays-tags' in bI || 'hot' in bI) bL['call'](this, this['setOverlaysVisibilityByTags'], bI['hide-overlays-tags'] || bI['hot'], ![]);
-  if ('show-overlays-tags' in bI || 'sot' in bI) bL['call'](this, this['setOverlaysVisibilityByTags'], bI['show-overlays-tags'] || bI['sot'], !![]);
-  if ('hide-overlays-names' in bI || 'hon' in bI) this['setOverlaysVisibilityByName'](decodeURIComponent(bI['hide-overlays-names'] || bI['hon'])['split'](','), ![]);
-  if ('show-overlays-names' in bI || 'son' in bI) this['setOverlaysVisibilityByName'](decodeURIComponent(bI['show-overlays-names'] || bI['son'])['split'](','), !![]);
+  if ("hide-components-tags" in bJ || "hct" in bJ)
+    bM["call"](
+      this,
+      this["setComponentsVisibilityByTags"],
+      bJ["hide-components-tags"] || bJ["hct"],
+      ![]
+    );
+  if ("show-components-tags" in bJ || "sct" in bJ)
+    bM["call"](
+      this,
+      this["setComponentsVisibilityByTags"],
+      bJ["show-components-tags"] || bJ["sct"],
+      !![]
+    );
+  if ("hide-overlays-tags" in bJ || "hot" in bJ)
+    bM["call"](
+      this,
+      this["setOverlaysVisibilityByTags"],
+      bJ["hide-overlays-tags"] || bJ["hot"],
+      ![]
+    );
+  if ("show-overlays-tags" in bJ || "sot" in bJ)
+    bM["call"](
+      this,
+      this["setOverlaysVisibilityByTags"],
+      bJ["show-overlays-tags"] || bJ["sot"],
+      !![]
+    );
+  if ("hide-overlays-names" in bJ || "hon" in bJ)
+    this["setOverlaysVisibilityByName"](
+      decodeURIComponent(bJ["hide-overlays-names"] || bJ["hon"])["split"](","),
+      ![]
+    );
+  if ("show-overlays-names" in bJ || "son" in bJ)
+    this["setOverlaysVisibilityByName"](
+      decodeURIComponent(bJ["show-overlays-names"] || bJ["son"])["split"](","),
+      !![]
+    );
 };
-TDV['Tour']['LocaleManager'] = function (bS, bT, bU, bV) {
-  TDV['EventDispatcher']['call'](this);
-  this['rootPlayer'] = bS;
-  this['locales'] = {};
-  this['defaultLocale'] = bU;
-  this['queryParam'] = bV;
-  this['currentLocaleMap'] = {};
-  this['currentLocaleID'] = undefined;
-  for (var bW in bT) {
-    this['registerLocale'](bW, bT[bW]);
+TDV["Tour"]["LocaleManager"] = function (bT, bU, bV, bW) {
+  TDV["EventDispatcher"]["call"](this);
+  this["rootPlayer"] = bT;
+  this["locales"] = {};
+  this["defaultLocale"] = bV;
+  this["queryParam"] = bW;
+  this["currentLocaleMap"] = {};
+  this["currentLocaleID"] = undefined;
+  for (var bX in bU) {
+    this["registerLocale"](bX, bU[bX]);
   }
 };
-TDV['Tour']['LocaleManager']['EVENT_LOCALE_CHANGED'] = 'localeChanged';
-TDV['Tour']['LocaleManager']['prototype'] = new TDV['EventDispatcher']();
-TDV['Tour']['LocaleManager']['prototype']['registerLocale'] = function (bX, bY) {
-  var bZ = [bX, bX['split']('-')[0x0]];
-  for (var c0 = 0x0; c0 < bZ['length']; ++c0) {
-    bX = bZ[c0];
-    if (!(bX in this['locales'])) {
-      this['locales'][bX] = bY;
+TDV["Tour"]["LocaleManager"]["EVENT_LOCALE_CHANGED"] = "localeChanged";
+TDV["Tour"]["LocaleManager"]["prototype"] = new TDV["EventDispatcher"]();
+TDV["Tour"]["LocaleManager"]["prototype"]["registerLocale"] = function (
+  bY,
+  bZ
+) {
+  var c0 = [bY, bY["split"]("-")[0x0]];
+  for (var c1 = 0x0; c1 < c0["length"]; ++c1) {
+    bY = c0[c1];
+    if (!(bY in this["locales"])) {
+      this["locales"][bY] = bZ;
     }
   }
 };
-TDV['Tour']['LocaleManager']['prototype']['unregisterLocale'] = function (c1) {
-  delete this['locales'][c1];
-  if (c1 == this['currentLocaleID']) {
-    this['setLocale'](this['defaultLocale']);
+TDV["Tour"]["LocaleManager"]["prototype"]["unregisterLocale"] = function (c2) {
+  delete this["locales"][c2];
+  if (c2 == this["currentLocaleID"]) {
+    this["setLocale"](this["defaultLocale"]);
   }
 };
-TDV['Tour']['LocaleManager']['prototype']['hasLocale'] = function (c2) {
-  return c2 in this['locales'];
+TDV["Tour"]["LocaleManager"]["prototype"]["hasLocale"] = function (c3) {
+  return c3 in this["locales"];
 };
-TDV['Tour']['LocaleManager']['prototype']['setLocale'] = function (c3) {
-  var c4 = undefined;
-  var c5 = c3['split']('-')[0x0];
-  var c6 = [c3, c5];
-  for (var c7 = 0x0; c7 < c6['length']; ++c7) {
-    var c9 = c6[c7];
-    if (c9 in this['locales']) {
-      c4 = c9;
+TDV["Tour"]["LocaleManager"]["prototype"]["setLocale"] = function (c4) {
+  var c5 = undefined;
+  var c6 = c4["split"]("-")[0x0];
+  var c7 = [c4, c6];
+  for (var c8 = 0x0; c8 < c7["length"]; ++c8) {
+    var ca = c7[c8];
+    if (ca in this["locales"]) {
+      c5 = ca;
       break;
     }
   }
-  if (c4 === undefined) {
-    for (var c9 in this['locales']) {
-      if (c9['indexOf'](c5) == 0x0) {
-        c4 = c9;
+  if (c5 === undefined) {
+    for (var ca in this["locales"]) {
+      if (ca["indexOf"](c6) == 0x0) {
+        c5 = ca;
         break;
       }
     }
   }
-  if (c4 === undefined) {
-    c4 = this['defaultLocale'];
+  if (c5 === undefined) {
+    c5 = this["defaultLocale"];
   }
-  var ca = this['locales'][c4];
-  if (ca !== undefined && this['currentLocaleID'] != c4) {
-    this['currentLocaleID'] = c4;
-    var cb = this;
-    if (typeof ca == 'string') {
-      var cc = new XMLHttpRequest();
-      cc['onreadystatechange'] = function () {
-        if (cc['readyState'] == 0x4) {
-          if (cc['status'] == 0xc8) {
-            cb['locales'][c4] = cb['currentLocaleMap'] = cb['_parsePropertiesContent'](cc['responseText']);
-            cb['dispatchEvent'](cb['createNewEvent'](TDV['Tour']['LocaleManager']['EVENT_LOCALE_CHANGED']));
+  var cb = this["locales"][c5];
+  if (cb !== undefined && this["currentLocaleID"] != c5) {
+    this["currentLocaleID"] = c5;
+    var cc = this;
+    if (typeof cb == "string") {
+      var cd = new XMLHttpRequest();
+      cd["onreadystatechange"] = function () {
+        if (cd["readyState"] == 0x4) {
+          if (cd["status"] == 0xc8) {
+            cc["locales"][c5] = cc["currentLocaleMap"] = cc[
+              "_parsePropertiesContent"
+            ](cd["responseText"]);
+            cc["dispatchEvent"](
+              cc["createNewEvent"](
+                TDV["Tour"]["LocaleManager"]["EVENT_LOCALE_CHANGED"]
+              )
+            );
           } else {
-            throw ca + '\x20can\x27t\x20be\x20loaded';
+            throw cb + "\x20can\x27t\x20be\x20loaded";
           }
         }
       };
-      var cd = ca;
-      if (this['queryParam']) cd += (cd['indexOf']('?') == -0x1 ? '?' : '&') + this['queryParam'];
-      cc['open']('GET', cd);
-      cc['send']();
+      var ce = cb;
+      if (this["queryParam"])
+        ce += (ce["indexOf"]("?") == -0x1 ? "?" : "&") + this["queryParam"];
+      cd["open"]("GET", ce);
+      cd["send"]();
     } else {
-      this['currentLocaleMap'] = ca;
-      this['dispatchEvent'](this['createNewEvent'](TDV['Tour']['LocaleManager']['EVENT_LOCALE_CHANGED']));
+      this["currentLocaleMap"] = cb;
+      this["dispatchEvent"](
+        this["createNewEvent"](
+          TDV["Tour"]["LocaleManager"]["EVENT_LOCALE_CHANGED"]
+        )
+      );
     }
   }
 };
-TDV['Tour']['LocaleManager']['prototype']['trans'] = function (ce) {
-  var cf = this['currentLocaleMap'][ce];
-  if (cf && arguments['length'] > 0x2) {
-    var cg = typeof arguments[0x2] == 'object' ? arguments[0x2] : undefined;
-    var ch = arguments;
-
-    function ci(cj) {
-      return /^\d+$/['test'](cj);
+TDV["Tour"]["LocaleManager"]["prototype"]["trans"] = function (cf) {
+  var cg = this["currentLocaleMap"][cf];
+  if (cg && arguments["length"] > 0x2) {
+    var ch = typeof arguments[0x2] == "object" ? arguments[0x2] : undefined;
+    var ci = arguments;
+    function cj(ck) {
+      return /^\d+$/["test"](ck);
     }
-    cf = cf['replace'](/\{\{([\w\.]+)\}\}/g, function (ck, cl) {
-      if (ci(cl)) cl = ch[parseInt(cl) + 0x1];
-      else if (cg !== undefined) cl = cg[cl];
-      if (typeof cl == 'string') cl = this['currentLocaleMap'][cl] || cl;
-      else if (typeof cl == 'function') cl = cl['call'](this['rootPlayer']);
-      return cl !== undefined ? cl : '';
-    }['bind'](this));
+    cg = cg["replace"](
+      /\{\{([\w\.]+)\}\}/g,
+      function (cl, cm) {
+        if (cj(cm)) cm = ci[parseInt(cm) + 0x1];
+        else if (ch !== undefined) cm = ch[cm];
+        if (typeof cm == "string") cm = this["currentLocaleMap"][cm] || cm;
+        else if (typeof cm == "function") cm = cm["call"](this["rootPlayer"]);
+        return cm !== undefined ? cm : "";
+      }["bind"](this)
+    );
   }
-  return cf;
+  return cg;
 };
-TDV['Tour']['LocaleManager']['prototype']['_parsePropertiesContent'] = function (cm) {
-  cm = cm['replace'](/(^|\n)#[^\n]*/g, '');
-  var cn = {};
-  var co = cm['split']('\x0a');
-  for (var cp = 0x0, cq = co['length']; cp < cq; ++cp) {
-    var cr = co[cp]['trim']();
-    if (cr['length'] == 0x0) {
-      continue;
+TDV["Tour"]["LocaleManager"]["prototype"]["_parsePropertiesContent"] =
+  function (cn) {
+    cn = cn["replace"](/(^|\n)#[^\n]*/g, "");
+    var co = {};
+    var cp = cn["split"]("\x0a");
+    for (var cq = 0x0, cr = cp["length"]; cq < cr; ++cq) {
+      var cs = cp[cq]["trim"]();
+      if (cs["length"] == 0x0) {
+        continue;
+      }
+      var ct = cs["indexOf"]("=");
+      if (ct == -0x1) {
+        console["error"]("Locale\x20parser:\x20Invalid\x20line\x20" + cq);
+        continue;
+      }
+      var cu = cs["substr"](0x0, ct)["trim"]();
+      var cv = cs["substr"](ct + 0x1)["trim"]();
+      var cw;
+      while (
+        (cw = cv["lastIndexOf"]("\x5c")) != -0x1 &&
+        cw == cv["length"] - 0x1 &&
+        ++cq < cr
+      ) {
+        cv = cv["substr"](0x0, cv["length"] - 0x2);
+        cs = cp[cq];
+        if (cs["length"] == 0x0) break;
+        cv += "\x0a" + cs;
+        cv = cv["trim"]();
+      }
+      co[cu] = cv;
     }
-    var cs = cr['indexOf']('=');
-    if (cs == -0x1) {
-      console['error']('Locale\x20parser:\x20Invalid\x20line\x20' + cp);
-      continue;
-    }
-    var ct = cr['substr'](0x0, cs)['trim']();
-    var cu = cr['substr'](cs + 0x1)['trim']();
-    var cv;
-    while ((cv = cu['lastIndexOf']('\x5c')) != -0x1 && cv == cu['length'] - 0x1 && ++cp < cq) {
-      cu = cu['substr'](0x0, cu['length'] - 0x2);
-      cr = co[cp];
-      if (cr['length'] == 0x0) break;
-      cu += '\x0a' + cr;
-      cu = cu['trim']();
-    }
-    cn[ct] = cu;
-  }
-  return cn;
+    return co;
+  };
+TDV["Tour"]["HistoryData"] = function (cx) {
+  this["playList"] = cx;
+  this["list"] = [];
+  this["pointer"] = -0x1;
 };
-TDV['Tour']['HistoryData'] = function (cw) {
-  this['playList'] = cw;
-  this['list'] = [];
-  this['pointer'] = -0x1;
-};
-TDV['Tour']['HistoryData']['prototype']['add'] = function (cx) {
-  if (this['pointer'] < this['list']['length'] && this['list'][this['pointer']] == cx) {
+TDV["Tour"]["HistoryData"]["prototype"]["add"] = function (cy) {
+  if (
+    this["pointer"] < this["list"]["length"] &&
+    this["list"][this["pointer"]] == cy
+  ) {
     return;
-  } ++this['pointer'];
-  this['list']['splice'](this['pointer'], this['list']['length'] - this['pointer'], cx);
-};
-TDV['Tour']['HistoryData']['prototype']['back'] = function () {
-  if (!this['canBack']()) return;
-  this['playList']['set']('selectedIndex', this['list'][--this['pointer']]);
-};
-TDV['Tour']['HistoryData']['prototype']['forward'] = function () {
-  if (!this['canForward']()) return;
-  this['playList']['set']('selectedIndex', this['list'][++this['pointer']]);
-};
-TDV['Tour']['HistoryData']['prototype']['canBack'] = function () {
-  return this['pointer'] > 0x0;
-};
-TDV['Tour']['HistoryData']['prototype']['canForward'] = function () {
-  return this['pointer'] >= 0x0 && this['pointer'] < this['list']['length'] - 0x1;
-};
-TDV['Tour']['Script'] = function () { };
-TDV['Tour']['Script']['assignObjRecursively'] = function (cy, cz) {
-  for (var cA in cy) {
-    var cB = cy[cA];
-    if (typeof cB == 'object' && cB !== null) this['assignObjRecursively'](cy[cA], cz[cA] || (cz[cA] = {}));
-    else cz[cA] = cB;
   }
-  return cz;
+  ++this["pointer"];
+  this["list"]["splice"](
+    this["pointer"],
+    this["list"]["length"] - this["pointer"],
+    cy
+  );
 };
-TDV['Tour']['Script']['autotriggerAtStart'] = function (cC, cD, cE) {
-  var cF = function (cG) {
-    cD();
-    if (cE == !![]) cC['unbind']('change', cF, this);
+TDV["Tour"]["HistoryData"]["prototype"]["back"] = function () {
+  if (!this["canBack"]()) return;
+  this["playList"]["set"]("selectedIndex", this["list"][--this["pointer"]]);
+};
+TDV["Tour"]["HistoryData"]["prototype"]["forward"] = function () {
+  if (!this["canForward"]()) return;
+  this["playList"]["set"]("selectedIndex", this["list"][++this["pointer"]]);
+};
+TDV["Tour"]["HistoryData"]["prototype"]["canBack"] = function () {
+  return this["pointer"] > 0x0;
+};
+TDV["Tour"]["HistoryData"]["prototype"]["canForward"] = function () {
+  return (
+    this["pointer"] >= 0x0 && this["pointer"] < this["list"]["length"] - 0x1
+  );
+};
+TDV["Tour"]["Script"] = function () { };
+TDV["Tour"]["Script"]["assignObjRecursively"] = function (cz, cA) {
+  for (var cB in cz) {
+    var cC = cz[cB];
+    if (typeof cC == "object" && cC !== null)
+      this["assignObjRecursively"](cz[cB], cA[cB] || (cA[cB] = {}));
+    else cA[cB] = cC;
+  }
+  return cA;
+};
+TDV["Tour"]["Script"]["autotriggerAtStart"] = function (cD, cE, cF) {
+  var cG = function (cH) {
+    cE();
+    if (cF == !![]) cD["unbind"]("change", cG, this);
   };
-  cC['bind']('change', cF, this);
+  cD["bind"]("change", cG, this);
 };
-TDV['Tour']['Script']['changeBackgroundWhilePlay'] = function (cH, cI, cJ) {
-  var cK = function () {
-    cL['unbind']('stop', cK, this);
-    if (cJ == cN['get']('backgroundColor') && cQ == cN['get']('backgroundColorRatios')) {
-      cN['set']('backgroundColor', cO);
-      cN['set']('backgroundColorRatios', cP);
+TDV["Tour"]["Script"]["changeBackgroundWhilePlay"] = function (cI, cJ, cK) {
+  var cL = function () {
+    cM["unbind"]("stop", cL, this);
+    if (
+      cK == cO["get"]("backgroundColor") &&
+      cR == cO["get"]("backgroundColorRatios")
+    ) {
+      cO["set"]("backgroundColor", cP);
+      cO["set"]("backgroundColorRatios", cQ);
     }
   };
-  var cL = cH['get']('items')[cI];
-  var cM = cL['get']('player');
-  var cN = cM['get']('viewerArea');
-  var cO = cN['get']('backgroundColor');
-  var cP = cN['get']('backgroundColorRatios');
-  var cQ = [0x0];
-  if (cJ != cO || cQ != cP) {
-    cN['set']('backgroundColor', cJ);
-    cN['set']('backgroundColorRatios', cQ);
-    cL['bind']('stop', cK, this);
+  var cM = cI["get"]("items")[cJ];
+  var cN = cM["get"]("player");
+  var cO = cN["get"]("viewerArea");
+  var cP = cO["get"]("backgroundColor");
+  var cQ = cO["get"]("backgroundColorRatios");
+  var cR = [0x0];
+  if (cK != cP || cR != cQ) {
+    cO["set"]("backgroundColor", cK);
+    cO["set"]("backgroundColorRatios", cR);
+    cM["bind"]("stop", cL, this);
   }
 };
-TDV['Tour']['Script']['changeOpacityWhilePlay'] = function (cR, cS, cT) {
-  var cU = function () {
-    cV['unbind']('stop', cU, this);
-    if (cY == cX['get']('backgroundOpacity')) {
-      cX['set']('opacity', cY);
+TDV["Tour"]["Script"]["changeOpacityWhilePlay"] = function (cS, cT, cU) {
+  var cV = function () {
+    cW["unbind"]("stop", cV, this);
+    if (cZ == cY["get"]("backgroundOpacity")) {
+      cY["set"]("opacity", cZ);
     }
   };
-  var cV = cR['get']('items')[cS];
-  var cW = cV['get']('player');
-  var cX = cW['get']('viewerArea');
-  var cY = cX['get']('backgroundOpacity');
-  if (cT != cY) {
-    cX['set']('backgroundOpacity', cT);
-    cV['bind']('stop', cU, this);
+  var cW = cS["get"]("items")[cT];
+  var cX = cW["get"]("player");
+  var cY = cX["get"]("viewerArea");
+  var cZ = cY["get"]("backgroundOpacity");
+  if (cU != cZ) {
+    cY["set"]("backgroundOpacity", cU);
+    cW["bind"]("stop", cV, this);
   }
 };
-TDV['Tour']['Script']['changePlayListWithSameSpot'] = function (cZ, d0) {
-  var d1 = cZ['get']('selectedIndex');
-  if (d1 >= 0x0 && d0 >= 0x0 && d1 != d0) {
-    var d2 = cZ['get']('items')[d1];
-    var d3 = cZ['get']('items')[d0];
-    var d4 = d2['get']('player');
-    var d5 = d3['get']('player');
-    if ((d4['get']('class') == 'PanoramaPlayer' || d4['get']('class') == 'Video360Player') && (d5['get']('class') == 'PanoramaPlayer' || d5['get']('class') == 'Video360Player')) {
-      var d6 = this['cloneCamera'](d3['get']('camera'));
-      this['setCameraSameSpotAsMedia'](d6, d2['get']('media'));
-      var d7 = d6['get']('initialPosition');
-      if (d7['get']('yaw') == undefined || d7['get']('pitch') == undefined || d7['get']('hfov') == undefined) return;
-      this['startPanoramaWithCamera'](d3['get']('media'), d6);
+TDV["Tour"]["Script"]["changePlayListWithSameSpot"] = function (d0, d1) {
+  var d2 = d0["get"]("selectedIndex");
+  if (d2 >= 0x0 && d1 >= 0x0 && d2 != d1) {
+    var d3 = d0["get"]("items")[d2];
+    var d4 = d0["get"]("items")[d1];
+    var d5 = d3["get"]("player");
+    var d6 = d4["get"]("player");
+    if (
+      (d5["get"]("class") == "PanoramaPlayer" ||
+        d5["get"]("class") == "Video360Player") &&
+      (d6["get"]("class") == "PanoramaPlayer" ||
+        d6["get"]("class") == "Video360Player")
+    ) {
+      var d7 = this["cloneCamera"](d4["get"]("camera"));
+      this["setCameraSameSpotAsMedia"](d7, d3["get"]("media"));
+      var d8 = d7["get"]("initialPosition");
+      if (
+        d8["get"]("yaw") == undefined ||
+        d8["get"]("pitch") == undefined ||
+        d8["get"]("hfov") == undefined
+      )
+        return;
+      this["startPanoramaWithCamera"](d4["get"]("media"), d7);
     }
   }
 };
-TDV['Tour']['Script']['clone'] = function (d8, d9) {
-  var da = this['rootPlayer']['createInstance'](d8['get']('class'));
-  var db = d8['get']('id');
-  if (db) {
-    var dc = db + '_' + Math['random']()['toString'](0x24)['substring'](0x2, 0xf);
-    da['set']('id', dc);
-    this[dc] = da;
+TDV["Tour"]["Script"]["clone"] = function (d9, da) {
+  var db = this["rootPlayer"]["createInstance"](d9["get"]("class"));
+  var dc = d9["get"]("id");
+  if (dc) {
+    var dd =
+      dc + "_" + Math["random"]()["toString"](0x24)["substring"](0x2, 0xf);
+    db["set"]("id", dd);
+    this[dd] = db;
   }
-  for (var dd = 0x0; dd < d9['length']; ++dd) {
-    var de = d9[dd];
-    var df = d8['get'](de);
-    if (df != null) da['set'](de, df);
+  for (var de = 0x0; de < da["length"]; ++de) {
+    var df = da[de];
+    var dg = d9["get"](df);
+    if (dg != null) db["set"](df, dg);
   }
-  return da;
+  return db;
 };
-TDV['Tour']['Script']['cloneBindings'] = function (dg, dh, di) {
-  var dj = dg['getBindings'](di);
-  for (var dk = 0x0; dk < dj['length']; ++dk) {
-    var dl = dj[dk];
-    if (typeof dl == 'string') dl = new Function('event', dl);
-    dh['bind'](di, dl, this);
+TDV["Tour"]["Script"]["cloneBindings"] = function (dh, di, dj) {
+  var dk = dh["getBindings"](dj);
+  for (var dl = 0x0; dl < dk["length"]; ++dl) {
+    var dm = dk[dl];
+    if (typeof dm == "string") dm = new Function("event", dm);
+    di["bind"](dj, dm, this);
   }
 };
-TDV['Tour']['Script']['cloneCamera'] = function (dm) {
-  var dn = this['clone'](dm, ['manualRotationSpeed', 'manualZoomSpeed', 'automaticRotationSpeed', 'automaticZoomSpeed', 'timeToIdle', 'sequences', 'draggingFactor', 'hoverFactor']);
-  var dp = ['initialSequence', 'idleSequence'];
-  for (var dq = 0x0; dq < dp['length']; ++dq) {
-    var dr = dp[dq];
-    var ds = dm['get'](dr);
-    if (ds) {
-      var dt = this['clone'](ds, ['mandatory', 'repeat', 'restartMovementOnUserInteraction', 'restartMovementDelay']);
-      dn['set'](dr, dt);
-      var du = ds['get']('movements');
-      var dv = [];
-      var dw = ['easing', 'duration', 'hfovSpeed', 'pitchSpeed', 'yawSpeed', 'path', 'stereographicFactorSpeed', 'targetYaw', 'targetPitch', 'targetHfov', 'targetStereographicFactor', 'hfovDelta', 'pitchDelta', 'yawDelta'];
-      for (var dx = 0x0; dx < du['length']; ++dx) {
-        var dy = du[dx];
-        var dz = this['clone'](dy, dw);
-        var dA = dy['getBindings']('end');
-        if (dA['length'] > 0x0) {
-          for (var dB = 0x0; dB < dA['length']; ++dB) {
-            var dC = dA[dB];
-            if (typeof dC == 'string') {
-              dC = dC['replace'](dm['get']('id'), dn['get']('id'));
-              dC = new Function('event', dC);
-              dz['bind']('end', dC, this);
+TDV["Tour"]["Script"]["cloneCamera"] = function (dn) {
+  var dp = this["clone"](dn, [
+    "manualRotationSpeed",
+    "manualZoomSpeed",
+    "automaticRotationSpeed",
+    "automaticZoomSpeed",
+    "timeToIdle",
+    "sequences",
+    "draggingFactor",
+    "hoverFactor",
+  ]);
+  var dq = ["initialSequence", "idleSequence"];
+  for (var dr = 0x0; dr < dq["length"]; ++dr) {
+    var ds = dq[dr];
+    var dt = dn["get"](ds);
+    if (dt) {
+      var du = this["clone"](dt, [
+        "mandatory",
+        "repeat",
+        "restartMovementOnUserInteraction",
+        "restartMovementDelay",
+      ]);
+      dp["set"](ds, du);
+      var dv = dt["get"]("movements");
+      var dw = [];
+      var dx = [
+        "easing",
+        "duration",
+        "hfovSpeed",
+        "pitchSpeed",
+        "yawSpeed",
+        "path",
+        "stereographicFactorSpeed",
+        "targetYaw",
+        "targetPitch",
+        "targetHfov",
+        "targetStereographicFactor",
+        "hfovDelta",
+        "pitchDelta",
+        "yawDelta",
+      ];
+      for (var dy = 0x0; dy < dv["length"]; ++dy) {
+        var dz = dv[dy];
+        var dA = this["clone"](dz, dx);
+        var dB = dz["getBindings"]("end");
+        if (dB["length"] > 0x0) {
+          for (var dC = 0x0; dC < dB["length"]; ++dC) {
+            var dD = dB[dC];
+            if (typeof dD == "string") {
+              dD = dD["replace"](dn["get"]("id"), dp["get"]("id"));
+              dD = new Function("event", dD);
+              dA["bind"]("end", dD, this);
             }
           }
         }
-        dv['push'](dz);
+        dw["push"](dA);
       }
-      dt['set']('movements', dv);
+      du["set"]("movements", dw);
     }
   }
-  return dn;
+  return dp;
 };
-TDV['Tour']['Script']['copyObjRecursively'] = function (dD) {
-  var dE = {};
-  for (var dF in dD) {
-    var dG = dD[dF];
-    if (typeof dG == 'object' && dG !== null) dE[dF] = this['copyObjRecursively'](dD[dF]);
-    else dE[dF] = dG;
+TDV["Tour"]["Script"]["copyObjRecursively"] = function (dE) {
+  var dF = {};
+  for (var dG in dE) {
+    var dH = dE[dG];
+    if (typeof dH == "object" && dH !== null)
+      dF[dG] = this["copyObjRecursively"](dE[dG]);
+    else dF[dG] = dH;
   }
-  return dE;
+  return dF;
 };
-TDV['Tour']['Script']['copyToClipboard'] = function (dH) {
-  if (navigator['clipboard']) {
-    navigator['clipboard']['writeText'](dH);
+TDV["Tour"]["Script"]["copyToClipboard"] = function (dI) {
+  if (navigator["clipboard"]) {
+    navigator["clipboard"]["writeText"](dI);
   } else {
-    var dI = document['createElement']('textarea');
-    dI['value'] = dH;
-    dI['style']['position'] = 'fixed';
-    document['body']['appendChild'](dI);
-    dI['focus']();
-    dI['select']();
+    var dJ = document["createElement"]("textarea");
+    dJ["value"] = dI;
+    dJ["style"]["position"] = "fixed";
+    document["body"]["appendChild"](dJ);
+    dJ["focus"]();
+    dJ["select"]();
     try {
-      document['execCommand']('copy');
-    } catch (dJ) { }
-    document['body']['removeChild'](dI);
+      document["execCommand"]("copy");
+    } catch (dK) { }
+    document["body"]["removeChild"](dJ);
   }
 };
-TDV['Tour']['Script']['executeFunctionWhenChange'] = function (dK, dL, dM, dN) {
-  var dO = undefined;
-  var dP = function (dS) {
-    if (dS['data']['previousSelectedIndex'] == dL) {
-      if (dN) dN['call'](this);
-      if (dM && dO) dO['unbind']('end', dM, this);
-      dK['unbind']('change', dP, this);
+TDV["Tour"]["Script"]["executeFunctionWhenChange"] = function (dL, dM, dN, dO) {
+  var dP = undefined;
+  var dQ = function (dT) {
+    if (dT["data"]["previousSelectedIndex"] == dM) {
+      if (dO) dO["call"](this);
+      if (dN && dP) dP["unbind"]("end", dN, this);
+      dL["unbind"]("change", dQ, this);
     }
   };
-  if (dM) {
-    var dQ = dK['get']('items')[dL];
-    if (dQ['get']('class') == 'PanoramaPlayListItem') {
-      var dR = dQ['get']('camera');
-      if (dR != undefined) dO = dR['get']('initialSequence');
-      if (dO == undefined) dO = dR['get']('idleSequence');
+  if (dN) {
+    var dR = dL["get"]("items")[dM];
+    if (dR["get"]("class") == "PanoramaPlayListItem") {
+      var dS = dR["get"]("camera");
+      if (dS != undefined) dP = dS["get"]("initialSequence");
+      if (dP == undefined) dP = dS["get"]("idleSequence");
     } else {
-      dO = dQ['get']('media');
+      dP = dR["get"]("media");
     }
-    if (dO) {
-      dO['bind']('end', dM, this);
+    if (dP) {
+      dP["bind"]("end", dN, this);
     }
   }
-  dK['bind']('change', dP, this);
+  dL["bind"]("change", dQ, this);
 };
-TDV['Tour']['Script']['executeJS'] = function (dT) {
+TDV["Tour"]["Script"]["executeJS"] = function (dU) {
   try {
-    eval(dT);
-  } catch (dU) {
-    console['log']('Javascript\x20error:\x20' + dU);
-    console['log']('\x20\x20\x20code:\x20' + dT);
+    eval(dU);
+  } catch (dV) {
+    console["log"]("Javascript\x20error:\x20" + dV);
+    console["log"]("\x20\x20\x20code:\x20" + dU);
   }
 };
-TDV['Tour']['Script']['fixTogglePlayPauseButton'] = function (dV) {
-  var dW = dV['get']('buttonPlayPause');
-  if (typeof dW !== 'undefined' && dV['get']('state') == 'playing') {
-    if (!Array['isArray'](dW)) dW = [dW];
-    for (var dX = 0x0; dX < dW['length']; ++dX) dW[dX]['set']('pressed', !![]);
+TDV["Tour"]["Script"]["fixTogglePlayPauseButton"] = function (dW) {
+  var dX = dW["get"]("buttonPlayPause");
+  if (typeof dX !== "undefined" && dW["get"]("state") == "playing") {
+    if (!Array["isArray"](dX)) dX = [dX];
+    for (var dY = 0x0; dY < dX["length"]; ++dY) dX[dY]["set"]("pressed", !![]);
   }
 };
-TDV['Tour']['Script']['getActiveMediaWithViewer'] = function (dY) {
-  var dZ = this['getActivePlayerWithViewer'](dY);
-  if (dZ == undefined) {
+TDV["Tour"]["Script"]["getActiveMediaWithViewer"] = function (dZ) {
+  var e0 = this["getActivePlayerWithViewer"](dZ);
+  if (e0 == undefined) {
     return undefined;
   }
-  return this['getMediaFromPlayer'](dZ);
+  return this["getMediaFromPlayer"](e0);
 };
-TDV['Tour']['Script']['getActivePlayerWithViewer'] = function (e0) {
-  var e1 = this['getCurrentPlayers']();
-  var e2 = e1['length'];
-  while (e2-- > 0x0) {
-    var e3 = e1[e2];
-    if (e3['get']('viewerArea') == e0) {
-      var e4 = e3['get']('class');
-      if (e4 == 'PanoramaPlayer' && (e3['get']('panorama') != undefined || e3['get']('video') != undefined) || (e4 == 'VideoPlayer' || e4 == 'Video360Player') && e3['get']('video') != undefined || e4 == 'PhotoAlbumPlayer' && e3['get']('photoAlbum') != undefined || e4 == 'MapPlayer' && e3['get']('map') != undefined) return e3;
+TDV["Tour"]["Script"]["getActivePlayerWithViewer"] = function (e1) {
+  var e2 = this["getCurrentPlayers"]();
+  var e3 = e2["length"];
+  while (e3-- > 0x0) {
+    var e4 = e2[e3];
+    if (e4["get"]("viewerArea") == e1) {
+      var e5 = e4["get"]("class");
+      if (
+        (e5 == "PanoramaPlayer" &&
+          (e4["get"]("panorama") != undefined ||
+            e4["get"]("video") != undefined)) ||
+        ((e5 == "VideoPlayer" || e5 == "Video360Player") &&
+          e4["get"]("video") != undefined) ||
+        (e5 == "PhotoAlbumPlayer" && e4["get"]("photoAlbum") != undefined) ||
+        (e5 == "MapPlayer" && e4["get"]("map") != undefined)
+      )
+        return e4;
     }
   }
   return undefined;
 };
-TDV['Tour']['Script']['getCurrentPlayerWithMedia'] = function (e5) {
-  var e6 = undefined;
+TDV["Tour"]["Script"]["getCurrentPlayerWithMedia"] = function (e6) {
   var e7 = undefined;
-  switch (e5['get']('class')) {
-    case 'Panorama':
-    case 'LivePanorama':
-    case 'HDRPanorama':
-      e6 = 'PanoramaPlayer';
-      e7 = 'panorama';
+  var e8 = undefined;
+  switch (e6["get"]("class")) {
+    case "Panorama":
+    case "LivePanorama":
+    case "HDRPanorama":
+      e7 = "PanoramaPlayer";
+      e8 = "panorama";
       break;
-    case 'Video360':
-      e6 = 'PanoramaPlayer';
-      e7 = 'video';
+    case "Video360":
+      e7 = "PanoramaPlayer";
+      e8 = "video";
       break;
-    case 'PhotoAlbum':
-      e6 = 'PhotoAlbumPlayer';
-      e7 = 'photoAlbum';
+    case "PhotoAlbum":
+      e7 = "PhotoAlbumPlayer";
+      e8 = "photoAlbum";
       break;
-    case 'Map':
-      e6 = 'MapPlayer';
-      e7 = 'map';
+    case "Map":
+      e7 = "MapPlayer";
+      e8 = "map";
       break;
-    case 'Video':
-      e6 = 'VideoPlayer';
-      e7 = 'video';
+    case "Video":
+      e7 = "VideoPlayer";
+      e8 = "video";
       break;
-  };
-  if (e6 != undefined) {
-    var e8 = this['getByClassName'](e6);
-    for (var e9 = 0x0; e9 < e8['length']; ++e9) {
-      var ea = e8[e9];
-      if (ea['get'](e7) == e5) {
-        return ea;
+  }
+  if (e7 != undefined) {
+    var e9 = this["getByClassName"](e7);
+    for (var ea = 0x0; ea < e9["length"]; ++ea) {
+      var eb = e9[ea];
+      if (eb["get"](e8) == e6) {
+        return eb;
       }
     }
   } else {
     return undefined;
   }
 };
-TDV['Tour']['Script']['getCurrentPlayers'] = function () {
-  var eb = this['getByClassName']('PanoramaPlayer');
-  eb = eb['concat'](this['getByClassName']('VideoPlayer'));
-  eb = eb['concat'](this['getByClassName']('Video360Player'));
-  eb = eb['concat'](this['getByClassName']('PhotoAlbumPlayer'));
-  eb = eb['concat'](this['getByClassName']('MapPlayer'));
-  return eb;
-};
-TDV['Tour']['Script']['getGlobalAudio'] = function (ec) {
-  var ed = window['currentGlobalAudios'];
-  if (ed != undefined && ec['get']('id') in ed) {
-    ec = ed[ec['get']('id')]['audio'];
-  }
+TDV["Tour"]["Script"]["getCurrentPlayers"] = function () {
+  var ec = this["getByClassName"]("PanoramaPlayer");
+  ec = ec["concat"](this["getByClassName"]("VideoPlayer"));
+  ec = ec["concat"](this["getByClassName"]("Video360Player"));
+  ec = ec["concat"](this["getByClassName"]("PhotoAlbumPlayer"));
+  ec = ec["concat"](this["getByClassName"]("MapPlayer"));
   return ec;
 };
-TDV['Tour']['Script']['getMediaByName'] = function (ee) {
-  var ef = this['getByClassName']('Media');
-  for (var eg = 0x0, eh = ef['length']; eg < eh; ++eg) {
-    var ei = ef[eg];
-    var ej = ei['get']('data');
-    if (ej && ej['label'] == ee) {
-      return ei;
+TDV["Tour"]["Script"]["getGlobalAudio"] = function (ed) {
+  var ee = window["currentGlobalAudios"];
+  if (ee != undefined && ed["get"]("id") in ee) {
+    ed = ee[ed["get"]("id")]["audio"];
+  }
+  return ed;
+};
+TDV["Tour"]["Script"]["getMediaByName"] = function (ef) {
+  var eg = this["getByClassName"]("Media");
+  for (var eh = 0x0, ei = eg["length"]; eh < ei; ++eh) {
+    var ej = eg[eh];
+    var ek = ej["get"]("data");
+    if (ek && ek["label"] == ef) {
+      return ej;
     }
   }
   return undefined;
 };
-TDV['Tour']['Script']['getMediaByTags'] = function (ek, el) {
-  return this['_getObjectsByTags'](ek, ['Media'], 'tags2Media', el);
+TDV["Tour"]["Script"]["getMediaByTags"] = function (el, em) {
+  return this["_getObjectsByTags"](el, ["Media"], "tags2Media", em);
 };
-TDV['Tour']['Script']['getAudioByTags'] = function (em, en) {
-  return this['_getObjectsByTags'](em, ['Audio'], 'tags2Media', en);
+TDV["Tour"]["Script"]["getAudioByTags"] = function (en, eo) {
+  return this["_getObjectsByTags"](en, ["Audio"], "tags2Media", eo);
 };
-TDV['Tour']['Script']['getOverlaysByTags'] = function (eo, ep) {
-  return this['_getObjectsByTags'](eo, ['HotspotPanoramaOverlay', 'HotspotMapOverlay', 'VideoPanoramaOverlay', 'QuadVideoPanoramaOverlay', 'FramePanoramaOverlay', 'QuadFramePanoramaOverlay'], 'tags2Overlays', ep);
+TDV["Tour"]["Script"]["getOverlaysByTags"] = function (ep, eq) {
+  return this["_getObjectsByTags"](
+    ep,
+    [
+      "HotspotPanoramaOverlay",
+      "HotspotMapOverlay",
+      "VideoPanoramaOverlay",
+      "QuadVideoPanoramaOverlay",
+      "FramePanoramaOverlay",
+      "QuadFramePanoramaOverlay",
+    ],
+    "tags2Overlays",
+    eq
+  );
 };
-TDV['Tour']['Script']['getOverlaysByGroupname'] = function (eq) {
-  var er = this['get']('data');
-  var es = 'groupname2Overlays';
-  var et = er[es];
-  if (!et) {
-    var eu = ['HotspotPanoramaOverlay', 'VideoPanoramaOverlay', 'QuadVideoPanoramaOverlay', 'FramePanoramaOverlay', 'QuadFramePanoramaOverlay'];
-    er[es] = et = {};
-    for (var ev = 0x0; ev < eu['length']; ++ev) {
-      var ew = eu[ev];
-      var ex = this['getByClassName'](ew);
-      for (var ey = 0x0, ez = ex['length']; ey < ez; ++ey) {
-        var eA = ex[ey];
-        var eB = eA['get']('data');
-        if (eB && eB['group']) {
-          var eC = et[eB['group']];
-          if (!eC) et[eB['group']] = eC = [];
-          eC['push'](eA);
+TDV["Tour"]["Script"]["getOverlaysByGroupname"] = function (er) {
+  var es = this["get"]("data");
+  var et = "groupname2Overlays";
+  var eu = es[et];
+  if (!eu) {
+    var ev = [
+      "HotspotPanoramaOverlay",
+      "VideoPanoramaOverlay",
+      "QuadVideoPanoramaOverlay",
+      "FramePanoramaOverlay",
+      "QuadFramePanoramaOverlay",
+    ];
+    es[et] = eu = {};
+    for (var ew = 0x0; ew < ev["length"]; ++ew) {
+      var ex = ev[ew];
+      var ey = this["getByClassName"](ex);
+      for (var ez = 0x0, eA = ey["length"]; ez < eA; ++ez) {
+        var eB = ey[ez];
+        var eC = eB["get"]("data");
+        if (eC && eC["group"]) {
+          var eD = eu[eC["group"]];
+          if (!eD) eu[eC["group"]] = eD = [];
+          eD["push"](eB);
         }
       }
     }
   }
-  return et[eq] || [];
+  return eu[er] || [];
 };
-TDV['Tour']['Script']['getRootOverlay'] = function (eD) {
-  var eE = eD['get']('class');
-  var eF = eE['indexOf']('HotspotPanoramaOverlayArea') != -0x1;
-  var eG = eE['indexOf']('HotspotPanoramaOverlayImage') != -0x1;
-  if (eF || eG) {
-    var eH = this['get']('data');
-    var eI = 'overlays';
-    var eJ = eH[eI];
-    if (!eJ) {
-      var eK = ['HotspotPanoramaOverlay'];
-      eJ = [];
-      for (var eL = 0x0; eL < eK['length']; ++eL) {
-        var eM = eK[eL];
-        eJ = eJ['concat'](this['getByClassName'](eM));
+TDV["Tour"]["Script"]["getRootOverlay"] = function (eE) {
+  var eF = eE["get"]("class");
+  var eG = eF["indexOf"]("HotspotPanoramaOverlayArea") != -0x1;
+  var eH = eF["indexOf"]("HotspotPanoramaOverlayImage") != -0x1;
+  if (eG || eH) {
+    var eI = this["get"]("data");
+    var eJ = "overlays";
+    var eK = eI[eJ];
+    if (!eK) {
+      var eL = ["HotspotPanoramaOverlay"];
+      eK = [];
+      for (var eM = 0x0; eM < eL["length"]; ++eM) {
+        var eN = eL[eM];
+        eK = eK["concat"](this["getByClassName"](eN));
       }
-      eH[eI] = eJ;
+      eI[eJ] = eK;
     }
-    var eN = eF ? 'areas' : 'items';
-    for (var eO = 0x0, eP = eJ['length']; eO < eP; ++eO) {
-      var eQ = eJ[eO];
-      var eR = eQ['get'](eN);
-      if (eR) {
-        for (var eS = 0x0; eS < eR['length']; ++eS) {
-          if (eR[eS] == eD) return eQ;
+    var eO = eG ? "areas" : "items";
+    for (var eP = 0x0, eQ = eK["length"]; eP < eQ; ++eP) {
+      var eR = eK[eP];
+      var eS = eR["get"](eO);
+      if (eS) {
+        for (var eT = 0x0; eT < eS["length"]; ++eT) {
+          if (eS[eT] == eE) return eR;
         }
       }
     }
   }
-  return eD;
+  return eE;
 };
-TDV['Tour']['Script']['initOverlayGroupRotationOnClick'] = function (eT) {
-  var eU = this['getOverlaysByGroupname'](eT);
-  if (eU['length'] > 0x1) {
-    eU['sort'](function (f1, f2) {
-      var f3 = f1['get']('data')['groupIndex'];
-      var f4 = f2['get']('data')['groupIndex'];
-      return f3 - f4;
+TDV["Tour"]["Script"]["initOverlayGroupRotationOnClick"] = function (eU) {
+  var eV = this["getOverlaysByGroupname"](eU);
+  if (eV["length"] > 0x1) {
+    eV["sort"](function (f2, f3) {
+      var f4 = f2["get"]("data")["groupIndex"];
+      var f5 = f3["get"]("data")["groupIndex"];
+      return f4 - f5;
     });
-    for (var eV = 0x0, eW = eU['length']; eV < eW; ++eV) {
-      var eX = eU[eV];
-      var eY = eU[(eV + 0x1) % eW];
-      var eZ = eX['get']('class');
-      var f0 = eX;
-      if (eZ == 'HotspotPanoramaOverlay') {
-        f0 = eX['get']('areas')[0x0];
+    for (var eW = 0x0, eX = eV["length"]; eW < eX; ++eW) {
+      var eY = eV[eW];
+      var eZ = eV[(eW + 0x1) % eX];
+      var f0 = eY["get"]("class");
+      var f1 = eY;
+      if (f0 == "HotspotPanoramaOverlay") {
+        f1 = eY["get"]("areas")[0x0];
       }
-      f0['bind']('click', function (f5, f6) {
-        this['setOverlaysVisibility']([f5], ![]);
-        this['setOverlaysVisibility']([f6], !![]);
-      }['bind'](this, eX, eY), this);
+      f1["bind"](
+        "click",
+        function (f6, f7) {
+          this["setOverlaysVisibility"]([f6], ![]);
+          this["setOverlaysVisibility"]([f7], !![]);
+        }["bind"](this, eY, eZ),
+        this
+      );
     }
   }
 };
-TDV['Tour']['Script']['getComponentsByTags'] = function (f7, f8) {
-  return this['_getObjectsByTags'](f7, ['UIComponent'], 'tags2Components', f8);
+TDV["Tour"]["Script"]["getComponentsByTags"] = function (f8, f9) {
+  return this["_getObjectsByTags"](f8, ["UIComponent"], "tags2Components", f9);
 };
-TDV['Tour']['Script']['_getObjectsByTags'] = function (f9, fa, fb, fc) {
-  var fd = this['get']('data');
-  var fe = fd[fb];
-  if (!fe) {
-    fd[fb] = fe = {};
-    for (var ff = 0x0; ff < fa['length']; ++ff) {
-      var fg = fa[ff];
-      var fh = this['getByClassName'](fg);
-      for (var fj = 0x0, fl = fh['length']; fj < fl; ++fj) {
-        var fn = fh[fj];
-        var fo = fn['get']('data');
-        if (fo && fo['tags']) {
-          var fp = fo['tags'];
-          for (var fs = 0x0, ft = fp['length']; fs < ft; ++fs) {
-            var fu = fp[fs];
-            if (fu in fe) fe[fu]['push'](fn);
-            else fe[fu] = [fn];
+TDV["Tour"]["Script"]["_getObjectsByTags"] = function (fa, fb, fc, fd) {
+  var fe = this["get"]("data");
+  var ff = fe[fc];
+  if (!ff) {
+    fe[fc] = ff = {};
+    for (var fg = 0x0; fg < fb["length"]; ++fg) {
+      var fh = fb[fg];
+      var fi = this["getByClassName"](fh);
+      for (var fk = 0x0, fm = fi["length"]; fk < fm; ++fk) {
+        var fo = fi[fk];
+        var fp = fo["get"]("data");
+        if (fp && fp["tags"]) {
+          var fq = fp["tags"];
+          for (var ft = 0x0, fu = fq["length"]; ft < fu; ++ft) {
+            var fv = fq[ft];
+            if (fv in ff) ff[fv]["push"](fo);
+            else ff[fv] = [fo];
           }
         }
       }
     }
   }
-  var fv = undefined;
-  fc = fc || 'and';
-  for (var fj = 0x0, fl = f9['length']; fj < fl; ++fj) {
-    var fw = fe[f9[fj]];
-    if (!fw) continue;
-    if (!fv) fv = fw['concat']();
+  var fw = undefined;
+  fd = fd || "and";
+  for (var fk = 0x0, fm = fa["length"]; fk < fm; ++fk) {
+    var fx = ff[fa[fk]];
+    if (!fx) continue;
+    if (!fw) fw = fx["concat"]();
     else {
-      if (fc == 'and') {
-        for (var fs = fv['length'] - 0x1; fs >= 0x0; --fs) {
-          if (fw['indexOf'](fv[fs]) == -0x1) fv['splice'](fs, 0x1);
+      if (fd == "and") {
+        for (var ft = fw["length"] - 0x1; ft >= 0x0; --ft) {
+          if (fx["indexOf"](fw[ft]) == -0x1) fw["splice"](ft, 0x1);
         }
-      } else if (fc == 'or') {
-        for (var fs = fw['length'] - 0x1; fs >= 0x0; --fs) {
-          var fn = fw[fs];
-          if (fv['indexOf'](fn) == -0x1) fv['push'](fn);
+      } else if (fd == "or") {
+        for (var ft = fx["length"] - 0x1; ft >= 0x0; --ft) {
+          var fo = fx[ft];
+          if (fw["indexOf"](fo) == -0x1) fw["push"](fo);
         }
       }
     }
   }
-  return fv || [];
+  return fw || [];
 };
-TDV['Tour']['Script']['getComponentByName'] = function (fx) {
-  var fy = this['getByClassName']('UIComponent');
-  for (var fz = 0x0, fA = fy['length']; fz < fA; ++fz) {
-    var fB = fy[fz];
-    var fC = fB['get']('data');
-    if (fC != undefined && fC['name'] == fx) {
-      return fB;
+TDV["Tour"]["Script"]["getComponentByName"] = function (fy) {
+  var fz = this["getByClassName"]("UIComponent");
+  for (var fA = 0x0, fB = fz["length"]; fA < fB; ++fA) {
+    var fC = fz[fA];
+    var fD = fC["get"]("data");
+    if (fD != undefined && fD["name"] == fy) {
+      return fC;
     }
   }
   return undefined;
 };
-TDV['Tour']['Script']['getMainViewer'] = function () {
-  var fD = 'MainViewer';
-  return this[fD] || this[fD + '_mobile'];
+TDV["Tour"]["Script"]["getMainViewer"] = function () {
+  var fE = "MainViewer";
+  return this[fE] || this[fE + "_mobile"];
 };
-TDV['Tour']['Script']['getMediaFromPlayer'] = function (fE) {
-  switch (fE['get']('class')) {
-    case 'PanoramaPlayer':
-      return fE['get']('panorama') || fE['get']('video');
-    case 'VideoPlayer':
-    case 'Video360Player':
-      return fE['get']('video');
-    case 'PhotoAlbumPlayer':
-      return fE['get']('photoAlbum');
-    case 'MapPlayer':
-      return fE['get']('map');
+TDV["Tour"]["Script"]["getMediaFromPlayer"] = function (fF) {
+  switch (fF["get"]("class")) {
+    case "PanoramaPlayer":
+      return fF["get"]("panorama") || fF["get"]("video");
+    case "VideoPlayer":
+    case "Video360Player":
+      return fF["get"]("video");
+    case "PhotoAlbumPlayer":
+      return fF["get"]("photoAlbum");
+    case "MapPlayer":
+      return fF["get"]("map");
   }
 };
-TDV['Tour']['Script']['getMediaWidth'] = function (fF) {
-  switch (fF['get']('class')) {
-    case 'Video360':
-      var fG = fF['get']('video');
-      if (fG instanceof Array) {
-        var fH = 0x0;
-        for (var fI = 0x0; fI < fG['length']; fI++) {
-          var fJ = fG[fI];
-          if (fJ['get']('width') > fH) fH = fJ['get']('width');
+TDV["Tour"]["Script"]["getMediaWidth"] = function (fG) {
+  switch (fG["get"]("class")) {
+    case "Video360":
+      var fH = fG["get"]("video");
+      if (fH instanceof Array) {
+        var fI = 0x0;
+        for (var fJ = 0x0; fJ < fH["length"]; fJ++) {
+          var fK = fH[fJ];
+          if (fK["get"]("width") > fI) fI = fK["get"]("width");
         }
-        return fH;
+        return fI;
       } else {
-        return fJ['get']('width');
+        return fK["get"]("width");
       }
     default:
-      return fF['get']('width');
+      return fG["get"]("width");
   }
 };
-TDV['Tour']['Script']['getMediaHeight'] = function (fK) {
-  switch (fK['get']('class')) {
-    case 'Video360':
-      var fL = fK['get']('video');
-      if (fL instanceof Array) {
-        var fM = 0x0;
-        for (var fN = 0x0; fN < fL['length']; fN++) {
-          var fO = fL[fN];
-          if (fO['get']('height') > fM) fM = fO['get']('height');
+TDV["Tour"]["Script"]["getMediaHeight"] = function (fL) {
+  switch (fL["get"]("class")) {
+    case "Video360":
+      var fM = fL["get"]("video");
+      if (fM instanceof Array) {
+        var fN = 0x0;
+        for (var fO = 0x0; fO < fM["length"]; fO++) {
+          var fP = fM[fO];
+          if (fP["get"]("height") > fN) fN = fP["get"]("height");
         }
-        return fM;
+        return fN;
       } else {
-        return fO['get']('height');
+        return fP["get"]("height");
       }
     default:
-      return fK['get']('height');
+      return fL["get"]("height");
   }
 };
-TDV['Tour']['Script']['getOverlays'] = function (fP) {
-  switch (fP['get']('class')) {
-    case 'LivePanorama':
-    case 'HDRPanorama':
-    case 'Panorama':
-      var fQ = fP['get']('overlays')['concat']() || [];
-      var fR = fP['get']('frames');
-      for (var fS = 0x0; fS < fR['length']; ++fS) {
-        fQ = fQ['concat'](fR[fS]['get']('overlays') || []);
+TDV["Tour"]["Script"]["getOverlays"] = function (fQ) {
+  switch (fQ["get"]("class")) {
+    case "LivePanorama":
+    case "HDRPanorama":
+    case "Panorama":
+      var fR = fQ["get"]("overlays")["concat"]() || [];
+      var fS = fQ["get"]("frames");
+      for (var fT = 0x0; fT < fS["length"]; ++fT) {
+        fR = fR["concat"](fS[fT]["get"]("overlays") || []);
       }
-      return fQ;
-    case 'Video360':
-    case 'Map':
-      return fP['get']('overlays') || [];
+      return fR;
+    case "Video360":
+    case "Map":
+      return fQ["get"]("overlays") || [];
     default:
       return [];
   }
 };
-TDV['Tour']['Script']['getPanoramaOverlayByName'] = function (fT, fU) {
-  var fV = this['getOverlays'](fT);
-  for (var fW = 0x0, fX = fV['length']; fW < fX; ++fW) {
-    var fY = fV[fW];
-    var fZ = fY['get']('data');
-    if (fZ != undefined && fZ['label'] == fU) {
-      return fY;
+TDV["Tour"]["Script"]["getPanoramaOverlayByName"] = function (fU, fV) {
+  var fW = this["getOverlays"](fU);
+  for (var fX = 0x0, fY = fW["length"]; fX < fY; ++fX) {
+    var fZ = fW[fX];
+    var g0 = fZ["get"]("data");
+    if (g0 != undefined && g0["label"] == fV) {
+      return fZ;
     }
   }
   return undefined;
 };
-TDV['Tour']['Script']['getPanoramaOverlaysByTags'] = function (g0, g1, g2) {
-  var g3 = [];
-  var g4 = this['getOverlays'](g0);
-  var g5 = this['getOverlaysByTags'](g1, g2);
-  for (var g6 = 0x0, g7 = g4['length']; g6 < g7; ++g6) {
-    var g8 = g4[g6];
-    if (g5['indexOf'](g8) != -0x1) g3['push'](g8);
+TDV["Tour"]["Script"]["getPanoramaOverlaysByTags"] = function (g1, g2, g3) {
+  var g4 = [];
+  var g5 = this["getOverlays"](g1);
+  var g6 = this["getOverlaysByTags"](g2, g3);
+  for (var g7 = 0x0, g8 = g5["length"]; g7 < g8; ++g7) {
+    var g9 = g5[g7];
+    if (g6["indexOf"](g9) != -0x1) g4["push"](g9);
   }
-  return g3;
+  return g4;
 };
-TDV['Tour']['Script']['getPixels'] = function (g9) {
-  var gb = /((\+|-)?d+(.d*)?)(px|vw|vh|vmin|vmax)?/i['exec'](g9);
-  if (gb == undefined) {
+TDV["Tour"]["Script"]["getPixels"] = function (gb) {
+  var gc = /((\+|-)?d+(.d*)?)(px|vw|vh|vmin|vmax)?/i["exec"](gb);
+  if (gc == undefined) {
     return 0x0;
   }
-  var gc = parseFloat(gb[0x1]);
-  var gd = gb[0x4];
-  var ge = this['rootPlayer']['get']('actualWidth') / 0x64;
-  var gf = this['rootPlayer']['get']('actualHeight') / 0x64;
-  switch (gd) {
-    case 'vw':
-      return gc * ge;
-    case 'vh':
-      return gc * gf;
-    case 'vmin':
-      return gc * Math['min'](ge, gf);
-    case 'vmax':
-      return gc * Math['max'](ge, gf);
+  var gd = parseFloat(gc[0x1]);
+  var ge = gc[0x4];
+  var gf = this["rootPlayer"]["get"]("actualWidth") / 0x64;
+  var gg = this["rootPlayer"]["get"]("actualHeight") / 0x64;
+  switch (ge) {
+    case "vw":
+      return gd * gf;
+    case "vh":
+      return gd * gg;
+    case "vmin":
+      return gd * Math["min"](gf, gg);
+    case "vmax":
+      return gd * Math["max"](gf, gg);
     default:
-      return gc;
+      return gd;
   }
 };
-TDV['Tour']['Script']['getPlayListsWithMedia'] = function (gg, gh) {
-  var gi = [];
-  var gj = this['getByClassName']('PlayList');
-  for (var gk = 0x0, gl = gj['length']; gk < gl; ++gk) {
-    var gm = gj[gk];
-    if (gh && gm['get']('selectedIndex') == -0x1) continue;
-    var gn = this['getPlayListItemByMedia'](gm, gg);
-    if (gn != undefined && gn['get']('player') != undefined) gi['push'](gm);
+TDV["Tour"]["Script"]["getPlayListsWithMedia"] = function (gh, gi) {
+  var gj = [];
+  var gk = this["getByClassName"]("PlayList");
+  for (var gl = 0x0, gm = gk["length"]; gl < gm; ++gl) {
+    var gn = gk[gl];
+    if (gi && gn["get"]("selectedIndex") == -0x1) continue;
+    var go = this["getPlayListItemByMedia"](gn, gh);
+    if (go != undefined && go["get"]("player") != undefined) gj["push"](gn);
   }
-  return gi;
+  return gj;
 };
-TDV['Tour']['Script']['_getPlayListsWithViewer'] = function (go) {
-  var gp = this['getByClassName']('PlayList');
-  var gq = function (gs) {
-    var gt = gs['get']('items');
-    for (var gu = gt['length'] - 0x1; gu >= 0x0; --gu) {
-      var gv = gt[gu];
-      var gw = gv['get']('player');
-      if (gw !== undefined && gw['get']('viewerArea') == go) return !![];
+TDV["Tour"]["Script"]["_getPlayListsWithViewer"] = function (gp) {
+  var gq = this["getByClassName"]("PlayList");
+  var gr = function (gt) {
+    var gu = gt["get"]("items");
+    for (var gv = gu["length"] - 0x1; gv >= 0x0; --gv) {
+      var gw = gu[gv];
+      var gx = gw["get"]("player");
+      if (gx !== undefined && gx["get"]("viewerArea") == gp) return !![];
     }
     return ![];
   };
-  for (var gr = gp['length'] - 0x1; gr >= 0x0; --gr) {
-    if (!gq(gp[gr])) gp['splice'](gr, 0x1);
+  for (var gs = gq["length"] - 0x1; gs >= 0x0; --gs) {
+    if (!gr(gq[gs])) gq["splice"](gs, 0x1);
   }
-  return gp;
+  return gq;
 };
-TDV['Tour']['Script']['getPlayListWithItem'] = function (gx) {
-  var gy = this['getByClassName']('PlayList');
-  for (var gz = gy['length'] - 0x1; gz >= 0x0; --gz) {
-    var gA = gy[gz];
-    var gB = gA['get']('items');
-    for (var gC = gB['length'] - 0x1; gC >= 0x0; --gC) {
-      var gD = gB[gC];
-      if (gD == gx) return gA;
+TDV["Tour"]["Script"]["getPlayListWithItem"] = function (gy) {
+  var gz = this["getByClassName"]("PlayList");
+  for (var gA = gz["length"] - 0x1; gA >= 0x0; --gA) {
+    var gB = gz[gA];
+    var gC = gB["get"]("items");
+    for (var gD = gC["length"] - 0x1; gD >= 0x0; --gD) {
+      var gE = gC[gD];
+      if (gE == gy) return gB;
     }
   }
   return undefined;
 };
-TDV['Tour']['Script']['getFirstPlayListWithMedia'] = function (gE, gF) {
-  var gG = this['getPlayListsWithMedia'](gE, gF);
-  return gG['length'] > 0x0 ? gG[0x0] : undefined;
+TDV["Tour"]["Script"]["getFirstPlayListWithMedia"] = function (gF, gG) {
+  var gH = this["getPlayListsWithMedia"](gF, gG);
+  return gH["length"] > 0x0 ? gH[0x0] : undefined;
 };
-TDV['Tour']['Script']['getPlayListItemByMedia'] = function (gH, gI) {
-  var gJ = gH['get']('items');
-  for (var gK = 0x0, gL = gJ['length']; gK < gL; ++gK) {
-    var gM = gJ[gK];
-    if (gM['get']('media') == gI) return gM;
+TDV["Tour"]["Script"]["getPlayListItemByMedia"] = function (gI, gJ) {
+  var gK = gI["get"]("items");
+  for (var gL = 0x0, gM = gK["length"]; gL < gM; ++gL) {
+    var gN = gK[gL];
+    if (gN["get"]("media") == gJ) return gN;
   }
   return undefined;
 };
-TDV['Tour']['Script']['getPlayListItemIndexByMedia'] = function (gN, gO) {
-  var gP = this['getPlayListItemByMedia'](gN, gO);
-  return gP ? gN['get']('items')['indexOf'](gP) : -0x1;
+TDV["Tour"]["Script"]["getPlayListItemIndexByMedia"] = function (gO, gP) {
+  var gQ = this["getPlayListItemByMedia"](gO, gP);
+  return gQ ? gO["get"]("items")["indexOf"](gQ) : -0x1;
 };
-TDV['Tour']['Script']['getPlayListItems'] = function (gQ, gR) {
-  var gS = function () {
-    switch (gQ['get']('class')) {
-      case 'Panorama':
-      case 'LivePanorama':
-      case 'HDRPanorama':
-        return 'PanoramaPlayListItem';
-      case 'Video360':
-        return 'Video360PlayListItem';
-      case 'PhotoAlbum':
-        return 'PhotoAlbumPlayListItem';
-      case 'Map':
-        return 'MapPlayListItem';
-      case 'Video':
-        return 'VideoPlayListItem';
+TDV["Tour"]["Script"]["getPlayListItems"] = function (gR, gS) {
+  var gT = (function () {
+    switch (gR["get"]("class")) {
+      case "Panorama":
+      case "LivePanorama":
+      case "HDRPanorama":
+        return "PanoramaPlayListItem";
+      case "Video360":
+        return "Video360PlayListItem";
+      case "PhotoAlbum":
+        return "PhotoAlbumPlayListItem";
+      case "Map":
+        return "MapPlayListItem";
+      case "Video":
+        return "VideoPlayListItem";
     }
-  }();
-  if (gS != undefined) {
-    var gT = this['getByClassName'](gS);
-    for (var gU = gT['length'] - 0x1; gU >= 0x0; --gU) {
-      var gV = gT[gU];
-      if (gV['get']('media') != gQ || gR != undefined && gV['get']('player') != gR) {
-        gT['splice'](gU, 0x1);
+  })();
+  if (gT != undefined) {
+    var gU = this["getByClassName"](gT);
+    for (var gV = gU["length"] - 0x1; gV >= 0x0; --gV) {
+      var gW = gU[gV];
+      if (
+        gW["get"]("media") != gR ||
+        (gS != undefined && gW["get"]("player") != gS)
+      ) {
+        gU["splice"](gV, 0x1);
       }
     }
-    return gT;
+    return gU;
   } else {
     return [];
   }
 };
-TDV['Tour']['Script']['historyGoBack'] = function (gW) {
-  var gX = this['get']('data')['history'][gW['get']('id')];
-  if (gX != undefined) {
-    gX['back']();
+TDV["Tour"]["Script"]["historyGoBack"] = function (gX) {
+  var gY = this["get"]("data")["history"][gX["get"]("id")];
+  if (gY != undefined) {
+    gY["back"]();
   }
 };
-TDV['Tour']['Script']['historyGoForward'] = function (gY) {
-  var gZ = this['get']('data')['history'][gY['get']('id')];
-  if (gZ != undefined) {
-    gZ['forward']();
+TDV["Tour"]["Script"]["historyGoForward"] = function (gZ) {
+  var h0 = this["get"]("data")["history"][gZ["get"]("id")];
+  if (h0 != undefined) {
+    h0["forward"]();
   }
 };
-TDV['Tour']['Script']['init'] = function () {
-  var h0 = this['get']('data')['history'];
-  var h1 = function (ha) {
-    var hb = ha['source'];
-    var hc = hb['get']('selectedIndex');
-    if (hc < 0x0) return;
-    var hd = hb['get']('id');
-    if (!h0['hasOwnProperty'](hd)) h0[hd] = new TDV['Tour']['HistoryData'](hb);
-    h0[hd]['add'](hc);
+TDV["Tour"]["Script"]["init"] = function () {
+  var h1 = this["get"]("data")["history"];
+  var h2 = function (hb) {
+    var hc = hb["source"];
+    var hd = hc["get"]("selectedIndex");
+    if (hd < 0x0) return;
+    var he = hc["get"]("id");
+    if (!h1["hasOwnProperty"](he)) h1[he] = new TDV["Tour"]["HistoryData"](hc);
+    h1[he]["add"](hd);
   };
-  var h2 = this['getByClassName']('PlayList');
-  for (var h4 = 0x0, h5 = h2['length']; h4 < h5; ++h4) {
-    var h6 = h2[h4];
-    h6['bind']('change', h1, this);
+  var h3 = this["getByClassName"]("PlayList");
+  for (var h5 = 0x0, h6 = h3["length"]; h5 < h6; ++h5) {
+    var h7 = h3[h5];
+    h7["bind"]("change", h2, this);
   }
-  if (this['getMainViewer']()['get']('translationTransitionEnabled')) {
-    var h7 = this['getByClassName']('ThumbnailList');
-    h7 = h7['concat'](this['getByClassName']('ThumbnailGrid'));
-    h7 = h7['concat'](this['getByClassName']('DropDown'));
-
-    function he(hf) {
-      var hg = hf['source']['get']('playList');
-      var hh = hg['get']('selectedIndex');
-      if (hh >= 0x0) {
-        this['skip3DTransitionOnce'](hg['get']('items')[hh]['get']('player'));
+  if (this["getMainViewer"]()["get"]("translationTransitionEnabled")) {
+    var h8 = this["getByClassName"]("ThumbnailList");
+    h8 = h8["concat"](this["getByClassName"]("ThumbnailGrid"));
+    h8 = h8["concat"](this["getByClassName"]("DropDown"));
+    function hf(hg) {
+      var hh = hg["source"]["get"]("playList");
+      var hi = hh["get"]("selectedIndex");
+      if (hi >= 0x0) {
+        this["skip3DTransitionOnce"](hh["get"]("items")[hi]["get"]("player"));
       }
     }
-    for (var h4 = 0x0, h8 = h7['length']; h4 < h8; ++h4) {
-      var h9 = h7[h4];
-      h9['bind']('change', he, this);
+    for (var h5 = 0x0, h9 = h8["length"]; h5 < h9; ++h5) {
+      var ha = h8[h5];
+      ha["bind"]("change", hf, this);
     }
   }
 };
@@ -1407,6 +1648,7 @@ TDV['Tour']['Script']['sendAnalyticsData'] = function (gP, gQ, gR, gS) {
   }
   if (gP) {
     if (gP == 'Hotspot') {
+      console.log("🚀 ~ file: script.js:1410 ~ gP", gP)
       onHotspotClicked(gS);
     } else if (gP == 'Media' && gR) {
       console.log(gR);
@@ -1484,2318 +1726,2595 @@ TDV['Tour']['Script']['initAnalytics'] = function () {
     }['bind'](this));
   }
 };
-TDV['Tour']['Script']['initQuiz'] = function (hP, hQ, hR) {
-  var hS = {
-    "timeout": {
-      "veil": {
-        "backgroundColor": "#000000",
-        "backgroundOpacity": 0.3
+TDV["Tour"]["Script"]["initQuiz"] = function (hQ, hR, hS) {
+  var hT = {
+    score: {
+      veil: { backgroundColor: "#000000", backgroundOpacity: 0.3 },
+      window: {
+        calification: {
+          fontFamily: "Arial",
+          width: "100%",
+          verticalAlign: "middle",
+          textAlign: "center",
+          paddingTop: 15,
+          paddingBottom: 10,
+          fontColor: "#009fe3",
+          paddingRight: 100,
+          paddingLeft: 100,
+          fontSize: 30,
+          fontWeight: "bold",
+        },
+        maxWidth: 1500,
+        shadowColor: "#000000",
+        paddingTop: 20,
+        description: {
+          fontFamily: "Arial",
+          textAlign: "center",
+          paddingTop: 15,
+          paddingBottom: 15,
+          fontColor: "#000000",
+          paddingRight: 100,
+          paddingLeft: 100,
+          fontSize: 16,
+          fontWeight: "normal",
+        },
+        paddingBottom: 20,
+        buttonsContainer: {
+          width: "100%",
+          verticalAlign: "middle",
+          horizontalAlign: "center",
+          button: {
+            fontFamily: "Arial",
+            paddingTop: 12,
+            backgroundColor: "#009fe3",
+            verticalAlign: "middle",
+            paddingBottom: 12,
+            fontColor: "#ffffff",
+            paddingRight: 25,
+            paddingLeft: 25,
+            fontSize: 15,
+            horizontalAlign: "center",
+            fontWeight: "bold",
+          },
+          paddingBottom: 50,
+          paddingRight: 100,
+          paddingLeft: 100,
+          paddingTop: 35,
+          gap: 8,
+        },
+        shadowBlurRadius: 4,
+        statsContainer: {
+          contentOpaque: true,
+          verticalAlign: "middle",
+          paddingTop: 15,
+          paddingBottom: 15,
+          paddingRight: 100,
+          paddingLeft: 100,
+          horizontalAlign: "center",
+          overflow: "scroll",
+          gap: 20,
+        },
+        shadowVerticalLength: 0,
+        backgroundColor: "#ffffff",
+        shadowOpacity: 0.3,
+        title: {
+          fontFamily: "Arial",
+          textAlign: "center",
+          paddingTop: 50,
+          paddingBottom: 15,
+          fontColor: "#000000",
+          fontSize: 50,
+          fontWeight: "bold",
+        },
+        paddingRight: 20,
+        timeContainer: {
+          width: "100%",
+          verticalAlign: "middle",
+          paddingTop: 10,
+          paddingBottom: 15,
+          paddingRight: 100,
+          paddingLeft: 100,
+          horizontalAlign: "center",
+          gap: 5,
+        },
+        content: { horizontalAlign: "center", width: "100%" },
+        minWidth: 500,
+        shadow: true,
+        closeButton: {
+          iconColor: "#ffffff",
+          iconHeight: 18,
+          iconWidth: 18,
+          width: 45,
+          height: 45,
+          iconLineWidth: 2,
+          backgroundColor: "#009fe3",
+        },
+        stats: {
+          borderRadius: 75,
+          mainValue: {
+            fontFamily: "Arial",
+            fontSize: 40,
+            fontWeight: "bold",
+            fontColor: "#000000",
+          },
+          borderSize: 1,
+          layout: "vertical",
+          secondaryValue: {
+            fontFamily: "Arial",
+            fontSize: 20,
+            fontWeight: "bold",
+            fontColor: "#000000",
+          },
+          title: {
+            fontFamily: "Arial",
+            paddingTop: 10,
+            fontColor: "#000000",
+            paddingRight: 5,
+            paddingLeft: 5,
+            fontSize: 20,
+            fontWeight: "normal",
+          },
+          height: 150,
+          minWidth: 150,
+          label: {
+            fontFamily: "Arial",
+            fontSize: 15,
+            fontWeight: "normal",
+            fontColor: "#000000",
+          },
+          verticalAlign: "middle",
+          horizontalAlign: "center",
+          borderColor: "#009fe3",
+          gap: 0,
+        },
+        paddingLeft: 20,
+        horizontalAlign: "center",
+        shadowSpread: 4,
+        shadowHorizontalLength: 0,
       },
-      "window": {
-        "shadowOpacity": 0.3,
-        "shadowVerticalLength": 0,
-        "paddingLeft": 80,
-        "shadowHorizontalLength": 0,
-        "paddingBottom": 55,
-        "paddingRight": 80,
-        "backgroundColor": "#ffffff",
-        "paddingTop": 45,
-        "title": {
-          "fontFamily": "Arial",
-          "textAlign": "center",
-          "fontColor": "#000000",
-          "paddingBottom": 20,
-          "fontSize": 40,
-          "fontWeight": "bold"
-        },
-        "buttonsContainer": {
-          "width": "100%",
-          "horizontalAlign": "center",
-          "gap": 10
-        },
-        "icon": {
-          "height": 72,
-          "width": 62,
-          "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD0AAABGCAYAAAB/h5zrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABhRJREFUeNrsW41y2jgQliVjGxMuhDR37/92l2uvhVIcjGtzuLO6aBRpdyVb9G4azWiABKH99n9XcibSj9V13geu6a7z7+scUhAkbwB6GbFmAVP8X0H/58Y76HfQ76DfQYeOLmLNGKq+pyIouxFzS3jNkZg9MucrvB8B96mIyW8EumV858L8XlLQC5DKqGqHSDX9WeMe6G+BdpZ6jwseDZsfIC0MBa6M7KqEzwr5/hlUu4P3MYzeXGdtfG6uc0eBtgGLQOAjqAo2nppKjnuejBkK2Ak8YwI2ifgTcVYrAJxi9ED80VOIrGH6xr/A8wDAvhBXwmZFYjtVsM8KgB8cAsOG1oCdCgCsw0pjMOAeprqhk8qA0bUV2jKGlo04lQLin5iJioJNxu9+uIF0qcSqhtcugPmLDNA//UppaA5c6lIW7RB+WtjHlYQooCUHOqqUKXJmqMrjzMA7cDinyLZPCV2XembMu8yykTmAn8GztjPa7grmVOmPIavJHBvontYooW0AEwYoGJqEIesh0HnuwPEWgKcTDm93MWz8An+rmNL9BK+pxgUYOjBp6g3QZ9PEFMHZLaP8HAn5bDApRHJ5hL13ILUlQZs0BPJmY994ZJSee1cVwxg1xPkV0HAKXD+Az6CAly5HKhGiCoaEj4wMSCIpofB4ZwkES0LinAOBe66kt8SGI/e+EJs9Qa5cA4FmJ6QytGgk+ptF0++gBePaF8R0BvjtmpFFdhjomviRnmHDo5TujFxAAvFmJ0UazsaU1p3hqDLY50zQY7akfBp3xDona0YYGBg2R33eIZHABQobB2DUApF2rcOpLekK1GqKHWtQujBpIX5zvXtvrD0ExP2OoF3q38oRB+PjKHc0ExKVmLW67PVhKLR9K4sTG4KQF8//1mCLF5GmXy3h97cgzbPHxHpC2j8cmrQ4gQ2fWq8AdAVEqZnBrsGbr+GzEnjvHOvhLW31LikOIZ7aLlf7GcDGFhlHRGMLG3RBxGVM7Ssmp+cAO0Am6BtUdVfmzMZaSzDk2WhIxNTOykhkqMLmM7FHTzRF8pyRgwtG9dQHqPRoDr8ZRPVMP7BnhkvBBZ0TMXeuCy+1w94UA8Au0GwwASw4B3jfGeUhR60lSNjWjoJwSntPo0MKf+MfZRBH0lg+q3vl48Z/EcALq8b9hEhf5+StpxgqjAzyo6fhQBbaMb2nylrPabS7HGPjcIwfEedZMJ0vCTrGZvsQlbL+X3pSX453PgY4WFS9Y1LHBkq/JdTDFGidOkqQ1h8Om+bk23tDC3z5Q8YBHfudY0AY0d3SjeEElaNg4IxTgClFSVoazmrq0N1M+9zpGNlrw6KK18xyZqG+EPM17/UBuz48THGtA5P0kDOzmIoAvQHn1CIdkSlZnB3ajkj+LQnQZ8n0hBVBTG20ZGqRZtRWORtD649wKZlFhUK4l4V4zgljQHpu3O5PZyclVMzzcffFsMsO6a5MHQfwBWfEhBSR1jYuqWwJ9XgWCW/yzTA2hKSf7R6ZzlmXRPjiHsHovtYCGBVy1lVBcZJDOOWsXQi8x3fWOUXuCCdYfatPHDjhyzzrLiG95MbYrQFeMSMC9ZxII5BC48BQIcnkPOZR9QMtFZEBcrLGFWHLPQW6IexWWXUxp9vSeACvxNsOamslLN8YzKWkfOCkaxfCoS0YHv8E9nhyaE9lVVqtxehGvF7j6Bg1fUaEqT0HdCdeL7BivS6sNWzeanDF9tqIuQeHs6Kcn76OQan/m1I1I36Uc6kOSwkphxXbQeXecDy4fBQmyYvg3e8ojIIkJCxdIkKZjiAPgnel80toCaYXSkEf+eTi9a5mqmcvJIC9Y6S6A/TgLjGgtZNRjH6U7qKUERUUJ8l5YPbE9L30XsS0VQJTPFfIakT8jcEF7LcU/MYl6yJ+aEUUCtwMX/oRBd+TOKVRMJQi/PST/chFTBlI3aD/GaOD0MQyqZiz5DPMStzuuS4qZO5CTCib6GA2It0zG5x2016EX7ybRVK3eobDtF3deo7q0M6pnqnBTwabsp+lxOsFODUDUDP0zTJSOyIFGqCfwssFfd+zN8Jbkmcv/xFgALaVsLLFsFFBAAAAAElFTkSuQmCC"
-        },
-        "button": {
-          "fontFamily": "Arial",
-          "verticalAlign": "middle",
-          "backgroundColor": "#009fe3",
-          "fontColor": "#ffffff",
-          "paddingBottom": 12,
-          "paddingTop": 12,
-          "paddingRight": 25,
-          "paddingLeft": 25,
-          "fontSize": 15,
-          "horizontalAlign": "center",
-          "fontWeight": "bold"
-        },
-        "shadow": true,
-        "shadowBlurRadius": 4,
-        "shadowColor": "#000000",
-        "shadowSpread": 4,
-        "horizontalAlign": "center",
-        "gap": 15
-      }
     },
-    "score": {
-      "veil": {
-        "backgroundColor": "#000000",
-        "backgroundOpacity": 0.3
+    question: {
+      veil: { backgroundColor: "#000000", backgroundOpacity: 0.3 },
+      window: {
+        mediaContainer: {
+          height: "100%",
+          width: "70%",
+          buttonPrevious: {
+            height: 37,
+            iconURL:
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAlCAMAAACAj7KHAAAAA3NCSVQICAjb4U/gAAAAS1BMVEX///8AAAAAAAAAAAAAAACVlZWLi4uDg4MAAAC8vLx8fHx5eXl2dnZ0dHRxcXHDw8PAwMBra2tjY2PY2NiLi4v7+/v5+fn////7+/sWSBTRAAAAGXRSTlMAESIzRFVVVVVmZmZmZmZ3d3d3mZnu7v//nfgMagAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDYvMjkvMTUTtAt+AAAAkElEQVQokbXSyRaDIAwFUALOQ7W2iP//pQK6CGheF55mmXuYwlPqn0VEUp/uzPd0qAuFvqnsdKEInXVuziTCsDpfraYcxgi25MKh5rsxWHvDhMMIIJWf8EpAeei2CO/CJK8kXR2w5ED6E8B9m0zkNegc8W7ye8AM5LmBWYP/AX8KcgCyA/IGMqrkXJ92239aO3W4D6yL2ECSAAAAAElFTkSuQmCC",
+            width: 25,
+          },
+          buttonNext: {
+            height: 37,
+            iconURL:
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAlCAMAAACAj7KHAAAAA3NCSVQICAjb4U/gAAAAS1BMVEX///8AAAAAAAAAAAAAAACVlZWLi4uDg4MAAAC8vLx8fHx5eXl2dnZ0dHRxcXHDw8PAwMBra2tjY2PY2NiLi4v7+/v5+fn////7+/sWSBTRAAAAGXRSTlMAESIzRFVVVVVmZmZmZmZ3d3d3mZnu7v//nfgMagAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDYvMjkvMTUTtAt+AAAAjElEQVQokbXTyRaAIAgFUJHmeTL7/y9Naie+Toti2T0R4suYH4qI0HNKGpGV0iYwuoLFlEzeu0YT2dqH2jtFZHN3UR9T6FamKQi3O6Q+STL2O4r6WR4QcTZfdIQjR6NzttxUaKk2Eb/qdql34HfgbPA8eAdwb3jXD/eD7xTnAGcH5g1n9CHXBv8Ln9UJhXMPrAhUbYMAAAAASUVORK5CYII=",
+            width: 25,
+          },
+          viewerArea: {
+            playbackBarHeadOpacity: 1,
+            playbackBarRight: 0,
+            playbackBarProgressOpacity: 0.5,
+            playbackBarProgressBackgroundColor: "#3399ff",
+            playbackBarHeadBorderRadius: 7,
+            backgroundColor: "#e6e6e6",
+            playbackBarHeadBorderColor: "#ffffff",
+            playbackBarHeadShadowOpacity: 0.3,
+            backgroundOpacity: 1,
+            playbackBarBorderSize: 0,
+            playbackBarHeadShadowBlurRadius: 2,
+            playbackBarBorderRadius: 0,
+            playbackBarHeadShadowVerticalLength: 0,
+            playbackBarHeadBackgroundColor: "#cccccc",
+            playbackBarBackgroundColor: "#000000",
+            playbackBarHeadShadowSpread: 2,
+            playbackBarLeft: 0,
+            playbackBarHeight: 6,
+            playbackBarHeadHeight: 14,
+            playbackBarBottom: 5,
+            playbackBarHeadShadowColor: "#000000",
+            playbackBarHeadShadowHorizontalLength: 0,
+            playbackBarHeadWidth: 14,
+            playbackBarHeadBorderSize: 3,
+            playbackBarBackgroundOpacity: 0.5,
+            playbackBarHeadShadow: true,
+          },
+        },
+        height: "60%",
+        backgroundColor: "#ffffff",
+        backgroundOpacity: 1,
+        width: "60%",
+        shadowOpacity: 0.3,
+        shadowColor: "#000000",
+        paddingTop: 20,
+        shadowBlurRadius: 4,
+        paddingLeft: 20,
+        horizontalAlign: "center",
+        paddingBottom: 20,
+        buttonsContainer: {
+          verticalAlign: "bottom",
+          horizontalAlign: "right",
+          button: {
+            fontFamily: "Arial",
+            borderRadius: 3,
+            paddingTop: 10,
+            fontWeight: "bold",
+            paddingBottom: 10,
+            paddingRight: 25,
+            verticalAlign: "middle",
+            backgroundColor: "#000000",
+            backgroundOpacity: 0.7,
+            fontColor: "#ffffff",
+            paddingLeft: 25,
+            fontSize: 18,
+            horizontalAlign: "center",
+          },
+        },
+        borderRadius: 5,
+        title: {
+          fontFamily: "Arial",
+          textAlign: "center",
+          paddingTop: 25,
+          paddingBottom: 40,
+          fontColor: "#000000",
+          paddingRight: 50,
+          paddingLeft: 50,
+          fontSize: 20,
+          fontWeight: "bold",
+        },
+        optionsContainer: {
+          height: "100%",
+          width: "30%",
+          contentOpaque: true,
+          overflow: "scroll",
+          gap: 10,
+        },
+        paddingRight: 20,
+        minWidth: 500,
+        shadow: true,
+        closeButton: {
+          iconColor: "#FFFFFF",
+          iconHeight: 18,
+          iconWidth: 18,
+          width: 45,
+          height: 45,
+          iconLineWidth: 2,
+          backgroundColor: "#009FE3",
+        },
+        bodyContainer: {
+          layout: "horizontal",
+          width: "100%",
+          paddingBottom: 30,
+          height: "100%",
+          paddingRight: 30,
+          paddingLeft: 30,
+          gap: 35,
+        },
+        option: {
+          text: {
+            fontFamily: "Arial",
+            textAlign: "left",
+            selected: {
+              fontFamily: "Arial",
+              fontSize: 18,
+              paddingTop: 9,
+              textAlign: "left",
+              fontColor: "#000000",
+            },
+            fontColor: "#404040",
+            verticalAlign: "middle",
+            fontSize: 18,
+            paddingTop: 9,
+          },
+          label: {
+            fontFamily: "Arial",
+            borderRadius: 19,
+            fontWeight: "bold",
+            height: 38,
+            backgroundColor: "#000000",
+            backgroundOpacity: 0.2,
+            incorrect: {
+              fontFamily: "Arial",
+              borderRadius: 19,
+              fontWeight: "bold",
+              height: 38,
+              backgroundColor: "#ed1c24",
+              backgroundOpacity: 1,
+              width: 38,
+              pressedBackgroundOpacity: 1,
+              fontColor: "#ffffff",
+              verticalAlign: "middle",
+              fontSize: 18,
+              horizontalAlign: "center",
+            },
+            width: 38,
+            correct: {
+              fontFamily: "Arial",
+              borderRadius: 19,
+              fontWeight: "bold",
+              height: 38,
+              backgroundColor: "#39b54a",
+              backgroundOpacity: 1,
+              width: 38,
+              pressedBackgroundOpacity: 1,
+              fontColor: "#ffffff",
+              verticalAlign: "middle",
+              fontSize: 18,
+              horizontalAlign: "center",
+            },
+            pressedBackgroundOpacity: 1,
+            fontColor: "#ffffff",
+            verticalAlign: "middle",
+            fontSize: 18,
+            horizontalAlign: "center",
+          },
+          gap: 10,
+        },
+        shadowVerticalLength: 0,
+        shadowSpread: 4,
+        shadowHorizontalLength: 0,
       },
-      "window": {
-        "shadowOpacity": 0.3,
-        "maxWidth": 1500,
-        "paddingLeft": 20,
-        "paddingTop": 20,
-        "description": {
-          "fontFamily": "Arial",
-          "textAlign": "center",
-          "fontColor": "#000000",
-          "paddingBottom": 15,
-          "paddingRight": 100,
-          "paddingLeft": 100,
-          "fontSize": 16,
-          "fontWeight": "normal",
-          "paddingTop": 15
-        },
-        "paddingBottom": 20,
-        "calification": {
-          "fontFamily": "Arial",
-          "width": "100%",
-          "verticalAlign": "middle",
-          "textAlign": "center",
-          "fontColor": "#009fe3",
-          "paddingBottom": 10,
-          "paddingRight": 100,
-          "paddingLeft": 100,
-          "fontSize": 30,
-          "fontWeight": "bold",
-          "paddingTop": 15
-        },
-        "paddingRight": 20,
-        "shadowVerticalLength": 0,
-        "backgroundColor": "#ffffff",
-        "title": {
-          "fontFamily": "Arial",
-          "textAlign": "center",
-          "fontColor": "#000000",
-          "paddingBottom": 15,
-          "fontSize": 50,
-          "fontWeight": "bold",
-          "paddingTop": 50
-        },
-        "timeContainer": {
-          "width": "100%",
-          "verticalAlign": "middle",
-          "paddingTop": 10,
-          "paddingBottom": 15,
-          "paddingRight": 100,
-          "paddingLeft": 100,
-          "horizontalAlign": "center",
-          "gap": 5
-        },
-        "stats": {
-          "borderRadius": 75,
-          "borderSize": 1,
-          "layout": "vertical",
-          "mainValue": {
-            "fontFamily": "Arial",
-            "fontSize": 40,
-            "fontColor": "#000000",
-            "fontWeight": "bold"
-          },
-          "height": 150,
-          "minWidth": 150,
-          "secondaryValue": {
-            "fontFamily": "Arial",
-            "fontSize": 20,
-            "fontColor": "#000000",
-            "fontWeight": "bold"
-          },
-          "label": {
-            "fontFamily": "Arial",
-            "fontSize": 15,
-            "fontColor": "#000000",
-            "fontWeight": "normal"
-          },
-          "verticalAlign": "middle",
-          "horizontalAlign": "center",
-          "borderColor": "#009fe3",
-          "gap": 0,
-          "title": {
-            "fontFamily": "Arial",
-            "fontColor": "#000000",
-            "paddingRight": 5,
-            "paddingLeft": 5,
-            "fontSize": 20,
-            "fontWeight": "normal",
-            "paddingTop": 10
-          }
-        },
-        "buttonsContainer": {
-          "width": "100%",
-          "verticalAlign": "middle",
-          "horizontalAlign": "center",
-          "button": {
-            "fontFamily": "Arial",
-            "verticalAlign": "middle",
-            "backgroundColor": "#009fe3",
-            "fontColor": "#ffffff",
-            "paddingBottom": 12,
-            "paddingTop": 12,
-            "paddingRight": 25,
-            "paddingLeft": 25,
-            "fontSize": 15,
-            "horizontalAlign": "center",
-            "fontWeight": "bold"
-          },
-          "paddingBottom": 50,
-          "paddingRight": 100,
-          "paddingLeft": 100,
-          "paddingTop": 35,
-          "gap": 8
-        },
-        "statsContainer": {
-          "verticalAlign": "middle",
-          "paddingTop": 15,
-          "paddingBottom": 15,
-          "paddingRight": 100,
-          "paddingLeft": 100,
-          "horizontalAlign": "center",
-          "overflow": "scroll",
-          "gap": 20,
-          "contentOpaque": true
-        },
-        "content": {
-          "horizontalAlign": "center",
-          "width": "100%"
-        },
-        "minWidth": 500,
-        "shadow": true,
-        "closeButton": {
-          "iconWidth": 18,
-          "iconColor": "#ffffff",
-          "iconHeight": 18,
-          "height": 45,
-          "width": 45,
-          "backgroundColor": "#009fe3",
-          "iconLineWidth": 2
-        },
-        "shadowBlurRadius": 4,
-        "shadowColor": "#000000",
-        "shadowSpread": 4,
-        "horizontalAlign": "center",
-        "shadowHorizontalLength": 0
-      }
     },
-    "question": {
-      "veil": {
-        "backgroundColor": "#000000",
-        "backgroundOpacity": 0.3
+    timeout: {
+      veil: { backgroundColor: "#000000", backgroundOpacity: 0.3 },
+      window: {
+        shadowBlurRadius: 4,
+        paddingLeft: 80,
+        paddingTop: 45,
+        paddingBottom: 55,
+        buttonsContainer: { width: "100%", horizontalAlign: "center", gap: 10 },
+        paddingRight: 80,
+        shadowVerticalLength: 0,
+        backgroundColor: "#ffffff",
+        shadowOpacity: 0.3,
+        title: {
+          fontFamily: "Arial",
+          textAlign: "center",
+          paddingBottom: 20,
+          fontColor: "#000000",
+          fontSize: 40,
+          fontWeight: "bold",
+        },
+        icon: {
+          height: 72,
+          width: 62,
+          url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD0AAABGCAYAAAB/h5zrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABhRJREFUeNrsW41y2jgQliVjGxMuhDR37/92l2uvhVIcjGtzuLO6aBRpdyVb9G4azWiABKH99n9XcibSj9V13geu6a7z7+scUhAkbwB6GbFmAVP8X0H/58Y76HfQ76DfQYeOLmLNGKq+pyIouxFzS3jNkZg9MucrvB8B96mIyW8EumV858L8XlLQC5DKqGqHSDX9WeMe6G+BdpZ6jwseDZsfIC0MBa6M7KqEzwr5/hlUu4P3MYzeXGdtfG6uc0eBtgGLQOAjqAo2nppKjnuejBkK2Ak8YwI2ifgTcVYrAJxi9ED80VOIrGH6xr/A8wDAvhBXwmZFYjtVsM8KgB8cAsOG1oCdCgCsw0pjMOAeprqhk8qA0bUV2jKGlo04lQLin5iJioJNxu9+uIF0qcSqhtcugPmLDNA//UppaA5c6lIW7RB+WtjHlYQooCUHOqqUKXJmqMrjzMA7cDinyLZPCV2XembMu8yykTmAn8GztjPa7grmVOmPIavJHBvontYooW0AEwYoGJqEIesh0HnuwPEWgKcTDm93MWz8An+rmNL9BK+pxgUYOjBp6g3QZ9PEFMHZLaP8HAn5bDApRHJ5hL13ILUlQZs0BPJmY994ZJSee1cVwxg1xPkV0HAKXD+Az6CAly5HKhGiCoaEj4wMSCIpofB4ZwkES0LinAOBe66kt8SGI/e+EJs9Qa5cA4FmJ6QytGgk+ptF0++gBePaF8R0BvjtmpFFdhjomviRnmHDo5TujFxAAvFmJ0UazsaU1p3hqDLY50zQY7akfBp3xDona0YYGBg2R33eIZHABQobB2DUApF2rcOpLekK1GqKHWtQujBpIX5zvXtvrD0ExP2OoF3q38oRB+PjKHc0ExKVmLW67PVhKLR9K4sTG4KQF8//1mCLF5GmXy3h97cgzbPHxHpC2j8cmrQ4gQ2fWq8AdAVEqZnBrsGbr+GzEnjvHOvhLW31LikOIZ7aLlf7GcDGFhlHRGMLG3RBxGVM7Ssmp+cAO0Am6BtUdVfmzMZaSzDk2WhIxNTOykhkqMLmM7FHTzRF8pyRgwtG9dQHqPRoDr8ZRPVMP7BnhkvBBZ0TMXeuCy+1w94UA8Au0GwwASw4B3jfGeUhR60lSNjWjoJwSntPo0MKf+MfZRBH0lg+q3vl48Z/EcALq8b9hEhf5+StpxgqjAzyo6fhQBbaMb2nylrPabS7HGPjcIwfEedZMJ0vCTrGZvsQlbL+X3pSX453PgY4WFS9Y1LHBkq/JdTDFGidOkqQ1h8Om+bk23tDC3z5Q8YBHfudY0AY0d3SjeEElaNg4IxTgClFSVoazmrq0N1M+9zpGNlrw6KK18xyZqG+EPM17/UBuz48THGtA5P0kDOzmIoAvQHn1CIdkSlZnB3ajkj+LQnQZ8n0hBVBTG20ZGqRZtRWORtD649wKZlFhUK4l4V4zgljQHpu3O5PZyclVMzzcffFsMsO6a5MHQfwBWfEhBSR1jYuqWwJ9XgWCW/yzTA2hKSf7R6ZzlmXRPjiHsHovtYCGBVy1lVBcZJDOOWsXQi8x3fWOUXuCCdYfatPHDjhyzzrLiG95MbYrQFeMSMC9ZxII5BC48BQIcnkPOZR9QMtFZEBcrLGFWHLPQW6IexWWXUxp9vSeACvxNsOamslLN8YzKWkfOCkaxfCoS0YHv8E9nhyaE9lVVqtxehGvF7j6Bg1fUaEqT0HdCdeL7BivS6sNWzeanDF9tqIuQeHs6Kcn76OQan/m1I1I36Uc6kOSwkphxXbQeXecDy4fBQmyYvg3e8ojIIkJCxdIkKZjiAPgnel80toCaYXSkEf+eTi9a5mqmcvJIC9Y6S6A/TgLjGgtZNRjH6U7qKUERUUJ8l5YPbE9L30XsS0VQJTPFfIakT8jcEF7LcU/MYl6yJ+aEUUCtwMX/oRBd+TOKVRMJQi/PST/chFTBlI3aD/GaOD0MQyqZiz5DPMStzuuS4qZO5CTCib6GA2It0zG5x2016EX7ybRVK3eobDtF3deo7q0M6pnqnBTwabsp+lxOsFODUDUDP0zTJSOyIFGqCfwssFfd+zN8Jbkmcv/xFgALaVsLLFsFFBAAAAAElFTkSuQmCC",
+        },
+        shadowSpread: 4,
+        shadow: true,
+        shadowColor: "#000000",
+        horizontalAlign: "center",
+        button: {
+          fontFamily: "Arial",
+          paddingTop: 12,
+          backgroundColor: "#009fe3",
+          verticalAlign: "middle",
+          paddingBottom: 12,
+          fontColor: "#ffffff",
+          paddingRight: 25,
+          paddingLeft: 25,
+          fontSize: 15,
+          horizontalAlign: "center",
+          fontWeight: "bold",
+        },
+        gap: 15,
+        shadowHorizontalLength: 0,
       },
-      "window": {
-        "bodyContainer": {
-          "layout": "horizontal",
-          "width": "100%",
-          "paddingBottom": 30,
-          "height": "100%",
-          "paddingRight": 30,
-          "paddingLeft": 30,
-          "gap": 35
-        },
-        "borderRadius": 5,
-        "mediaContainer": {
-          "height": "100%",
-          "width": "70%",
-          "buttonNext": {
-            "height": 37,
-            "width": 25,
-            "iconURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAlCAMAAACAj7KHAAAAA3NCSVQICAjb4U/gAAAAS1BMVEX///8AAAAAAAAAAAAAAACVlZWLi4uDg4MAAAC8vLx8fHx5eXl2dnZ0dHRxcXHDw8PAwMBra2tjY2PY2NiLi4v7+/v5+fn////7+/sWSBTRAAAAGXRSTlMAESIzRFVVVVVmZmZmZmZ3d3d3mZnu7v//nfgMagAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDYvMjkvMTUTtAt+AAAAjElEQVQokbXTyRaAIAgFUJHmeTL7/y9Naie+Toti2T0R4suYH4qI0HNKGpGV0iYwuoLFlEzeu0YT2dqH2jtFZHN3UR9T6FamKQi3O6Q+STL2O4r6WR4QcTZfdIQjR6NzttxUaKk2Eb/qdql34HfgbPA8eAdwb3jXD/eD7xTnAGcH5g1n9CHXBv8Ln9UJhXMPrAhUbYMAAAAASUVORK5CYII="
-          },
-          "buttonPrevious": {
-            "height": 37,
-            "width": 25,
-            "iconURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAlCAMAAACAj7KHAAAAA3NCSVQICAjb4U/gAAAAS1BMVEX///8AAAAAAAAAAAAAAACVlZWLi4uDg4MAAAC8vLx8fHx5eXl2dnZ0dHRxcXHDw8PAwMBra2tjY2PY2NiLi4v7+/v5+fn////7+/sWSBTRAAAAGXRSTlMAESIzRFVVVVVmZmZmZmZ3d3d3mZnu7v//nfgMagAAAAlwSFlzAAAK6wAACusBgosNWgAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDYvMjkvMTUTtAt+AAAAkElEQVQokbXSyRaDIAwFUALOQ7W2iP//pQK6CGheF55mmXuYwlPqn0VEUp/uzPd0qAuFvqnsdKEInXVuziTCsDpfraYcxgi25MKh5rsxWHvDhMMIIJWf8EpAeei2CO/CJK8kXR2w5ED6E8B9m0zkNegc8W7ye8AM5LmBWYP/AX8KcgCyA/IGMqrkXJ92239aO3W4D6yL2ECSAAAAAElFTkSuQmCC"
-          },
-          "viewerArea": {
-            "playbackBarHeadBorderRadius": 7,
-            "backgroundOpacity": 1,
-            "playbackBarHeadHeight": 14,
-            "backgroundColor": "#e6e6e6",
-            "playbackBarHeadShadowSpread": 2,
-            "playbackBarProgressOpacity": 0.5,
-            "playbackBarHeadShadowHorizontalLength": 0,
-            "playbackBarHeadWidth": 14,
-            "playbackBarHeadShadowColor": "#000000",
-            "playbackBarBorderRadius": 0,
-            "playbackBarHeadBorderSize": 3,
-            "playbackBarHeadShadow": true,
-            "playbackBarHeadBorderColor": "#ffffff",
-            "playbackBarHeadShadowVerticalLength": 0,
-            "playbackBarBackgroundOpacity": 0.5,
-            "playbackBarBackgroundColor": "#000000",
-            "playbackBarRight": 0,
-            "playbackBarBorderSize": 0,
-            "playbackBarHeadShadowBlurRadius": 2,
-            "playbackBarHeight": 6,
-            "playbackBarProgressBackgroundColor": "#3399ff",
-            "playbackBarHeadShadowOpacity": 0.3,
-            "playbackBarHeadOpacity": 1,
-            "playbackBarHeadBackgroundColor": "#cccccc",
-            "playbackBarLeft": 0,
-            "playbackBarBottom": 5
-          }
-        },
-        "backgroundOpacity": 1,
-        "height": "60%",
-        "shadowBlurRadius": 4,
-        "backgroundColor": "#ffffff",
-        "width": "60%",
-        "buttonsContainer": {
-          "verticalAlign": "bottom",
-          "horizontalAlign": "right",
-          "button": {
-            "fontFamily": "Arial",
-            "verticalAlign": "middle",
-            "borderRadius": 3,
-            "fontWeight": "bold",
-            "paddingBottom": 10,
-            "backgroundOpacity": 0.7,
-            "paddingRight": 25,
-            "backgroundColor": "#000000",
-            "paddingTop": 10,
-            "fontColor": "#ffffff",
-            "paddingLeft": 25,
-            "fontSize": 18,
-            "horizontalAlign": "center"
-          }
-        },
-        "shadowHorizontalLength": 0,
-        "shadowColor": "#000000",
-        "shadowSpread": 4,
-        "paddingTop": 20,
-        "shadowOpacity": 0.3,
-        "paddingLeft": 20,
-        "horizontalAlign": "center",
-        "paddingBottom": 20,
-        "paddingRight": 20,
-        "title": {
-          "fontFamily": "Arial",
-          "textAlign": "center",
-          "fontColor": "#000000",
-          "paddingBottom": 40,
-          "paddingRight": 50,
-          "paddingLeft": 50,
-          "fontSize": 20,
-          "fontWeight": "bold",
-          "paddingTop": 25
-        },
-        "option": {
-          "text": {
-            "fontFamily": "Arial",
-            "textAlign": "left",
-            "fontColor": "#404040",
-            "verticalAlign": "middle",
-            "fontSize": 18,
-            "paddingTop": 9,
-            "selected": {
-              "fontFamily": "Arial",
-              "fontSize": 18,
-              "fontColor": "#000000",
-              "paddingTop": 9,
-              "textAlign": "left"
-            }
-          },
-          "label": {
-            "fontFamily": "Arial",
-            "incorrect": {
-              "fontFamily": "Arial",
-              "borderRadius": 19,
-              "fontWeight": "bold",
-              "backgroundOpacity": 1,
-              "height": 38,
-              "backgroundColor": "#ed1c24",
-              "pressedBackgroundOpacity": 1,
-              "fontColor": "#ffffff",
-              "width": 38,
-              "verticalAlign": "middle",
-              "fontSize": 18,
-              "horizontalAlign": "center"
-            },
-            "borderRadius": 19,
-            "fontWeight": "bold",
-            "backgroundOpacity": 0.2,
-            "height": 38,
-            "backgroundColor": "#000000",
-            "correct": {
-              "fontFamily": "Arial",
-              "borderRadius": 19,
-              "fontWeight": "bold",
-              "backgroundOpacity": 1,
-              "height": 38,
-              "backgroundColor": "#39b54a",
-              "pressedBackgroundOpacity": 1,
-              "fontColor": "#ffffff",
-              "width": 38,
-              "verticalAlign": "middle",
-              "fontSize": 18,
-              "horizontalAlign": "center"
-            },
-            "pressedBackgroundOpacity": 1,
-            "fontColor": "#ffffff",
-            "width": 38,
-            "verticalAlign": "middle",
-            "fontSize": 18,
-            "horizontalAlign": "center"
-          },
-          "gap": 10
-        },
-        "minWidth": 500,
-        "shadow": true,
-        "closeButton": {
-          "iconWidth": 18,
-          "iconColor": "#FFFFFF",
-          "iconHeight": 18,
-          "height": 45,
-          "width": 45,
-          "backgroundColor": "#009FE3",
-          "iconLineWidth": 2
-        },
-        "shadowVerticalLength": 0,
-        "optionsContainer": {
-          "height": "100%",
-          "width": "30%",
-          "overflow": "scroll",
-          "gap": 10,
-          "contentOpaque": true
-        }
-      }
-    }
+    },
   };
-  hP['theme'] = 'theme' in hP ? this['mixObject'](hS, hP['theme']) : hS;
-  var hT = hP['data'] && hP['data']['titlesScale'] ? hP['data']['titlesScale'] : 0x1;
-  var hU = hP['data'] && hP['data']['bodyScale'] ? hP['data']['bodyScale'] : 0x1;
-  if (hP['player']['get']('isMobile')) {
-    var hV = this['mixObject'](hP['theme'], {
-      'question': {
-        'window': {
-          'width': '100%',
-          'height': '100%',
-          'minWidth': undefined,
-          'backgroundOpacity': 0x1,
-          'borderRadius': 0x0,
-          'paddingLeft': 0x0,
-          'paddingRight': 0x0,
-          'paddingBottom': 0x0,
-          'paddingTop': 0x0,
-          'verticalAlign': 'middle',
-          'title': {
-            'paddingBottom': 0x19,
-            'paddingTop': 0x19
+  hQ["theme"] = "theme" in hQ ? this["mixObject"](hT, hQ["theme"]) : hT;
+  var hU =
+    hQ["data"] && hQ["data"]["titlesScale"] ? hQ["data"]["titlesScale"] : 0x1;
+  var hV =
+    hQ["data"] && hQ["data"]["bodyScale"] ? hQ["data"]["bodyScale"] : 0x1;
+  if (hQ["player"]["get"]("isMobile")) {
+    var hW = this["mixObject"](hQ["theme"], {
+      question: {
+        window: {
+          width: "100%",
+          height: "100%",
+          minWidth: undefined,
+          backgroundOpacity: 0x1,
+          borderRadius: 0x0,
+          paddingLeft: 0x0,
+          paddingRight: 0x0,
+          paddingBottom: 0x0,
+          paddingTop: 0x0,
+          verticalAlign: "middle",
+          title: { paddingBottom: 0x19, paddingTop: 0x19 },
+          bodyContainer: {
+            layout: "vertical",
+            horizontalAlign: "center",
+            paddingLeft: 0x0,
+            paddingRight: 0x0,
+            gap: 0x14,
           },
-          'bodyContainer': {
-            'layout': 'vertical',
-            'horizontalAlign': 'center',
-            'paddingLeft': 0x0,
-            'paddingRight': 0x0,
-            'gap': 0x14
+          mediaContainer: { width: "100%", height: "45%" },
+          optionsContainer: {
+            width: "100%",
+            height: "55%",
+            paddingLeft: 0x14,
+            paddingRight: 0x14,
           },
-          'mediaContainer': {
-            'width': '100%',
-            'height': '45%'
-          },
-          'optionsContainer': {
-            'width': '100%',
-            'height': '55%',
-            'paddingLeft': 0x14,
-            'paddingRight': 0x14
-          }
-        }
+        },
       },
-      'score': {
-        'window': {
-          'description': {
-            'paddingLeft': 0xa,
-            'paddingRight': 0xa
+      score: {
+        window: {
+          description: { paddingLeft: 0xa, paddingRight: 0xa },
+          calification: {
+            fontSize: 0x14 * hV,
+            paddingLeft: 0xa,
+            paddingRight: 0xa,
           },
-          'calification': {
-            'fontSize': 0x14 * hU,
-            'paddingLeft': 0xa,
-            'paddingRight': 0xa
-          }
-        }
-      }
+        },
+      },
     });
-    hP['theme'] = hV;
+    hQ["theme"] = hW;
   }
-  var hW = this['get']('data');
-  var hX = document['getElementById']('metaViewport');
-  var hY = hX ? /initial-scale=(\d+(\.\d+)?)/['exec'](hX['getAttribute']('content')) : undefined;
-  var hZ = hY ? hY[0x1] : 0x1;
-  hW['scorePortraitConfig'] = {
-    'theme': {
-      'window': {
-        'minWidth': 0xfa / hZ,
-        'maxHeight': 0x258 / hZ,
-        'content': {
-          'height': '100%'
+  var hX = this["get"]("data");
+  var hY = document["getElementById"]("metaViewport");
+  var hZ = hY
+    ? /initial-scale=(\d+(\.\d+)?)/["exec"](hY["getAttribute"]("content"))
+    : undefined;
+  var i0 = hZ ? hZ[0x1] : 0x1;
+  hX["scorePortraitConfig"] = {
+    theme: {
+      window: {
+        minWidth: 0xfa / i0,
+        maxHeight: 0x258 / i0,
+        content: { height: "100%" },
+        statsContainer: {
+          layout: "vertical",
+          horizontalAlign: "center",
+          maxHeight: 0x258,
+          paddingLeft: 0x0,
+          paddingRight: 0x0,
+          width: "100%",
+          height: "100%",
         },
-        'statsContainer': {
-          'layout': 'vertical',
-          'horizontalAlign': 'center',
-          'maxHeight': 0x258,
-          'paddingLeft': 0x0,
-          'paddingRight': 0x0,
-          'width': '100%',
-          'height': '100%'
+        buttonsContainer: {
+          paddingLeft: 0xa,
+          paddingRight: 0xa,
+          button: { paddingLeft: 0xf, paddingRight: 0xf },
         },
-        'buttonsContainer': {
-          'paddingLeft': 0xa,
-          'paddingRight': 0xa,
-          'button': {
-            'paddingLeft': 0xf,
-            'paddingRight': 0xf
-          }
-        }
-      }
-    }
+      },
+    },
   };
-  hW['scoreLandscapeConfig'] = {
-    'theme': {
-      'window': {
-        'title': {
-          'fontSize': 0x1e * hT,
-          'paddingTop': 0xa
-        },
-        'stats': {
-          'height': 0x64
-        },
-        'buttonsContainer': {
-          'paddingBottom': 0x14,
-          'paddingTop': 0xa
-        },
-        'description': {
-          'paddingBottom': 0x5,
-          'paddingTop': 0x5
-        }
-      }
-    }
+  hX["scoreLandscapeConfig"] = {
+    theme: {
+      window: {
+        title: { fontSize: 0x1e * hU, paddingTop: 0xa },
+        stats: { height: 0x64 },
+        buttonsContainer: { paddingBottom: 0x14, paddingTop: 0xa },
+        description: { paddingBottom: 0x5, paddingTop: 0x5 },
+      },
+    },
   };
-  var i0 = new TDV['Quiz'](hP);
-  i0['setMaxListeners'](0x32);
+  var i1 = new TDV["Quiz"](hQ);
+  i1["setMaxListeners"](0x32);
+  if (hS === !![]) {
+    i1["bind"](
+      TDV["Quiz"]["EVENT_PROPERTIES_CHANGE"],
+      function () {
+        if (
+          (i1["get"](TDV["Quiz"]["PROPERTY"]["QUESTIONS_ANSWERED"]) +
+            i1["get"](TDV["Quiz"]["PROPERTY"]["ITEMS_FOUND"])) /
+          (i1["get"](TDV["Quiz"]["PROPERTY"]["QUESTION_COUNT"]) +
+            i1["get"](TDV["Quiz"]["PROPERTY"]["ITEM_COUNT"])) ==
+          0x1
+        )
+          i1["finish"]();
+      }["bind"](this)
+    );
+  }
   if (hR === !![]) {
-    i0['bind'](TDV['Quiz']['EVENT_PROPERTIES_CHANGE'], function () {
-      if ((i0['get'](TDV['Quiz']['PROPERTY']['QUESTIONS_ANSWERED']) + i0['get'](TDV['Quiz']['PROPERTY']['ITEMS_FOUND'])) / (i0['get'](TDV['Quiz']['PROPERTY']['QUESTION_COUNT']) + i0['get'](TDV['Quiz']['PROPERTY']['ITEM_COUNT'])) == 0x1) i0['finish']();
-    }['bind'](this));
+    i1["start"]();
   }
-  if (hQ === !![]) {
-    i0['start']();
-  }
-  hW['quiz'] = i0;
-  hW['quizConfig'] = hP;
+  hX["quiz"] = i1;
+  hX["quizConfig"] = hQ;
 };
-TDV['Tour']['Script']['getQuizTotalObjectiveProperty'] = function (i1) {
-  var i2 = this['get']('data')['quiz'];
-  var i3 = this['get']('data')['quizConfig'];
-  var i4 = i3['objectives'];
-  var i5 = 0x0;
-  for (var i6 = 0x0, i7 = i4['length']; i6 < i7; ++i6) {
-    var i8 = i4[i6];
-    i5 += i2['getObjective'](i8['id'], i1);
+TDV["Tour"]["Script"]["getQuizTotalObjectiveProperty"] = function (i2) {
+  var i3 = this["get"]("data")["quiz"];
+  var i4 = this["get"]("data")["quizConfig"];
+  var i5 = i4["objectives"];
+  var i6 = 0x0;
+  for (var i7 = 0x0, i8 = i5["length"]; i7 < i8; ++i7) {
+    var i9 = i5[i7];
+    i6 += i3["getObjective"](i9["id"], i2);
   }
-  return i5;
+  return i6;
 };
-TDV['Tour']['Script']['_initSplitViewer'] = function (i9) {
-  function ia() {
-    var iy = i9['get']('actualWidth');
-    io['get']('children')[0x0]['set']('width', iy);
-    ip['get']('children')[0x0]['set']('width', iy);
-    var iz = is['get']('left');
-    var iA = typeof iz == 'string' ? ib(iz) : iz;
-    iA += is['get']('actualWidth') * 0.5;
-    io['set']('width', ic(iA));
-    ip['set']('width', ic(iy - iA));
+TDV["Tour"]["Script"]["_initSplitViewer"] = function (ia) {
+  function ib() {
+    var iz = ia["get"]("actualWidth");
+    ip["get"]("children")[0x0]["set"]("width", iz);
+    iq["get"]("children")[0x0]["set"]("width", iz);
+    var iA = it["get"]("left");
+    var iB = typeof iA == "string" ? ic(iA) : iA;
+    iB += it["get"]("actualWidth") * 0.5;
+    ip["set"]("width", ie(iB));
+    iq["set"]("width", ie(iz - iB));
   }
-
-  function ib(iB) {
-    return parseFloat(iB['replace']('%', '')) / 0x64 * i9['get']('actualWidth');
-  }
-
   function ic(iC) {
-    return iC / i9['get']('actualWidth') * 0x64 + '%';
+    return (
+      (parseFloat(iC["replace"]("%", "")) / 0x64) * ia["get"]("actualWidth")
+    );
   }
-
   function ie(iD) {
-    ig(iD['source']);
+    return (iD / ia["get"]("actualWidth")) * 0x64 + "%";
   }
-
   function ig(iE) {
-    var iF = iE == iu ? it : iu;
-    if (iv && iE != iv || !iE || !iF) return;
-    var iG = iF['get']('camera')['get']('initialPosition')['get']('yaw') - iE['get']('camera')['get']('initialPosition')['get']('yaw');
-    iF['setPosition'](iE['get']('yaw') + iG, iE['get']('pitch'), iE['get']('roll'), iE['get']('hfov'));
+    ih(iE["source"]);
   }
-
-  function ih(iH) {
-    iv = iH['source'];
+  function ih(iF) {
+    var iG = iF == iv ? iu : iv;
+    if ((iw && iF != iw) || !iF || !iG) return;
+    var iH =
+      iG["get"]("camera")["get"]("initialPosition")["get"]("yaw") -
+      iF["get"]("camera")["get"]("initialPosition")["get"]("yaw");
+    iG["setPosition"](
+      iF["get"]("yaw") + iH,
+      iF["get"]("pitch"),
+      iF["get"]("roll"),
+      iF["get"]("hfov")
+    );
   }
-
   function ii(iI) {
-    ij(iI['source']);
+    iw = iI["source"];
   }
-
   function ij(iJ) {
-    var iK = iJ['get']('viewerArea');
-    if (iK == iq) {
-      if (it) {
-        it['get']('camera')['set']('hoverFactor', iw);
-      }
-      it = iJ;
-      iv = it;
-      if (it) {
-        iw = it['get']('camera')['get']('hoverFactor');
-        it['get']('camera')['set']('hoverFactor', 0x0);
-      }
-    } else if (iK == ir) {
+    ik(iJ["source"]);
+  }
+  function ik(iK) {
+    var iL = iK["get"]("viewerArea");
+    if (iL == ir) {
       if (iu) {
-        iu['get']('camera')['set']('hoverFactor', ix);
+        iu["get"]("camera")["set"]("hoverFactor", ix);
       }
-      iu = iJ;
-      iv = it;
+      iu = iK;
+      iw = iu;
       if (iu) {
-        ix = iu['get']('camera')['get']('hoverFactor');
-        iu['get']('camera')['set']('hoverFactor', 0x0);
+        ix = iu["get"]("camera")["get"]("hoverFactor");
+        iu["get"]("camera")["set"]("hoverFactor", 0x0);
+      }
+    } else if (iL == is) {
+      if (iv) {
+        iv["get"]("camera")["set"]("hoverFactor", iy);
+      }
+      iv = iK;
+      iw = iu;
+      if (iv) {
+        iy = iv["get"]("camera")["get"]("hoverFactor");
+        iv["get"]("camera")["set"]("hoverFactor", 0x0);
       }
     }
-    ig(iJ);
+    ih(iK);
   }
-
-  function ik(iL) {
-    var iM = this['getCurrentPlayers']();
-    var iN = iM['length'];
-    while (iN-- > 0x0) {
-      var iP = iM[iN];
-      if (iP['get']('viewerArea') != iL) {
-        iM['splice'](iN, 0x1);
+  function il(iM) {
+    var iN = this["getCurrentPlayers"]();
+    var iO = iN["length"];
+    while (iO-- > 0x0) {
+      var iQ = iN[iO];
+      if (iQ["get"]("viewerArea") != iM) {
+        iN["splice"](iO, 0x1);
       }
     }
-    for (iN = 0x0; iN < iM['length']; ++iN) {
-      var iP = iM[iN];
-      iP['bind']('preloadMediaShow', ii, this);
-      iP['bind']('cameraPositionChange', ie, this);
-      iP['bind']('userInteractionStart', ih, this);
-      if (iP['get']('panorama')) ij(iP);
+    for (iO = 0x0; iO < iN["length"]; ++iO) {
+      var iQ = iN[iO];
+      iQ["bind"]("preloadMediaShow", ij, this);
+      iQ["bind"]("cameraPositionChange", ig, this);
+      iQ["bind"]("userInteractionStart", ii, this);
+      if (iQ["get"]("panorama")) ik(iQ);
     }
-    return iM;
+    return iN;
   }
-
-  function il(iQ) {
-    ij(this['getActivePlayerWithViewer'](iQ['source']));
-    ig(iv);
+  function im(iR) {
+    ik(this["getActivePlayerWithViewer"](iR["source"]));
+    ih(iw);
   }
-  var im = i9['get']('children');
-  var io = im[0x0];
-  var ip = im[0x1];
-  var iq = io['get']('children')[0x0];
-  var ir = ip['get']('children')[0x0];
-  var is = im[0x2];
-  var it, iu, iv;
-  var iw, ix;
-  ik['call'](this, iq);
-  ik['call'](this, ir);
-  iq['bind']('mouseDown', il, this);
-  ir['bind']('mouseDown', il, this);
-  i9['bind']('resize', function () {
-    is['set']('left', (i9['get']('actualWidth') - is['get']('actualWidth')) * 0.5);
-    ia();
-  }, this);
-  is['bind']('mouseDown', function (iR) {
-    var iS = iR['pageX'];
-    var iT = function (iU) {
-      var iV = iU['pageX'];
-      var iW = iS - iV;
-      var iX = i9['get']('actualWidth');
-      var iY = is['get']('left');
-      var iZ = (typeof iY == 'string' ? ib(iY) : iY) - iW;
-      if (iZ < 0x0) {
-        iV -= iZ;
-        iZ = 0x0;
-      } else if (iZ + is['get']('actualWidth') >= iX) {
-        iV -= iZ - (iX - is['get']('actualWidth'));
-        iZ = iX - is['get']('actualWidth');
-      }
-      is['set']('left', iZ);
-      ia();
-      iS = iV;
-    };
-    this['bind']('mouseMove', iT, this);
-    this['bind']('mouseUp', function () {
-      this['unbind']('mouseMove', iT, this);
-    }, this);
-  }, this);
-  ia();
-};
-TDV['Tour']['Script']['_initTwinsViewer'] = function (j0) {
-  function j1() {
-    var jm = j0['get']('actualWidth');
-    jc['get']('children')[0x0]['set']('width', jm);
-    jd['get']('children')[0x0]['set']('width', jm);
-    var jn = jg['get']('left');
-    var jo = typeof jn == 'string' ? j2(jn) : jn;
-    jo += jg['get']('actualWidth') * 0.5;
-    jc['set']('width', j3(jo));
-    jd['set']('width', j3(jm - jo));
-  }
-
-  function j2(jp) {
-    return parseFloat(jp['replace']('%', '')) / 0x64 * j0['get']('actualWidth');
-  }
-
-  function j3(jq) {
-    return jq / j0['get']('actualWidth') * 0x64 + '%';
-  }
-
-  function j4(jr) {
-    j5(jr['source']);
-  }
-
-  function j5(js) {
-    var jt = js == ji ? jh : ji;
-    if (jj && js != jj || !js || !jt) return;
-    var ju = jt['get']('camera')['get']('initialPosition')['get']('yaw') - js['get']('camera')['get']('initialPosition')['get']('yaw');
-    jt['setPosition'](js['get']('yaw') + ju, js['get']('pitch'), js['get']('roll'), js['get']('hfov'));
-  }
-
-  function j6(jv) {
-    jj = jv['source'];
-  }
-
-  function j7(jw) {
-    j8(jw['source']);
-  }
-
-  function j8(jx) {
-    var jy = jx['get']('viewerArea');
-    if (jy == je) {
-      if (jh) {
-        jh['get']('camera')['set']('hoverFactor', jk);
-      }
-      jh = jx;
-      jj = jh;
-      if (jh) {
-        jk = jh['get']('camera')['get']('hoverFactor');
-        jh['get']('camera')['set']('hoverFactor', 0x0);
-      }
-    } else if (jy == jf) {
-      if (ji) {
-        ji['get']('camera')['set']('hoverFactor', jl);
-      }
-      ji = jx;
-      jj = jh;
-      if (ji) {
-        jl = ji['get']('camera')['get']('hoverFactor');
-        ji['get']('camera')['set']('hoverFactor', 0x0);
-      }
-    }
-    j5(jx);
-  }
-
-  function j9(jz) {
-    var jA = this['getCurrentPlayers']();
-    var jB = jA['length'];
-    while (jB-- > 0x0) {
-      var jD = jA[jB];
-      if (jD['get']('viewerArea') != jz) {
-        jA['splice'](jB, 0x1);
-      }
-    }
-    for (jB = 0x0; jB < jA['length']; ++jB) {
-      var jD = jA[jB];
-      jD['bind']('preloadMediaShow', j7, this);
-      jD['bind']('cameraPositionChange', j4, this);
-      jD['bind']('userInteractionStart', j6, this);
-      if (jD['get']('panorama')) j8(jD);
-    }
-    return jA;
-  }
-
-  function ja(jE) {
-    j8(this['getActivePlayerWithViewer'](jE['source']));
-    j5(jj);
-  }
-  var jb = j0['get']('children');
-  var jc = jb[0x0];
-  var jd = jb[0x1];
-  var je = jc['get']('children')[0x0];
-  var jf = jd['get']('children')[0x0];
-  var jg = jb[0x2];
-  var jh, ji, jj;
-  var jk, jl;
-  j9['call'](this, je);
-  j9['call'](this, jf);
-  je['bind']('mouseDown', ja, this);
-  jf['bind']('mouseDown', ja, this);
-  j0['bind']('resize', function () {
-    jg['set']('left', (j0['get']('actualWidth') - jg['get']('actualWidth')) * 0.5);
-    j1();
-  }, this);
-  j1();
-};
-TDV['Tour']['Script']['isCardboardViewMode'] = function () {
-  var jF = this['getByClassName']('PanoramaPlayer');
-  return jF['length'] > 0x0 && jF[0x0]['get']('viewMode') == 'cardboard';
-};
-TDV['Tour']['Script']['isPanorama'] = function (jG) {
-  return ['Panorama', 'HDRPanorama', 'LivePanorama', 'Video360', 'VideoPanorama']['indexOf'](jG['get']('class')) != -0x1;
-};
-TDV['Tour']['Script']['keepCompVisible'] = function (jH, jI) {
-  var jJ = 'keepVisibility_' + jH['get']('id');
-  var jK = this['getKey'](jJ);
-  if (jK == undefined && jI) {
-    this['registerKey'](jJ, jI);
-  } else if (jK != undefined && !jI) {
-    this['unregisterKey'](jJ);
-  }
-};
-TDV['Tour']['Script']['_initItemWithComps'] = function (jL, jM, jN, jO, jP, jQ, jR, jS) {
-  var jT = jL['get']('items')[jM];
-  var jU = jT['get']('media');
-  var jV = jU['get']('loop') == undefined || jU['get']('loop');
-  var jW = jS > 0x0;
-  var jX = this['rootPlayer'];
-  var jY = function (k6) {
-    var k7 = jQ ? jQ['get']('class') : undefined;
-    var k8 = undefined;
-    switch (k7) {
-      case 'FadeInEffect':
-      case 'FadeOutEffect':
-        k8 = jX['createInstance'](k6 ? 'FadeInEffect' : 'FadeOutEffect');
-        break;
-      case 'SlideInEffect':
-      case 'SlideOutEffect':
-        k8 = jX['createInstance'](k6 ? 'SlideInEffect' : 'SlideOutEffect');
-        break;
-    }
-    if (k8) {
-      k8['set']('duration', jQ['get']('duration'));
-      k8['set']('easing', jQ['get']('easing'));
-      if (k7['indexOf']('Slide') != -0x1) k8['set'](k6 ? 'from' : 'to', jQ['get'](jQ['get']('class') == 'SlideInEffect' ? 'from' : 'to'));
-    }
-    return k8;
-  };
-  var jZ = function () {
-    for (var k9 = 0x0, ka = jN['length']; k9 < ka; ++k9) {
-      var kb = jN[k9];
-      if (jS > 0x0) {
-        this['setComponentVisibility'](kb, !jP, 0x0, jY(!jP));
-      } else {
-        var kc = 'visibility_' + kb['get']('id');
-        if (this['existsKey'](kc)) {
-          if (this['getKey'](kc)) this['setComponentVisibility'](kb, !![], 0x0, jY(!![]));
-          else this['setComponentVisibility'](kb, ![], 0x0, jY(![]));
-          this['unregisterKey'](kc);
+  var io = ia["get"]("children");
+  var ip = io[0x0];
+  var iq = io[0x1];
+  var ir = ip["get"]("children")[0x0];
+  var is = iq["get"]("children")[0x0];
+  var it = io[0x2];
+  var iu, iv, iw;
+  var ix, iy;
+  il["call"](this, ir);
+  il["call"](this, is);
+  ir["bind"]("mouseDown", im, this);
+  is["bind"]("mouseDown", im, this);
+  ia["bind"](
+    "resize",
+    function () {
+      it["set"](
+        "left",
+        (ia["get"]("actualWidth") - it["get"]("actualWidth")) * 0.5
+      );
+      ib();
+    },
+    this
+  );
+  it["bind"](
+    "mouseDown",
+    function (iS) {
+      var iT = iS["pageX"];
+      var iU = function (iV) {
+        var iW = iV["pageX"];
+        var iX = iT - iW;
+        var iY = ia["get"]("actualWidth");
+        var iZ = it["get"]("left");
+        var j0 = (typeof iZ == "string" ? ic(iZ) : iZ) - iX;
+        if (j0 < 0x0) {
+          iW -= j0;
+          j0 = 0x0;
+        } else if (j0 + it["get"]("actualWidth") >= iY) {
+          iW -= j0 - (iY - it["get"]("actualWidth"));
+          j0 = iY - it["get"]("actualWidth");
         }
+        it["set"]("left", j0);
+        ib();
+        iT = iW;
+      };
+      this["bind"]("mouseMove", iU, this);
+      this["bind"](
+        "mouseUp",
+        function () {
+          this["unbind"]("mouseMove", iU, this);
+        },
+        this
+      );
+    },
+    this
+  );
+  ib();
+};
+TDV["Tour"]["Script"]["_initTwinsViewer"] = function (j1) {
+  function j2() {
+    var jn = j1["get"]("actualWidth");
+    jd["get"]("children")[0x0]["set"]("width", jn);
+    je["get"]("children")[0x0]["set"]("width", jn);
+    var jo = jh["get"]("left");
+    var jp = typeof jo == "string" ? j3(jo) : jo;
+    jp += jh["get"]("actualWidth") * 0.5;
+    jd["set"]("width", j4(jp));
+    je["set"]("width", j4(jn - jp));
+  }
+  function j3(jq) {
+    return (
+      (parseFloat(jq["replace"]("%", "")) / 0x64) * j1["get"]("actualWidth")
+    );
+  }
+  function j4(jr) {
+    return (jr / j1["get"]("actualWidth")) * 0x64 + "%";
+  }
+  function j5(js) {
+    j6(js["source"]);
+  }
+  function j6(jt) {
+    var ju = jt == jj ? ji : jj;
+    if ((jk && jt != jk) || !jt || !ju) return;
+    var jv =
+      ju["get"]("camera")["get"]("initialPosition")["get"]("yaw") -
+      jt["get"]("camera")["get"]("initialPosition")["get"]("yaw");
+    ju["setPosition"](
+      jt["get"]("yaw") + jv,
+      jt["get"]("pitch"),
+      jt["get"]("roll"),
+      jt["get"]("hfov")
+    );
+  }
+  function j7(jw) {
+    jk = jw["source"];
+  }
+  function j8(jx) {
+    j9(jx["source"]);
+  }
+  function j9(jy) {
+    var jz = jy["get"]("viewerArea");
+    if (jz == jf) {
+      if (ji) {
+        ji["get"]("camera")["set"]("hoverFactor", jl);
+      }
+      ji = jy;
+      jk = ji;
+      if (ji) {
+        jl = ji["get"]("camera")["get"]("hoverFactor");
+        ji["get"]("camera")["set"]("hoverFactor", 0x0);
+      }
+    } else if (jz == jg) {
+      if (jj) {
+        jj["get"]("camera")["set"]("hoverFactor", jm);
+      }
+      jj = jy;
+      jk = ji;
+      if (jj) {
+        jm = jj["get"]("camera")["get"]("hoverFactor");
+        jj["get"]("camera")["set"]("hoverFactor", 0x0);
       }
     }
-    jT['unbind']('end', jZ, this);
-    if (!jV) jU['unbind']('end', jZ, this);
+    j6(jy);
+  }
+  function ja(jA) {
+    var jB = this["getCurrentPlayers"]();
+    var jC = jB["length"];
+    while (jC-- > 0x0) {
+      var jE = jB[jC];
+      if (jE["get"]("viewerArea") != jA) {
+        jB["splice"](jC, 0x1);
+      }
+    }
+    for (jC = 0x0; jC < jB["length"]; ++jC) {
+      var jE = jB[jC];
+      jE["bind"]("preloadMediaShow", j8, this);
+      jE["bind"]("cameraPositionChange", j5, this);
+      jE["bind"]("userInteractionStart", j7, this);
+      if (jE["get"]("panorama")) j9(jE);
+    }
+    return jB;
+  }
+  function jb(jF) {
+    j9(this["getActivePlayerWithViewer"](jF["source"]));
+    j6(jk);
+  }
+  var jc = j1["get"]("children");
+  var jd = jc[0x0];
+  var je = jc[0x1];
+  var jf = jd["get"]("children")[0x0];
+  var jg = je["get"]("children")[0x0];
+  var jh = jc[0x2];
+  var ji, jj, jk;
+  var jl, jm;
+  ja["call"](this, jf);
+  ja["call"](this, jg);
+  jf["bind"]("mouseDown", jb, this);
+  jg["bind"]("mouseDown", jb, this);
+  j1["bind"](
+    "resize",
+    function () {
+      jh["set"](
+        "left",
+        (j1["get"]("actualWidth") - jh["get"]("actualWidth")) * 0.5
+      );
+      j2();
+    },
+    this
+  );
+  j2();
+};
+TDV["Tour"]["Script"]["isCardboardViewMode"] = function () {
+  var jG = this["getByClassName"]("PanoramaPlayer");
+  return jG["length"] > 0x0 && jG[0x0]["get"]("viewMode") == "cardboard";
+};
+TDV["Tour"]["Script"]["isPanorama"] = function (jH) {
+  return (
+    ["Panorama", "HDRPanorama", "LivePanorama", "Video360", "VideoPanorama"][
+      "indexOf"
+    ](jH["get"]("class")) != -0x1
+  );
+};
+TDV["Tour"]["Script"]["keepCompVisible"] = function (jI, jJ) {
+  var jK = "keepVisibility_" + jI["get"]("id");
+  var jL = this["getKey"](jK);
+  if (jL == undefined && jJ) {
+    this["registerKey"](jK, jJ);
+  } else if (jL != undefined && !jJ) {
+    this["unregisterKey"](jK);
+  }
+};
+TDV["Tour"]["Script"]["_initItemWithComps"] = function (
+  jM,
+  jN,
+  jO,
+  jP,
+  jQ,
+  jR,
+  jS,
+  jT
+) {
+  var jU = jM["get"]("items")[jN];
+  var jV = jU["get"]("media");
+  var jW = jV["get"]("loop") == undefined || jV["get"]("loop");
+  var jX = jT > 0x0;
+  var jY = this["rootPlayer"];
+  var jZ = function (k7) {
+    var k8 = jR ? jR["get"]("class") : undefined;
+    var k9 = undefined;
+    switch (k8) {
+      case "FadeInEffect":
+      case "FadeOutEffect":
+        k9 = jY["createInstance"](k7 ? "FadeInEffect" : "FadeOutEffect");
+        break;
+      case "SlideInEffect":
+      case "SlideOutEffect":
+        k9 = jY["createInstance"](k7 ? "SlideInEffect" : "SlideOutEffect");
+        break;
+    }
+    if (k9) {
+      k9["set"]("duration", jR["get"]("duration"));
+      k9["set"]("easing", jR["get"]("easing"));
+      if (k8["indexOf"]("Slide") != -0x1)
+        k9["set"](
+          k7 ? "from" : "to",
+          jR["get"](jR["get"]("class") == "SlideInEffect" ? "from" : "to")
+        );
+    }
+    return k9;
   };
   var k0 = function () {
-    jT['unbind']('stop', k0, this, !![]);
-    jT['unbind']('stop', k0, this);
-    jT['unbind']('begin', k0, this, !![]);
-    jT['unbind']('begin', k0, this);
-    for (var kd = 0x0, ke = jN['length']; kd < ke; ++kd) {
-      this['keepCompVisible'](jN[kd], ![]);
+    for (var ka = 0x0, kb = jO["length"]; ka < kb; ++ka) {
+      var kc = jO[ka];
+      if (jT > 0x0) {
+        this["setComponentVisibility"](kc, !jQ, 0x0, jZ(!jQ));
+      } else {
+        var kd = "visibility_" + kc["get"]("id");
+        if (this["existsKey"](kd)) {
+          if (this["getKey"](kd))
+            this["setComponentVisibility"](kc, !![], 0x0, jZ(!![]));
+          else this["setComponentVisibility"](kc, ![], 0x0, jZ(![]));
+          this["unregisterKey"](kd);
+        }
+      }
+    }
+    jU["unbind"]("end", k0, this);
+    if (!jW) jV["unbind"]("end", k0, this);
+  };
+  var k1 = function () {
+    jU["unbind"]("stop", k1, this, !![]);
+    jU["unbind"]("stop", k1, this);
+    jU["unbind"]("begin", k1, this, !![]);
+    jU["unbind"]("begin", k1, this);
+    for (var ke = 0x0, kf = jO["length"]; ke < kf; ++ke) {
+      this["keepCompVisible"](jO[ke], ![]);
     }
   };
-  var k1 = function (kf, kg, kh) {
-    var ki = function () {
-      var kj = function (kn, ko, kp) {
-        jX['setComponentVisibility'](kn, ko, kg, kp, ko ? 'showEffect' : 'hideEffect', ![]);
-        if (kh > 0x0) {
-          var kq = kg + kh + (kp != undefined ? kp['get']('duration') : 0x0);
-          jX['setComponentVisibility'](kn, !ko, kq, jY(!ko), ko ? 'hideEffect' : 'showEffect', !![]);
+  var k2 = function (kg, kh, ki) {
+    var kj = function () {
+      var kk = function (ko, kp, kq) {
+        jY["setComponentVisibility"](
+          ko,
+          kp,
+          kh,
+          kq,
+          kp ? "showEffect" : "hideEffect",
+          ![]
+        );
+        if (ki > 0x0) {
+          var kr = kh + ki + (kq != undefined ? kq["get"]("duration") : 0x0);
+          jY["setComponentVisibility"](
+            ko,
+            !kp,
+            kr,
+            jZ(!kp),
+            kp ? "hideEffect" : "showEffect",
+            !![]
+          );
         }
       };
-      for (var kk = 0x0, kl = jN['length']; kk < kl; ++kk) {
-        var km = jN[kk];
-        if (jP == 'toggle') {
-          if (!km['get']('visible')) kj(km, !![], jY(!![]));
-          else kj(km, ![], jY(![]));
+      for (var kl = 0x0, km = jO["length"]; kl < km; ++kl) {
+        var kn = jO[kl];
+        if (jQ == "toggle") {
+          if (!kn["get"]("visible")) kk(kn, !![], jZ(!![]));
+          else kk(kn, ![], jZ(![]));
         } else {
-          kj(km, jP, jY(jP));
+          kk(kn, jQ, jZ(jQ));
         }
       }
-      jT['unbind'](kf, ki, this);
-      if (kf == 'end' && !jV) jU['unbind'](kf, ki, this);
+      jU["unbind"](kg, kj, this);
+      if (kg == "end" && !jW) jV["unbind"](kg, kj, this);
     };
-    jT['bind'](kf, ki, this);
-    if (kf == 'end' && !jV) jU['bind'](kf, ki, this);
+    jU["bind"](kg, kj, this);
+    if (kg == "end" && !jW) jV["bind"](kg, kj, this);
   };
-  if (jO == 'begin') {
-    for (var k2 = 0x0, k3 = jN['length']; k2 < k3; ++k2) {
-      var k4 = jN[k2];
-      this['keepCompVisible'](k4, !![]);
-      if (jW) {
-        var k5 = 'visibility_' + k4['get']('id');
-        this['registerKey'](k5, k4['get']('visible'));
+  if (jP == "begin") {
+    for (var k3 = 0x0, k4 = jO["length"]; k3 < k4; ++k3) {
+      var k5 = jO[k3];
+      this["keepCompVisible"](k5, !![]);
+      if (jX) {
+        var k6 = "visibility_" + k5["get"]("id");
+        this["registerKey"](k6, k5["get"]("visible"));
       }
     }
-    jT['bind']('stop', k0, this, !![]);
-    jT['bind']('stop', k0, this);
-    jT['bind']('begin', k0, this, !![]);
-    jT['bind']('begin', k0, this);
-    if (jW) {
-      jT['bind']('end', jZ, this);
-      if (!jV) jU['bind']('end', jZ, this);
+    jU["bind"]("stop", k1, this, !![]);
+    jU["bind"]("stop", k1, this);
+    jU["bind"]("begin", k1, this, !![]);
+    jU["bind"]("begin", k1, this);
+    if (jX) {
+      jU["bind"]("end", k0, this);
+      if (!jW) jV["bind"]("end", k0, this);
     }
-  } else if (jO == 'end' && jS > 0x0) {
-    k1('begin', jS, 0x0);
-    jS = 0x0;
+  } else if (jP == "end" && jT > 0x0) {
+    k2("begin", jT, 0x0);
+    jT = 0x0;
   }
-  if (jO != undefined) k1(jO, jR, jS);
+  if (jP != undefined) k2(jP, jS, jT);
 };
-TDV['Tour']['Script']['loadFromCurrentMediaPlayList'] = function (kr, ks, kt) {
-  var ku = kr['get']('selectedIndex');
-  var kv = kr['get']('items')['length'];
-  var kw = (ku + ks) % kv;
-  while (kw < 0x0) {
-    kw = kv + kw;
+TDV["Tour"]["Script"]["loadFromCurrentMediaPlayList"] = function (ks, kt, ku) {
+  var kv = ks["get"]("selectedIndex");
+  var kw = ks["get"]("items")["length"];
+  var kx = (kv + kt) % kw;
+  while (kx < 0x0) {
+    kx = kw + kx;
   }
-  if (ku != kw) {
-    if (kt) {
-      var kx = kr['get']('items')[kw];
-      this['skip3DTransitionOnce'](kx['get']('player'));
+  if (kv != kx) {
+    if (ku) {
+      var ky = ks["get"]("items")[kx];
+      this["skip3DTransitionOnce"](ky["get"]("player"));
     }
-    kr['set']('selectedIndex', kw);
+    ks["set"]("selectedIndex", kx);
   }
 };
-TDV['Tour']['Script']['mixObject'] = function (ky, kz) {
-  return this['assignObjRecursively'](kz, this['copyObjRecursively'](ky));
+TDV["Tour"]["Script"]["mixObject"] = function (kz, kA) {
+  return this["assignObjRecursively"](kA, this["copyObjRecursively"](kz));
 };
-TDV['Tour']['Script']['downloadFile'] = function (kA) {
-  if ((navigator['userAgent']['toLowerCase']()['indexOf']('chrome') > -0x1 || navigator['userAgent']['toLowerCase']()['indexOf']('safari') > -0x1) && !/(iP)/g['test'](navigator['userAgent'])) {
-    var kB = document['createElement']('a');
-    kB['href'] = kA;
-    kB['setAttribute']('target', '_blank');
-    if (kB['download'] !== undefined) {
-      var kC = kA['substring'](kA['lastIndexOf']('/') + 0x1, kA['length']);
-      kB['download'] = kC;
+TDV["Tour"]["Script"]["downloadFile"] = function (kB) {
+  if (
+    (navigator["userAgent"]["toLowerCase"]()["indexOf"]("chrome") > -0x1 ||
+      navigator["userAgent"]["toLowerCase"]()["indexOf"]("safari") > -0x1) &&
+    !/(iP)/g["test"](navigator["userAgent"])
+  ) {
+    var kC = document["createElement"]("a");
+    kC["href"] = kB;
+    kC["setAttribute"]("target", "_blank");
+    if (kC["download"] !== undefined) {
+      var kD = kB["substring"](kB["lastIndexOf"]("/") + 0x1, kB["length"]);
+      kC["download"] = kD;
     }
-    if (document['createEvent']) {
-      var kD = document['createEvent']('MouseEvents');
-      kD['initEvent']('click', !![], !![]);
-      kB['dispatchEvent'](kD);
+    if (document["createEvent"]) {
+      var kE = document["createEvent"]("MouseEvents");
+      kE["initEvent"]("click", !![], !![]);
+      kC["dispatchEvent"](kE);
       return;
     }
   }
-  window['open'](kA, '_blank');
+  window["open"](kB, "_blank");
 };
-TDV['Tour']['Script']['openLink'] = function (kE, kF) {
-  if (!kE || kE == location['href']) {
+TDV["Tour"]["Script"]["openLink"] = function (kF, kG) {
+  if (!kF || kF == location["href"]) {
     return;
   }
-  if (!kF) kF = '_blank';
-  if (kF == '_top' || kF == '_self') {
-    this['updateDeepLink'](!![], !![], !![]);
+  if (!kG) kG = "_blank";
+  if (kG == "_top" || kG == "_self") {
+    this["updateDeepLink"](!![], !![], !![]);
   }
-  var kG = window && window['process'] && window['process']['versions'] && window['process']['versions']['electron'] || navigator && navigator['userAgent'] && navigator['userAgent']['indexOf']('Electron') >= 0x0;
-  if (kG && kF == '_blank') {
-    if (kE['startsWith']('files/')) {
-      kE = '/' + kE;
+  var kH =
+    (window &&
+      window["process"] &&
+      window["process"]["versions"] &&
+      window["process"]["versions"]["electron"]) ||
+    (navigator &&
+      navigator["userAgent"] &&
+      navigator["userAgent"]["indexOf"]("Electron") >= 0x0);
+  if (kH && kG == "_blank") {
+    if (kF["startsWith"]("files/")) {
+      kF = "/" + kF;
     }
-    if (kE['startsWith']('//')) {
-      kE = 'https:' + kE;
-    } else if (kE['startsWith']('/')) {
-      var kH = window['location']['href']['split']('/');
-      kH['pop']();
-      kE = kH['join']('/') + kE;
+    if (kF["startsWith"]("//")) {
+      kF = "https:" + kF;
+    } else if (kF["startsWith"]("/")) {
+      var kI = window["location"]["href"]["split"]("/");
+      kI["pop"]();
+      kF = kI["join"]("/") + kF;
     }
-    var kI = kE['split']('.')['pop']()['toLowerCase']();
-    if ((['pdf', 'zip', 'xls', 'xlsx']['indexOf'](kI) == -0x1 || kE['startsWith']('file://')) && window['hasOwnProperty']('require')) {
-      var kJ = window['require']('electron')['shell'];
-      kJ['openExternal'](kE);
+    var kJ = kF["split"](".")["pop"]()["toLowerCase"]();
+    if (
+      (["pdf", "zip", "xls", "xlsx"]["indexOf"](kJ) == -0x1 ||
+        kF["startsWith"]("file://")) &&
+      window["hasOwnProperty"]("require")
+    ) {
+      var kK = window["require"]("electron")["shell"];
+      kK["openExternal"](kF);
     } else {
-      window['open'](kE, kF);
+      window["open"](kF, kG);
     }
-  } else if (kG && (kF == '_top' || kF == '_self')) {
-    window['location'] = kE;
+  } else if (kH && (kG == "_top" || kG == "_self")) {
+    window["location"] = kF;
   } else {
-    var kK = this['get']('data')['tour'];
-    if (kK['isMobileApp']() && kK['isIOS']()) kE = 'blank:' + kE;
-    var kL = window['open'](kE, kF);
-    kL['focus']();
+    var kL = this["get"]("data")["tour"];
+    if (kL["isMobileApp"]() && kL["isIOS"]()) kF = "blank:" + kF;
+    var kM = window["open"](kF, kG);
+    kM["focus"]();
   }
 };
-TDV['Tour']['Script']['pauseCurrentPlayers'] = function (kM) {
-  var kN = this['getCurrentPlayers']();
-  var kO = kN['length'];
-  while (kO-- > 0x0) {
-    var kP = kN[kO];
-    if (kP['get']('state') == 'playing' || kP['get']('data') && kP['get']('data')['playing'] || kP['get']('viewerArea') && kP['get']('viewerArea')['get']('id') == this['getMainViewer']() || kP['get']('camera') && kP['get']('camera')['get']('idleSequence') && kP['get']('camera')['get']('timeToIdle') > 0x0 && kP['get']('state') == 'playing') {
-      var kQ = this['getMediaFromPlayer'](kP);
-      if (kM && kQ && kQ['get']('class') != 'Video360' && 'pauseCamera' in kP) {
-        kP['pauseCamera']();
+TDV["Tour"]["Script"]["pauseCurrentPlayers"] = function (kN) {
+  var kO = this["getCurrentPlayers"]();
+  var kP = kO["length"];
+  while (kP-- > 0x0) {
+    var kQ = kO[kP];
+    if (
+      kQ["get"]("state") == "playing" ||
+      (kQ["get"]("data") && kQ["get"]("data")["playing"]) ||
+      (kQ["get"]("viewerArea") &&
+        kQ["get"]("viewerArea")["get"]("id") == this["getMainViewer"]()) ||
+      (kQ["get"]("camera") &&
+        kQ["get"]("camera")["get"]("idleSequence") &&
+        kQ["get"]("camera")["get"]("timeToIdle") > 0x0 &&
+        kQ["get"]("state") == "playing")
+    ) {
+      var kR = this["getMediaFromPlayer"](kQ);
+      if (kN && kR && kR["get"]("class") != "Video360" && "pauseCamera" in kQ) {
+        kQ["pauseCamera"]();
       } else {
-        kP['pause']();
+        kQ["pause"]();
       }
     } else {
-      kN['splice'](kO, 0x1);
+      kO["splice"](kP, 0x1);
     }
   }
-  return kN;
+  return kO;
 };
-TDV['Tour']['Script']['pauseGlobalAudiosWhilePlayItem'] = function (kR, kS, kT) {
-  var kU = function () {
-    if (kR['get']('selectedIndex') != kS) {
-      this['resumeGlobalAudios']();
+TDV["Tour"]["Script"]["pauseGlobalAudiosWhilePlayItem"] = function (
+  kS,
+  kT,
+  kU
+) {
+  var kV = function () {
+    if (kS["get"]("selectedIndex") != kT) {
+      this["resumeGlobalAudios"]();
     }
   };
-  this['pauseGlobalAudios'](kT, !![]);
-  this['executeFunctionWhenChange'](kR, kS, kU, kU);
+  this["pauseGlobalAudios"](kU, !![]);
+  this["executeFunctionWhenChange"](kS, kT, kV, kV);
 };
-TDV['Tour']['Script']['pauseGlobalAudios'] = function (kV, kW) {
-  this['stopTextToSpeech']();
-  if (window['pausedAudiosLIFO'] == undefined) window['pausedAudiosLIFO'] = [];
-  var kX = this['getByClassName']('VideoPanoramaOverlay');
-  kX = kX['concat'](this['getByClassName']('QuadVideoPanoramaOverlay'));
-  for (var kZ = kX['length'] - 0x1; kZ >= 0x0; --kZ) {
-    var l0 = kX[kZ];
-    if (l0['get']('video')['get']('hasAudio') == ![]) kX['splice'](kZ, 0x1);
+TDV["Tour"]["Script"]["pauseGlobalAudios"] = function (kW, kX) {
+  this["stopTextToSpeech"]();
+  if (window["pausedAudiosLIFO"] == undefined) window["pausedAudiosLIFO"] = [];
+  var kY = this["getByClassName"]("VideoPanoramaOverlay");
+  kY = kY["concat"](this["getByClassName"]("QuadVideoPanoramaOverlay"));
+  for (var l0 = kY["length"] - 0x1; l0 >= 0x0; --l0) {
+    var l1 = kY[l0];
+    if (l1["get"]("video")["get"]("hasAudio") == ![]) kY["splice"](l0, 0x1);
   }
-  var l1 = this['getByClassName']('Audio')['concat'](kX);
-  var l2 = {};
-  if (window['currentGlobalAudios'] != undefined) l1 = l1['concat'](Object['values'](window['currentGlobalAudios'])['map'](function (l6) {
-    if (!l6['allowResume']) l2[l6['audio']['get']('id')] = l6['audio'];
-    return l6['audio'];
-  }));
-  var l3 = [];
-  for (var kZ = 0x0, l4 = l1['length']; kZ < l4; ++kZ) {
-    var l5 = l1[kZ];
-    if (l5 && l5['get']('state') == 'playing' && (kV == undefined || kV['indexOf'](l5) == -0x1)) {
-      if (l5['get']('id') in l2) {
-        l5['stop']();
+  var l2 = this["getByClassName"]("Audio")["concat"](kY);
+  var l3 = {};
+  if (window["currentGlobalAudios"] != undefined)
+    l2 = l2["concat"](
+      Object["values"](window["currentGlobalAudios"])["map"](function (l7) {
+        if (!l7["allowResume"]) l3[l7["audio"]["get"]("id")] = l7["audio"];
+        return l7["audio"];
+      })
+    );
+  var l4 = [];
+  for (var l0 = 0x0, l5 = l2["length"]; l0 < l5; ++l0) {
+    var l6 = l2[l0];
+    if (
+      l6 &&
+      l6["get"]("state") == "playing" &&
+      (kW == undefined || kW["indexOf"](l6) == -0x1)
+    ) {
+      if (l6["get"]("id") in l3) {
+        l6["stop"]();
       } else {
-        l5['pause']();
-        l3['push'](l5);
+        l6["pause"]();
+        l4["push"](l6);
       }
     }
   }
-  if (kW || l3['length'] > 0x0) window['pausedAudiosLIFO']['push'](l3);
-  return l3;
+  if (kX || l4["length"] > 0x0) window["pausedAudiosLIFO"]["push"](l4);
+  return l4;
 };
-TDV['Tour']['Script']['resumeGlobalAudios'] = function () {
-  if (window['pausedAudiosLIFO'] == undefined) return;
-  if (window['resumeAudiosBlocked']) {
-    if (window['pausedAudiosLIFO']['length'] > 0x1) {
-      window['pausedAudiosLIFO'][window['pausedAudiosLIFO']['length'] - 0x2] = window['pausedAudiosLIFO'][window['pausedAudiosLIFO']['length'] - 0x2]['concat'](window['pausedAudiosLIFO'][window['pausedAudiosLIFO']['length'] - 0x1]);
-      window['pausedAudiosLIFO']['splice'](window['pausedAudiosLIFO']['length'] - 0x1, 0x1);
+TDV["Tour"]["Script"]["resumeGlobalAudios"] = function () {
+  if (window["pausedAudiosLIFO"] == undefined) return;
+  if (window["resumeAudiosBlocked"]) {
+    if (window["pausedAudiosLIFO"]["length"] > 0x1) {
+      window["pausedAudiosLIFO"][window["pausedAudiosLIFO"]["length"] - 0x2] =
+        window["pausedAudiosLIFO"][window["pausedAudiosLIFO"]["length"] - 0x2][
+          "concat"
+        ](
+          window["pausedAudiosLIFO"][window["pausedAudiosLIFO"]["length"] - 0x1]
+        );
+      window["pausedAudiosLIFO"]["splice"](
+        window["pausedAudiosLIFO"]["length"] - 0x1,
+        0x1
+      );
     }
     return;
   }
-  var l7 = window['pausedAudiosLIFO']['pop']();
-  if (!l7) return;
-  for (var l8 = 0x0, l9 = l7['length']; l8 < l9; ++l8) {
-    var la = l7[l8];
-    if (la['get']('state') == 'paused') la['play']();
+  var l8 = window["pausedAudiosLIFO"]["pop"]();
+  if (!l8) return;
+  for (var l9 = 0x0, la = l8["length"]; l9 < la; ++l9) {
+    var lb = l8[l9];
+    if (lb["get"]("state") == "paused") lb["play"]();
   }
 };
-TDV['Tour']['Script']['pauseGlobalAudio'] = function (lb) {
-  var lc = window['currentGlobalAudios'];
-  if (lc) {
-    var ld = lc[lb['get']('id')];
-    if (ld) lb = ld['audio'];
+TDV["Tour"]["Script"]["pauseGlobalAudio"] = function (lc) {
+  var ld = window["currentGlobalAudios"];
+  if (ld) {
+    var le = ld[lc["get"]("id")];
+    if (le) lc = le["audio"];
   }
-  if (lb['get']('state') == 'playing') lb['pause']();
+  if (lc["get"]("state") == "playing") lc["pause"]();
 };
-TDV['Tour']['Script']['playAudioList'] = function (le, lf) {
-  if (le['length'] == 0x0) return;
-  if (le['length'] == 0x1 && lf) {
-    var lg = le[0x0];
-    lg['set']('loop', !![]);
-    this['playGlobalAudio'](lg, !![], null, !![]);
+TDV["Tour"]["Script"]["playAudioList"] = function (lf, lg) {
+  if (lf["length"] == 0x0) return;
+  if (lf["length"] == 0x1 && lg) {
+    var lh = lf[0x0];
+    lh["set"]("loop", !![]);
+    this["playGlobalAudio"](lh, !![], null, !![]);
   } else {
-    var lh = -0x1;
-    var li;
-    var lj = this['playGlobalAudio'];
-    var lk = function () {
-      if (++lh >= le['length']) {
-        if (!lf) return;
-        lh = 0x0;
+    var li = -0x1;
+    var lj;
+    var lk = this["playGlobalAudio"];
+    var ll = function () {
+      if (++li >= lf["length"]) {
+        if (!lg) return;
+        li = 0x0;
       }
-      li = le[lh];
-      lj(li, !![], lk, !![]);
+      lj = lf[li];
+      lk(lj, !![], ll, !![]);
     };
-    lk();
+    ll();
   }
 };
-TDV['Tour']['Script']['playGlobalAudioWhilePlayActiveMedia'] = function (ll, lm, ln, lo) {
-  var lp = this['getActiveMediaWithViewer'](this['getMainViewer']());
-  var lq = this['getFirstPlayListWithMedia'](lp, !![]);
-  var lr = this['getPlayListItemByMedia'](lq, lp);
-  var ls = lq['get']('items')['indexOf'](lr);
-  return this['playGlobalAudioWhilePlay'](lq, ls, ll, lm, ln, lo);
+TDV["Tour"]["Script"]["playGlobalAudioWhilePlayActiveMedia"] = function (
+  lm,
+  ln,
+  lo,
+  lp
+) {
+  var lq = this["getActiveMediaWithViewer"](this["getMainViewer"]());
+  var lr = this["getFirstPlayListWithMedia"](lq, !![]);
+  var ls = this["getPlayListItemByMedia"](lr, lq);
+  var lt = lr["get"]("items")["indexOf"](ls);
+  return this["playGlobalAudioWhilePlay"](lr, lt, lm, ln, lo, lp);
 };
-TDV['Tour']['Script']['playGlobalAudioWhilePlay'] = function (lt, lu, lv, lw, lx, ly) {
-  var lz = function (lI) {
-    if (lI['data']['previousSelectedIndex'] == lu) {
-      this['stopGlobalAudio'](lv);
-      if (lD) {
-        var lJ = lC['get']('media');
-        var lK = lJ['get']('audios');
-        lK['splice'](lK['indexOf'](lv), 0x1);
-        lJ['set']('audios', lK);
+TDV["Tour"]["Script"]["playGlobalAudioWhilePlay"] = function (
+  lu,
+  lv,
+  lw,
+  lx,
+  ly,
+  lz
+) {
+  var lA = function (lJ) {
+    if (lJ["data"]["previousSelectedIndex"] == lv) {
+      this["stopGlobalAudio"](lw);
+      if (lE) {
+        var lK = lD["get"]("media");
+        var lL = lK["get"]("audios");
+        lL["splice"](lL["indexOf"](lw), 0x1);
+        lK["set"]("audios", lL);
       }
-      lt['unbind']('change', lz, this);
-      if (lx) lx();
+      lu["unbind"]("change", lA, this);
+      if (ly) ly();
     }
   };
-  var lB = window['currentGlobalAudios'];
-  if (lB && lv['get']('id') in lB) {
-    lv = lB[lv['get']('id')]['audio'];
-    if (lv['get']('state') != 'playing') {
-      lv['play']();
+  var lC = window["currentGlobalAudios"];
+  if (lC && lw["get"]("id") in lC) {
+    lw = lC[lw["get"]("id")]["audio"];
+    if (lw["get"]("state") != "playing") {
+      lw["play"]();
     }
-    return lv;
+    return lw;
   }
-  lt['bind']('change', lz, this);
-  var lC = lt['get']('items')[lu];
-  var lD = lC['get']('class') == 'PanoramaPlayListItem';
-  if (lD) {
-    var lE = lC['get']('media');
-    var lB = (lE['get']('audios') || [])['slice']();
-    if (lv['get']('class') == 'MediaAudio') {
-      var lF = this['rootPlayer']['createInstance']('PanoramaAudio');
-      lF['set']('autoplay', ![]);
-      lF['set']('audio', lv['get']('audio'));
-      lF['set']('loop', lv['get']('loop'));
-      lF['set']('id', lv['get']('id'));
-      this['cloneBindings'](lv, lF, 'end');
-      this['cloneBindings'](lv, lF, 'stateChange');
-      lv = lF;
+  lu["bind"]("change", lA, this);
+  var lD = lu["get"]("items")[lv];
+  var lE = lD["get"]("class") == "PanoramaPlayListItem";
+  if (lE) {
+    var lF = lD["get"]("media");
+    var lC = (lF["get"]("audios") || [])["slice"]();
+    if (lw["get"]("class") == "MediaAudio") {
+      var lG = this["rootPlayer"]["createInstance"]("PanoramaAudio");
+      lG["set"]("autoplay", ![]);
+      lG["set"]("audio", lw["get"]("audio"));
+      lG["set"]("loop", lw["get"]("loop"));
+      lG["set"]("id", lw["get"]("id"));
+      this["cloneBindings"](lw, lG, "end");
+      this["cloneBindings"](lw, lG, "stateChange");
+      lw = lG;
     }
-    lB['push'](lv);
-    lE['set']('audios', lB);
+    lC["push"](lw);
+    lF["set"]("audios", lC);
   }
-  var lG = this['playGlobalAudio'](lv, lw, function () {
-    lt['unbind']('change', lz, this);
-    if (lx) lx['call'](this);
+  var lH = this["playGlobalAudio"](lw, lx, function () {
+    lu["unbind"]("change", lA, this);
+    if (ly) ly["call"](this);
   });
-  if (ly === !![]) {
-    var lH = function () {
-      if (lG['get']('state') == 'playing') {
-        this['pauseGlobalAudios']([lG], !![]);
-      } else if (lG['get']('state') == 'stopped') {
-        this['resumeGlobalAudios']();
-        lG['unbind']('stateChange', lH, this);
+  if (lz === !![]) {
+    var lI = function () {
+      if (lH["get"]("state") == "playing") {
+        this["pauseGlobalAudios"]([lH], !![]);
+      } else if (lH["get"]("state") == "stopped") {
+        this["resumeGlobalAudios"]();
+        lH["unbind"]("stateChange", lI, this);
       }
     };
-    lG['bind']('stateChange', lH, this);
+    lH["bind"]("stateChange", lI, this);
   }
-  return lG;
+  return lH;
 };
-TDV['Tour']['Script']['playGlobalAudio'] = function (lL, lM, lN, lO) {
-  var lP = function () {
-    lL['unbind']('end', lP, this);
-    this['stopGlobalAudio'](lL);
-    if (lN) lN['call'](this);
+TDV["Tour"]["Script"]["playGlobalAudio"] = function (lM, lN, lO, lP) {
+  var lQ = function () {
+    lM["unbind"]("end", lQ, this);
+    this["stopGlobalAudio"](lM);
+    if (lO) lO["call"](this);
   };
-  lL = this['getGlobalAudio'](lL);
-  var lQ = window['currentGlobalAudios'];
-  if (!lQ) {
-    lQ = window['currentGlobalAudios'] = {};
+  lM = this["getGlobalAudio"](lM);
+  var lR = window["currentGlobalAudios"];
+  if (!lR) {
+    lR = window["currentGlobalAudios"] = {};
   }
-  lQ[lL['get']('id')] = {
-    'audio': lL,
-    'asBackground': lO || ![],
-    'allowResume': lM
-  };
-  if (lL['get']('state') == 'playing') {
-    return lL;
+  lR[lM["get"]("id")] = { audio: lM, asBackground: lP || ![], allowResume: lN };
+  if (lM["get"]("state") == "playing") {
+    return lM;
   }
-  if (!lL['get']('loop')) {
-    lL['bind']('end', lP, this);
+  if (!lM["get"]("loop")) {
+    lM["bind"]("end", lQ, this);
   }
-  lL['play']();
-  return lL;
+  lM["play"]();
+  return lM;
 };
-TDV['Tour']['Script']['restartTourWithoutInteraction'] = function (lR) {
-  var lS = -0x1;
-  this['bind']('userInteraction', lT, this);
-  lT();
-
-  function lT() {
-    if (lS != -0x1) clearTimeout(lS);
-    lS = setTimeout(function () {
-      location['reload']();
-    }, lR * 0x3e8);
+TDV["Tour"]["Script"]["restartTourWithoutInteraction"] = function (lS) {
+  var lT = -0x1;
+  this["bind"]("userInteraction", lU["bind"](this), this);
+  lU();
+  function lU() {
+    if (lT != -0x1) clearTimeout(lT);
+    lT = setTimeout(
+      function () {
+        var lV = this["get"]("data")["tour"];
+        if (lV) lV["reload"]();
+      }["bind"](this),
+      lS * 0x3e8
+    );
   }
 };
-TDV['Tour']['Script']['resumePlayers'] = function (lU, lV) {
-  for (var lW = 0x0; lW < lU['length']; ++lW) {
-    var lX = lU[lW];
-    var lY = this['getMediaFromPlayer'](lX);
-    if (!lY) continue;
-    if (lV && lY['get']('class') != 'Video360' && 'pauseCamera' in lX) {
-      lX['resumeCamera']();
-    } else if (lX['get']('state') != 'playing') {
-      var lZ = lX['get']('data');
-      if (!lZ) {
-        lZ = {};
-        lX['set']('data', lZ);
+TDV["Tour"]["Script"]["resumePlayers"] = function (lW, lX) {
+  for (var lY = 0x0; lY < lW["length"]; ++lY) {
+    var lZ = lW[lY];
+    var m0 = this["getMediaFromPlayer"](lZ);
+    if (!m0) continue;
+    if (lX && m0["get"]("class") != "Video360" && "pauseCamera" in lZ) {
+      lZ["resumeCamera"]();
+    } else if (lZ["get"]("state") != "playing") {
+      var m1 = lZ["get"]("data");
+      if (!m1) {
+        m1 = {};
+        lZ["set"]("data", m1);
       }
-      lZ['playing'] = !![];
-      var m0 = function () {
-        if (lX['get']('state') == 'playing') {
-          delete lZ['playing'];
-          lX['unbind']('stateChange', m0, this);
+      m1["playing"] = !![];
+      var m2 = function () {
+        if (lZ["get"]("state") == "playing") {
+          delete m1["playing"];
+          lZ["unbind"]("stateChange", m2, this);
         }
       };
-      lX['bind']('stateChange', m0, this);
-      lX['play']();
+      lZ["bind"]("stateChange", m2, this);
+      lZ["play"]();
     }
   }
 };
-TDV['Tour']['Script']['stopGlobalAudios'] = function (m1) {
-  var m2 = window['currentGlobalAudios'];
-  var m3 = this;
-  if (m2) {
-    Object['keys'](m2)['forEach'](function (m4) {
-      var m5 = m2[m4];
-      if (!m1 || m1 && !m5['asBackground']) {
-        m3['stopGlobalAudio'](m5['audio']);
+TDV["Tour"]["Script"]["stopGlobalAudios"] = function (m3) {
+  var m4 = window["currentGlobalAudios"];
+  var m5 = this;
+  if (m4) {
+    Object["keys"](m4)["forEach"](function (m6) {
+      var m7 = m4[m6];
+      if (!m3 || (m3 && !m7["asBackground"])) {
+        m5["stopGlobalAudio"](m7["audio"]);
       }
     });
   }
 };
-TDV['Tour']['Script']['stopGlobalAudio'] = function (m6) {
-  var m7 = window['currentGlobalAudios'];
-  if (m7) {
-    var m8 = m7[m6['get']('id')];
-    if (m8) {
-      m6 = m8['audio'];
-      delete m7[m6['get']('id')];
-      if (Object['keys'](m7)['length'] == 0x0) {
-        window['currentGlobalAudios'] = undefined;
+TDV["Tour"]["Script"]["stopGlobalAudio"] = function (m8) {
+  var m9 = window["currentGlobalAudios"];
+  if (m9) {
+    var ma = m9[m8["get"]("id")];
+    if (ma) {
+      m8 = ma["audio"];
+      delete m9[m8["get"]("id")];
+      if (Object["keys"](m9)["length"] == 0x0) {
+        window["currentGlobalAudios"] = undefined;
       }
     }
   }
-  if (m6) m6['stop']();
+  if (m8) m8["stop"]();
 };
-TDV['Tour']['Script']['setCameraSameSpotAsMedia'] = function (m9, ma) {
-  var mb = this['getCurrentPlayerWithMedia'](ma);
-  if (mb != undefined) {
-    var mc = m9['get']('initialPosition');
-    mc['set']('yaw', mb['get']('yaw'));
-    mc['set']('pitch', mb['get']('pitch'));
-    mc['set']('hfov', mb['get']('hfov'));
+TDV["Tour"]["Script"]["setCameraSameSpotAsMedia"] = function (mb, mc) {
+  var md = this["getCurrentPlayerWithMedia"](mc);
+  if (md != undefined) {
+    var me = mb["get"]("initialPosition");
+    me["set"]("yaw", md["get"]("yaw"));
+    me["set"]("pitch", md["get"]("pitch"));
+    me["set"]("hfov", md["get"]("hfov"));
   }
 };
-TDV['Tour']['Script']['setComponentVisibility'] = function (md, me, mf, mg, mh, mi) {
-  var mj = this['getKey']('keepVisibility_' + md['get']('id'));
-  if (mj) return;
-  this['unregisterKey']('visibility_' + md['get']('id'));
-  var mk = function () {
-    if (mh) {
-      md['set'](mh, mg);
+TDV["Tour"]["Script"]["setComponentVisibility"] = function (
+  mf,
+  mg,
+  mh,
+  mi,
+  mj,
+  mk
+) {
+  var ml = this["getKey"]("keepVisibility_" + mf["get"]("id"));
+  if (ml) return;
+  this["unregisterKey"]("visibility_" + mf["get"]("id"));
+  var mm = function () {
+    if (mj) {
+      mf["set"](mj, mi);
     }
-    md['set']('visible', me);
-    if (md['get']('class') == 'ViewerArea') {
+    mf["set"]("visible", mg);
+    if (mf["get"]("class") == "ViewerArea") {
       try {
-        if (me) md['restart']();
-        else if (md['get']('playbackState') == 'playing') md['pause']();
-      } catch (mp) { };
+        if (mg) mf["restart"]();
+        else if (mf["get"]("playbackState") == "playing") mf["pause"]();
+      } catch (mr) { }
     }
   };
-  var ml = 'effectTimeout_' + md['get']('id');
-  if (!mi && window['hasOwnProperty'](ml)) {
-    var mn = window[ml];
-    if (mn instanceof Array) {
-      for (var mo = 0x0; mo < mn['length']; mo++) {
-        clearTimeout(mn[mo]);
+  var mn = "effectTimeout_" + mf["get"]("id");
+  if (!mk && window["hasOwnProperty"](mn)) {
+    var mp = window[mn];
+    if (mp instanceof Array) {
+      for (var mq = 0x0; mq < mp["length"]; mq++) {
+        clearTimeout(mp[mq]);
       }
     } else {
-      clearTimeout(mn);
+      clearTimeout(mp);
     }
-    delete window[ml];
-  } else if (me == md['get']('visible') && !mi) return;
-  if (mf && mf > 0x0) {
-    var mn = setTimeout(function () {
-      if (window[ml] instanceof Array) {
-        var mq = window[ml];
-        var mr = mq['indexOf'](mn);
-        mq['splice'](mr, 0x1);
-        if (mq['length'] == 0x0) {
-          delete window[ml];
+    delete window[mn];
+  } else if (mg == mf["get"]("visible") && !mk) return;
+  if (mh && mh > 0x0) {
+    var mp = setTimeout(function () {
+      if (window[mn] instanceof Array) {
+        var ms = window[mn];
+        var mt = ms["indexOf"](mp);
+        ms["splice"](mt, 0x1);
+        if (ms["length"] == 0x0) {
+          delete window[mn];
         }
       } else {
-        delete window[ml];
+        delete window[mn];
       }
-      mk();
-    }, mf);
-    if (window['hasOwnProperty'](ml)) {
-      window[ml] = [window[ml], mn];
+      mm();
+    }, mh);
+    if (window["hasOwnProperty"](mn)) {
+      window[mn] = [window[mn], mp];
     } else {
-      window[ml] = mn;
+      window[mn] = mp;
     }
   } else {
-    mk();
+    mm();
   }
 };
-TDV['Tour']['Script']['setDirectionalPanoramaAudio'] = function (ms, mt, mu, mv) {
-  ms['set']('yaw', mt);
-  ms['set']('pitch', mu);
-  ms['set']('maximumAngle', mv);
+TDV["Tour"]["Script"]["setDirectionalPanoramaAudio"] = function (
+  mu,
+  mv,
+  mw,
+  mx
+) {
+  mu["set"]("yaw", mv);
+  mu["set"]("pitch", mw);
+  mu["set"]("maximumAngle", mx);
 };
-TDV['Tour']['Script']['setLocale'] = function (mw) {
-  this['stopTextToSpeech']();
-  var mx = this['get']('data')['localeManager'];
-  if (mx) this['get']('data')['localeManager']['setLocale'](mw);
+TDV["Tour"]["Script"]["setLocale"] = function (my) {
+  this["stopTextToSpeech"]();
+  var mz = this["get"]("data")["localeManager"];
+  if (mz) this["get"]("data")["localeManager"]["setLocale"](my);
   else {
-    this['get']('data')['defaultLocale'] = mw;
-    this['get']('data')['forceDefaultLocale'] = !![];
+    this["get"]("data")["defaultLocale"] = my;
+    this["get"]("data")["forceDefaultLocale"] = !![];
   }
 };
-TDV['Tour']['Script']['setEndToItemIndex'] = function (my, mz, mA) {
-  var mB = function () {
-    if (my['get']('selectedIndex') == mz) {
-      var mC = my['get']('items')[mA];
-      this['skip3DTransitionOnce'](mC['get']('player'));
-      my['set']('selectedIndex', mA);
+TDV["Tour"]["Script"]["setEndToItemIndex"] = function (mA, mB, mC) {
+  var mD = function () {
+    if (mA["get"]("selectedIndex") == mB) {
+      var mE = mA["get"]("items")[mC];
+      this["skip3DTransitionOnce"](mE["get"]("player"));
+      mA["set"]("selectedIndex", mC);
     }
   };
-  this['executeFunctionWhenChange'](my, mz, mB);
+  this["executeFunctionWhenChange"](mA, mB, mD);
 };
-TDV['Tour']['Script']['setMapLocation'] = function (mD, mE) {
-  var mF = function () {
-    mD['unbind']('stop', mF, this);
-    mG['set']('mapPlayer', null);
+TDV["Tour"]["Script"]["setMapLocation"] = function (mF, mG) {
+  var mH = function () {
+    mF["unbind"]("stop", mH, this);
+    mI["set"]("mapPlayer", null);
   };
-  mD['bind']('stop', mF, this);
-  var mG = mD['get']('player');
-  mG['set']('mapPlayer', mE);
+  mF["bind"]("stop", mH, this);
+  var mI = mF["get"]("player");
+  mI["set"]("mapPlayer", mG);
 };
-TDV['Tour']['Script']['setMainMediaByIndex'] = function (mH) {
-  var mI = undefined;
-  if (mH >= 0x0 && mH < this['mainPlayList']['get']('items')['length']) {
-    this['mainPlayList']['set']('selectedIndex', mH);
-    mI = this['mainPlayList']['get']('items')[mH];
+TDV["Tour"]["Script"]["setMainMediaByIndex"] = function (mJ) {
+  var mK = undefined;
+  if (mJ >= 0x0 && mJ < this["mainPlayList"]["get"]("items")["length"]) {
+    this["mainPlayList"]["set"]("selectedIndex", mJ);
+    mK = this["mainPlayList"]["get"]("items")[mJ];
   }
-  return mI;
+  return mK;
 };
-TDV['Tour']['Script']['setMainMediaByName'] = function (mJ) {
-  var mK = this['getMainViewer']();
-  var mL = this['_getPlayListsWithViewer'](mK);
-  for (var mM = 0x0, mN = mL['length']; mM < mN; ++mM) {
-    var mO = mL[mM];
-    var mP = mO['get']('items');
-    for (var mQ = 0x0, mR = mP['length']; mQ < mR; ++mQ) {
-      var mS = mP[mQ];
-      var mT = mS['get']('media')['get']('data');
-      if (mT !== undefined && mT['label'] == mJ && mS['get']('player')['get']('viewerArea') == mK) {
-        mO['set']('selectedIndex', mQ);
-        return mS;
+TDV["Tour"]["Script"]["setMainMediaByName"] = function (mL) {
+  var mM = this["getMainViewer"]();
+  var mN = this["_getPlayListsWithViewer"](mM);
+  for (var mO = 0x0, mP = mN["length"]; mO < mP; ++mO) {
+    var mQ = mN[mO];
+    var mR = mQ["get"]("items");
+    for (var mS = 0x0, mT = mR["length"]; mS < mT; ++mS) {
+      var mU = mR[mS];
+      var mV = mU["get"]("media")["get"]("data");
+      if (
+        mV !== undefined &&
+        mV["label"] == mL &&
+        mU["get"]("player")["get"]("viewerArea") == mM
+      ) {
+        mQ["set"]("selectedIndex", mS);
+        return mU;
       }
     }
   }
 };
-TDV['Tour']['Script']['executeAudioAction'] = function (mU, mV, mW, mX, mY, mZ) {
-  if (mU['length'] == 0x0) return;
-  var n0, n1;
-  var n2 = this['getMainViewer']();
-  if (mW && !(mW === !![])) {
-    var n3 = this['getPlayListsWithMedia'](mW);
-    for (var n4 = 0x0; n4 < n3['length']; ++n4) {
-      var n5 = n3[n4];
-      var n7 = this['getPlayListItemByMedia'](n5, mW);
-      if (n7 && n7['get']('player') && n7['get']('player')['get']('viewerArea') == n2) {
-        n0 = n5;
-        n1 = n0['get']('items')['indexOf'](n7);
+TDV["Tour"]["Script"]["executeAudioAction"] = function (
+  mW,
+  mX,
+  mY,
+  mZ,
+  n0,
+  n1
+) {
+  if (mW["length"] == 0x0) return;
+  var n2, n3;
+  var n4 = this["getMainViewer"]();
+  if (mY && !(mY === !![])) {
+    var n5 = this["getPlayListsWithMedia"](mY);
+    for (var n6 = 0x0; n6 < n5["length"]; ++n6) {
+      var n7 = n5[n6];
+      var n9 = this["getPlayListItemByMedia"](n7, mY);
+      if (
+        n9 &&
+        n9["get"]("player") &&
+        n9["get"]("player")["get"]("viewerArea") == n4
+      ) {
+        n2 = n7;
+        n3 = n2["get"]("items")["indexOf"](n9);
         break;
       }
     }
-    if (!n0 && n3['length'] > 0x0) {
-      n0 = n3[0x0];
-      n1 = this['getPlayListItemIndexByMedia'](n0, mW);
+    if (!n2 && n5["length"] > 0x0) {
+      n2 = n5[0x0];
+      n3 = this["getPlayListItemIndexByMedia"](n2, mY);
     }
-    if (!n0) mW = !![];
+    if (!n2) mY = !![];
   }
-  if (mW === !![]) {
-    var n8 = this['getActiveMediaWithViewer'](n2);
-    if (n8) {
-      n0 = this['getFirstPlayListWithMedia'](n8, !![]);
-      var n7 = this['getPlayListItemByMedia'](n0, n8);
-      n1 = n0['get']('items')['indexOf'](n7);
+  if (mY === !![]) {
+    var na = this["getActiveMediaWithViewer"](n4);
+    if (na) {
+      n2 = this["getFirstPlayListWithMedia"](na, !![]);
+      var n9 = this["getPlayListItemByMedia"](n2, na);
+      n3 = n2["get"]("items")["indexOf"](n9);
     } else {
-      mW = null;
+      mY = null;
     }
   }
-  var n9 = [];
-  var na = function () {
-    var ni = n9['concat']();
-    var nj = ![];
-    var nk = function (nn) {
-      var no = nn['source']['get']('state');
-      if (no == 'playing') {
-        if (!nj) {
-          nj = !![];
-          this['pauseGlobalAudios'](n9, !![]);
-        }
-      } else if (no == 'stopped') {
-        ni['splice'](ni['indexOf'](nn['source']), 0x1);
-        if (ni['length'] == 0x0) {
-          this['resumeGlobalAudios']();
-        }
-        nn['source']['unbind']('stateChange', nk, this);
-      }
-    }['bind'](this);
-    for (var nl = 0x0, nm = n9['length']; nl < nm; ++nl) {
-      n9[nl]['bind']('stateChange', nk, this);
-    }
-  }['bind'](this);
-  var nb = function () {
-    for (var np = 0x0, nq = mU['length']; np < nq; ++np) {
-      var nr = mU[np];
-      n9['push'](this['playGlobalAudio'](nr, mX));
-    }
-    if (mY) na();
-  }['bind'](this);
+  var nb = [];
   var nc = function () {
-    for (var ns = 0x0, nt = mU['length']; ns < nt; ++ns) {
-      var nu = mU[ns];
-      n9['push'](this['playGlobalAudioWhilePlay'](n0, n1, nu, mX));
+    var nk = nb["concat"]();
+    var nl = ![];
+    var nm = function (np) {
+      var nq = np["source"]["get"]("state");
+      if (nq == "playing") {
+        if (!nl) {
+          nl = !![];
+          this["pauseGlobalAudios"](nb, !![]);
+        }
+      } else if (nq == "stopped") {
+        nk["splice"](nk["indexOf"](np["source"]), 0x1);
+        if (nk["length"] == 0x0) {
+          this["resumeGlobalAudios"]();
+        }
+        np["source"]["unbind"]("stateChange", nm, this);
+      }
+    }["bind"](this);
+    for (var nn = 0x0, no = nb["length"]; nn < no; ++nn) {
+      nb[nn]["bind"]("stateChange", nm, this);
     }
-    if (mY) na();
-  }['bind'](this);
+  }["bind"](this);
   var nd = function () {
-    for (var nv = 0x0, nw = mU['length']; nv < nw; ++nv) {
-      this['pauseGlobalAudio'](mU[nv]);
+    for (var nr = 0x0, ns = mW["length"]; nr < ns; ++nr) {
+      var nt = mW[nr];
+      nb["push"](this["playGlobalAudio"](nt, mZ));
     }
-  }['bind'](this);
+    if (n0) nc();
+  }["bind"](this);
   var ne = function () {
-    for (var nx = 0x0, ny = mU['length']; nx < ny; ++nx) {
-      this['stopGlobalAudio'](mU[nx]);
+    for (var nu = 0x0, nv = mW["length"]; nu < nv; ++nu) {
+      var nw = mW[nu];
+      nb["push"](this["playGlobalAudioWhilePlay"](n2, n3, nw, mZ));
     }
-  }['bind'](this);
+    if (n0) nc();
+  }["bind"](this);
   var nf = function () {
-    for (var nz = 0x0, nA = mU['length']; nz < nA; ++nz) {
-      if (this['getGlobalAudio'](mU[nz])['get']('state') == 'playing') return !![];
+    for (var nx = 0x0, ny = mW["length"]; nx < ny; ++nx) {
+      this["pauseGlobalAudio"](mW[nx]);
+    }
+  }["bind"](this);
+  var ng = function () {
+    for (var nz = 0x0, nA = mW["length"]; nz < nA; ++nz) {
+      this["stopGlobalAudio"](mW[nz]);
+    }
+  }["bind"](this);
+  var nh = function () {
+    for (var nB = 0x0, nC = mW["length"]; nB < nC; ++nB) {
+      if (this["getGlobalAudio"](mW[nB])["get"]("state") == "playing")
+        return !![];
     }
     return ![];
-  }['bind'](this);
-  if (mV == 'playPause' || mV == 'playStop') {
-    if (nf()) {
-      if (mV == 'playPause') {
-        nd();
-      } else if (mV == 'playStop') {
-        ne();
+  }["bind"](this);
+  if (mX == "playPause" || mX == "playStop") {
+    if (nh()) {
+      if (mX == "playPause") {
+        nf();
+      } else if (mX == "playStop") {
+        ng();
       }
     } else {
-      if (mY) {
-        if (mV == 'playStop') {
-          this['stopGlobalAudios'](!![]);
-        }
-      }
       if (n0) {
-        nc();
-      } else {
-        nb();
-      }
-    }
-  } else if (mV == 'play') {
-    if (n0 || mW === !![]) {
-      if (mZ) {
-        var ng = n0 ? n0['get']('items')[n1]['get']('player') : this['getActivePlayerWithViewer'](this['getMainViewer']());
-        if (ng && ng['pauseCamera']) {
-          var nh = mU['concat']();
-          endCallback = function (nB) {
-            nh['splice'](nh['indexOf'](nB), 0x1);
-            if (nh['length'] == 0x0) ng['resumeCamera']();
-          }['bind'](this);
-          ng['pauseCamera']();
+        if (mX == "playStop") {
+          this["stopGlobalAudios"](!![]);
         }
       }
-      nc();
-    } else {
-      nb();
+      if (n2) {
+        ne();
+      } else {
+        nd();
+      }
     }
-  } else if (mV == 'stop') {
-    ne();
-  } else if (mV == 'pause') {
-    nd();
+  } else if (mX == "play") {
+    if (n2 || mY === !![]) {
+      if (n1) {
+        var ni = n2
+          ? n2["get"]("items")[n3]["get"]("player")
+          : this["getActivePlayerWithViewer"](this["getMainViewer"]());
+        if (ni && ni["pauseCamera"]) {
+          var nj = mW["concat"]();
+          endCallback = function (nD) {
+            nj["splice"](nj["indexOf"](nD), 0x1);
+            if (nj["length"] == 0x0) ni["resumeCamera"]();
+          }["bind"](this);
+          ni["pauseCamera"]();
+        }
+      }
+      ne();
+    } else {
+      nd();
+    }
+  } else if (mX == "stop") {
+    ng();
+  } else if (mX == "pause") {
+    nf();
   }
 };
-TDV['Tour']['Script']['executeAudioActionByTags'] = function (nC, nD, nE, nF, nG, nH, nI) {
-  var nJ = this['getAudioByTags'](nC, nD);
-  this['executeAudioAction'](nJ, nE, nF, nG, nH, nI);
+TDV["Tour"]["Script"]["executeAudioActionByTags"] = function (
+  nE,
+  nF,
+  nG,
+  nH,
+  nI,
+  nJ,
+  nK
+) {
+  var nL = this["getAudioByTags"](nE, nF);
+  this["executeAudioAction"](nL, nG, nH, nI, nJ, nK);
 };
-TDV['Tour']['Script']['setMediaBehaviour'] = function (nK, nL, nM, nN) {
-  var nO = this;
-  var nP = function (oc) {
-    if (oc['data']['state'] == 'stopped' && nN) {
-      nT['call'](this, !![]);
-    }
-  };
-  var nQ = function () {
-    nZ['unbind']('begin', nQ, nO);
-    var od = nZ['get']('media');
-    if (od['get']('class') != 'Panorama' || od['get']('camera') != undefined && od['get']('camera')['get']('initialSequence') != undefined) {
-      o0['bind']('stateChange', nP, nO);
-    }
-  };
-  var nR = function () {
-    var oe = nW['get']('selectedIndex');
-    if (oe != -0x1) {
-      nY = oe;
-      nT['call'](this, ![]);
+TDV["Tour"]["Script"]["setMediaBehaviour"] = function (nM, nN, nO, nP) {
+  var nQ = this;
+  var nR = function (oe) {
+    if (oe["data"]["state"] == "stopped" && nP) {
+      nV["call"](this, !![]);
     }
   };
   var nS = function () {
-    nT['call'](this, ![]);
+    o1["unbind"]("begin", nS, nQ);
+    var of = o1["get"]("media");
+    if (
+      of["get"]("class") != "Panorama" ||
+      (of["get"]("camera") != undefined &&
+        of["get"]("camera")["get"]("initialSequence") != undefined)
+    ) {
+      o2["bind"]("stateChange", nR, nQ);
+    }
   };
-  var nT = function (of) {
-    if (!nW) return;
-    var og = nZ['get']('media');
-    if ((og['get']('class') == 'Video360' || og['get']('class') == 'Video') && og['get']('loop') == !![] && !of) return;
-    nK['set']('selectedIndex', -0x1);
-    if (o7 && o6 != -0x1) {
-      if (o7) {
-        if (o6 > 0x0 && o7['get']('movements')[o6 - 0x1]['get']('class') == 'TargetPanoramaCameraMovement') {
-          var oh = o8['get']('initialPosition');
-          var oi = oh['get']('yaw');
-          var oj = oh['get']('pitch');
-          var ok = oh['get']('hfov');
-          var ol = o7['get']('movements')[o6 - 0x1];
-          var om = ol['get']('targetYaw');
-          var on = ol['get']('targetPitch');
-          var oo = ol['get']('targetHfov');
-          if (om !== undefined) oh['set']('yaw', om);
-          if (on !== undefined) oh['set']('pitch', on);
-          if (oo !== undefined) oh['set']('hfov', oo);
-          var op = function (os) {
-            oh['set']('yaw', oi);
-            oh['set']('pitch', oj);
-            oh['set']('hfov', ok);
-            o2['unbind']('end', op, this);
+  var nT = function () {
+    var og = nY["get"]("selectedIndex");
+    if (og != -0x1) {
+      o0 = og;
+      nV["call"](this, ![]);
+    }
+  };
+  var nU = function () {
+    nV["call"](this, ![]);
+  };
+  var nV = function (oh) {
+    if (!nY) return;
+    var oi = o1["get"]("media");
+    if (
+      (oi["get"]("class") == "Video360" || oi["get"]("class") == "Video") &&
+      oi["get"]("loop") == !![] &&
+      !oh
+    )
+      return;
+    nM["set"]("selectedIndex", -0x1);
+    if (o9 && o8 != -0x1) {
+      if (o9) {
+        if (
+          o8 > 0x0 &&
+          o9["get"]("movements")[o8 - 0x1]["get"]("class") ==
+          "TargetPanoramaCameraMovement"
+        ) {
+          var oj = oa["get"]("initialPosition");
+          var ok = oj["get"]("yaw");
+          var ol = oj["get"]("pitch");
+          var om = oj["get"]("hfov");
+          var on = o9["get"]("movements")[o8 - 0x1];
+          var oo = on["get"]("targetYaw");
+          var op = on["get"]("targetPitch");
+          var oq = on["get"]("targetHfov");
+          if (oo !== undefined) oj["set"]("yaw", oo);
+          if (op !== undefined) oj["set"]("pitch", op);
+          if (oq !== undefined) oj["set"]("hfov", oq);
+          var or = function (ou) {
+            oj["set"]("yaw", ok);
+            oj["set"]("pitch", ol);
+            oj["set"]("hfov", om);
+            o4["unbind"]("end", or, this);
           };
-          o2['bind']('end', op, this);
+          o4["bind"]("end", or, this);
         }
-        o7['set']('movementIndex', o6);
+        o9["set"]("movementIndex", o8);
       }
     }
-    if (o0) {
-      nZ['unbind']('begin', nQ, this);
-      o0['unbind']('stateChange', nP, this);
-      for (var oq = 0x0; oq < o9['length']; ++oq) {
-        o9[oq]['unbind']('click', nS, this);
+    if (o2) {
+      o1["unbind"]("begin", nS, this);
+      o2["unbind"]("stateChange", nR, this);
+      for (var os = 0x0; os < ob["length"]; ++os) {
+        ob[os]["unbind"]("click", nU, this);
       }
     }
-    if (o5) {
-      var or = this['getMediaFromPlayer'](o0);
-      if ((nW == this['mainPlayList'] || nW['get']('items')['length'] > 0x1) && (or == undefined || or == nZ['get']('media'))) {
-        nW['set']('selectedIndex', nY);
+    if (o7) {
+      var ot = this["getMediaFromPlayer"](o2);
+      if (
+        (nY == this["mainPlayList"] || nY["get"]("items")["length"] > 0x1) &&
+        (ot == undefined || ot == o1["get"]("media"))
+      ) {
+        nY["set"]("selectedIndex", o0);
       }
-      if (nK != nW) nW['unbind']('change', nR, this);
+      if (nM != nY) nY["unbind"]("change", nT, this);
     } else {
-      o3['set']('visible', o4);
+      o5["set"]("visible", o6);
     }
-    nW = undefined;
+    nY = undefined;
   };
-  if (!nM) {
-    var nU = nK['get']('selectedIndex');
-    var nV = nU != -0x1 ? nK['get']('items')[nK['get']('selectedIndex')]['get']('player') : this['getActivePlayerWithViewer'](this['getMainViewer']());
-    if (nV) {
-      nM = this['getMediaFromPlayer'](nV);
+  if (!nO) {
+    var nW = nM["get"]("selectedIndex");
+    var nX =
+      nW != -0x1
+        ? nM["get"]("items")[nM["get"]("selectedIndex")]["get"]("player")
+        : this["getActivePlayerWithViewer"](this["getMainViewer"]());
+    if (nX) {
+      nO = this["getMediaFromPlayer"](nX);
     }
   }
-  var nW = undefined;
-  if (nM) {
-    var nX = this['getPlayListsWithMedia'](nM, !![]);
-    if (nX['indexOf'](nK) != -0x1) {
-      nW = nK;
-    } else if (nX['indexOf'](this['mainPlayList']) != -0x1) {
-      nW = this['mainPlayList'];
-    } else if (nX['length'] > 0x0) {
-      nW = nX[0x0];
+  var nY = undefined;
+  if (nO) {
+    var nZ = this["getPlayListsWithMedia"](nO, !![]);
+    if (nZ["indexOf"](nM) != -0x1) {
+      nY = nM;
+    } else if (nZ["indexOf"](this["mainPlayList"]) != -0x1) {
+      nY = this["mainPlayList"];
+    } else if (nZ["length"] > 0x0) {
+      nY = nZ[0x0];
     }
   }
-  if (!nW) {
-    nK['set']('selectedIndex', nL);
+  if (!nY) {
+    nM["set"]("selectedIndex", nN);
     return;
   }
-  var nY = nW['get']('selectedIndex');
-  var nZ = nK['get']('items')[nL];
-  var o0 = nZ['get']('player');
-  var o1 = this['getMediaFromPlayer'](o0);
-  if (nK['get']('selectedIndex') == nL && o1 == nZ['get']('media') || nY == -0x1) {
+  var o0 = nY["get"]("selectedIndex");
+  var o1 = nM["get"]("items")[nN];
+  var o2 = o1["get"]("player");
+  var o3 = this["getMediaFromPlayer"](o2);
+  if (
+    (nM["get"]("selectedIndex") == nN && o3 == o1["get"]("media")) ||
+    o0 == -0x1
+  ) {
     return;
   }
-  if (nK['get']('selectedIndex') == nL && o1 != nZ['get']('media')) nK['set']('selectedIndex', -0x1);
-  var o2 = nW['get']('items')[nY];
-  var o3 = o0['get']('viewerArea');
-  var o4 = o3['get']('visible');
-  var o5 = o3 == o2['get']('player')['get']('viewerArea');
-  if (o5) {
-    if (nK != nW) {
-      nW['set']('selectedIndex', -0x1);
-      nW['bind']('change', nR, this);
+  if (nM["get"]("selectedIndex") == nN && o3 != o1["get"]("media"))
+    nM["set"]("selectedIndex", -0x1);
+  var o4 = nY["get"]("items")[o0];
+  var o5 = o2["get"]("viewerArea");
+  var o6 = o5["get"]("visible");
+  var o7 = o5 == o4["get"]("player")["get"]("viewerArea");
+  if (o7) {
+    if (nM != nY) {
+      nY["set"]("selectedIndex", -0x1);
+      nY["bind"]("change", nT, this);
     }
   } else {
-    o3['set']('visible', !![]);
+    o5["set"]("visible", !![]);
   }
-  var o6 = -0x1;
-  var o7 = undefined;
-  var o8 = o2['get']('camera');
-  if (o8) {
-    o7 = o8['get']('initialSequence');
-    if (o7) {
-      o6 = o7['get']('movementIndex');
+  var o8 = -0x1;
+  var o9 = undefined;
+  var oa = o4["get"]("camera");
+  if (oa) {
+    o9 = oa["get"]("initialSequence");
+    if (o9) {
+      o8 = o9["get"]("movementIndex");
     }
   }
-  nK['set']('selectedIndex', nL);
-  var o9 = [];
-  var oa = function (ot) {
-    var ou = o0['get'](ot);
-    if (ou == undefined) return;
-    if (Array['isArray'](ou)) o9 = o9['concat'](ou);
-    else o9['push'](ou);
+  nM["set"]("selectedIndex", nN);
+  var ob = [];
+  var oc = function (ov) {
+    var ow = o2["get"](ov);
+    if (ow == undefined) return;
+    if (Array["isArray"](ow)) ob = ob["concat"](ow);
+    else ob["push"](ow);
   };
-  oa('buttonStop');
-  for (var ob = 0x0; ob < o9['length']; ++ob) {
-    o9[ob]['bind']('click', nS, this);
+  oc("buttonStop");
+  for (var od = 0x0; od < ob["length"]; ++od) {
+    ob[od]["bind"]("click", nU, this);
   }
-  nZ['bind']('begin', nQ, nO);
-  this['executeFunctionWhenChange'](nK, nL, nN ? nS : undefined);
+  o1["bind"]("begin", nS, nQ);
+  this["executeFunctionWhenChange"](nM, nN, nP ? nU : undefined);
 };
-TDV['Tour']['Script']['setOverlayBehaviour'] = function (ov, ow, ox, oy) {
-  var oz = function () {
-    switch (ox) {
-      case 'triggerClick':
-        this['triggerOverlay'](ov, 'click');
+TDV["Tour"]["Script"]["setOverlayBehaviour"] = function (ox, oy, oz, oA) {
+  var oB = function () {
+    switch (oz) {
+      case "triggerClick":
+        this["triggerOverlay"](ox, "click");
         break;
-      case 'stop':
-      case 'play':
-      case 'pause':
-        ov[ox]();
+      case "stop":
+      case "play":
+      case "pause":
+        ox[oz]();
         break;
-      case 'togglePlayPause':
-      case 'togglePlayStop':
-        if (ov['get']('state') == 'playing') ov[ox == 'togglePlayPause' ? 'pause' : 'stop']();
-        else ov['play']();
+      case "togglePlayPause":
+      case "togglePlayStop":
+        if (ox["get"]("state") == "playing")
+          ox[oz == "togglePlayPause" ? "pause" : "stop"]();
+        else ox["play"]();
         break;
     }
-    if (oy) {
-      if (window['overlaysDispatched'] == undefined) window['overlaysDispatched'] = {};
-      var oE = ov['get']('id');
-      window['overlaysDispatched'][oE] = !![];
+    if (oA) {
+      if (window["overlaysDispatched"] == undefined)
+        window["overlaysDispatched"] = {};
+      var oG = ox["get"]("id");
+      window["overlaysDispatched"][oG] = !![];
       setTimeout(function () {
-        delete window['overlaysDispatched'][oE];
+        delete window["overlaysDispatched"][oG];
       }, 0x3e8);
     }
   };
-  if (oy && window['overlaysDispatched'] != undefined && ov['get']('id') in window['overlaysDispatched']) return;
-  var oA = this['getFirstPlayListWithMedia'](ow, !![]);
-  if (oA != undefined) {
-    var oB = this['getPlayListItemByMedia'](oA, ow);
-    var oC = oB['get']('player');
-    if (oA['get']('items')['indexOf'](oB) != oA['get']('selectedIndex') || this['isPanorama'](oB['get']('media')) && oC['get']('rendererPanorama') != oB['get']('media')) {
-      var oD = function (oF) {
-        oB['unbind']('begin', oD, this);
-        oz['call'](this);
+  if (
+    oA &&
+    window["overlaysDispatched"] != undefined &&
+    ox["get"]("id") in window["overlaysDispatched"]
+  )
+    return;
+  var oC = this["getFirstPlayListWithMedia"](oy, !![]);
+  if (oC != undefined) {
+    var oD = this["getPlayListItemByMedia"](oC, oy);
+    var oE = oD["get"]("player");
+    if (
+      oC["get"]("items")["indexOf"](oD) != oC["get"]("selectedIndex") ||
+      (this["isPanorama"](oD["get"]("media")) &&
+        oE["get"]("rendererPanorama") != oD["get"]("media"))
+    ) {
+      var oF = function (oH) {
+        oD["unbind"]("begin", oF, this);
+        oB["call"](this);
       };
-      oB['bind']('begin', oD, this);
+      oD["bind"]("begin", oF, this);
       return;
     }
   }
-  oz['call'](this);
+  oB["call"](this);
 };
-TDV['Tour']['Script']['setOverlaysVisibility'] = function (oG, oH, oI) {
-  var oJ = 'overlayEffects';
-  var oK = undefined;
-  var oL = this['getKey'](oJ);
-  if (!oL) {
-    oL = {};
-    this['registerKey'](oJ, oL);
+TDV["Tour"]["Script"]["setOverlaysVisibility"] = function (oI, oJ, oK) {
+  var oL = "overlayEffects";
+  var oM = undefined;
+  var oN = this["getKey"](oL);
+  if (!oN) {
+    oN = {};
+    this["registerKey"](oL, oN);
   }
-  for (var oM = 0x0, oN = oG['length']; oM < oN; ++oM) {
-    var oO = oG[oM];
-    if (oI && oI > 0x0) {
-      oL[oO['get']('id')] = setTimeout(oP['bind'](this, oO), oI);
+  for (var oO = 0x0, oP = oI["length"]; oO < oP; ++oO) {
+    var oQ = oI[oO];
+    if (oK && oK > 0x0) {
+      oN[oQ["get"]("id")] = setTimeout(oR["bind"](this, oQ), oK);
     } else {
-      oP['call'](this, oO);
+      oR["call"](this, oQ);
     }
   }
-
-  function oP(oQ) {
-    var oR = oQ['get']('id');
-    var oS = oL[oR];
-    if (oS) {
-      clearTimeout(oS);
-      delete oS[oR];
+  function oR(oS) {
+    var oT = oS["get"]("id");
+    var oU = oN[oT];
+    if (oU) {
+      clearTimeout(oU);
+      delete oU[oT];
     }
-    var oT = oH == 'toggle' ? !oQ['get']('enabled') : oH;
-    oQ['set']('enabled', oT);
-    var oV = oQ['get']('data');
-    if (oT && oV && 'group' in oV) {
-      var oW = this['getOverlaysByGroupname'](oV['group']);
-      for (var oX = 0x0, oY = oW['length']; oX < oY; ++oX) {
-        var p0 = oW[oX];
-        if (p0 != oQ) p0['set']('enabled', !oT);
+    var oV = oJ == "toggle" ? !oS["get"]("enabled") : oJ;
+    oS["set"]("enabled", oV);
+    var oX = oS["get"]("data");
+    if (oV && oX && "group" in oX) {
+      var oY = this["getOverlaysByGroupname"](oX["group"]);
+      for (var oZ = 0x0, p0 = oY["length"]; oZ < p0; ++oZ) {
+        var p2 = oY[oZ];
+        if (p2 != oS) p2["set"]("enabled", !oV);
       }
     }
-    if (!oK) oK = this['getByClassName']('AdjacentPanorama');
-    for (var p1 = 0x0, p2 = oK['length']; p1 < p2; ++p1) {
-      var p3 = oK[p1];
-      var oV = p3['get']('data');
-      if (!oV) continue;
-      var p0 = this[oV['overlayID']];
-      if (p0 && p0 == oQ) {
-        p3['set']('enabledInSurfaceSelection', p0['get']('enabled'));
+    if (!oM) oM = this["getByClassName"]("AdjacentPanorama");
+    for (var p3 = 0x0, p4 = oM["length"]; p3 < p4; ++p3) {
+      var p5 = oM[p3];
+      var oX = p5["get"]("data");
+      if (!oX) continue;
+      var p2 = this[oX["overlayID"]];
+      if (p2 && p2 == oS) {
+        p5["set"]("enabled", p2["get"]("enabled"));
       }
     }
   }
 };
-TDV['Tour']['Script']['setOverlaysVisibilityByTags'] = function (p4, p5, p6, p7, p8) {
-  var p9 = p6 ? this['getPanoramaOverlaysByTags'](p6, p4, p7) : this['getOverlaysByTags'](p4, p7);
-  this['setOverlaysVisibility'](p9, p5, p8);
+TDV["Tour"]["Script"]["setOverlaysVisibilityByTags"] = function (
+  p6,
+  p7,
+  p8,
+  p9,
+  pa
+) {
+  var pb = p8
+    ? this["getPanoramaOverlaysByTags"](p8, p6, p9)
+    : this["getOverlaysByTags"](p6, p9);
+  this["setOverlaysVisibility"](pb, p7, pa);
 };
-TDV['Tour']['Script']['setComponentsVisibilityByTags'] = function (pa, pb, pc, pd, pe) {
-  var pf = this['getComponentsByTags'](pa, pe);
-  for (var pg = 0x0, ph = pf['length']; pg < ph; ++pg) {
-    var pi = pf[pg];
-    if (pb == 'toggle') pi['get']('visible') ? pd(pi) : pc(pi);
-    else pb ? pc(pi) : pd(pi);
+TDV["Tour"]["Script"]["setComponentsVisibilityByTags"] = function (
+  pc,
+  pd,
+  pe,
+  pf,
+  pg
+) {
+  var ph = this["getComponentsByTags"](pc, pg);
+  for (var pi = 0x0, pj = ph["length"]; pi < pj; ++pi) {
+    var pk = ph[pi];
+    if (pd == "toggle") pk["get"]("visible") ? pf(pk) : pe(pk);
+    else pd ? pe(pk) : pf(pk);
   }
 };
-TDV['Tour']['Script']['setPanoramaCameraWithCurrentSpot'] = function (pj, pk) {
-  var pl = this['getActiveMediaWithViewer'](pk || this['getMainViewer']());
-  if (pl != undefined && (pl['get']('class')['indexOf']('Panorama') != -0x1 || pl['get']('class') == 'Video360')) {
-    var pm = pj['get']('media');
-    var pn = this['cloneCamera'](pj['get']('camera'));
-    this['setCameraSameSpotAsMedia'](pn, pl);
-    this['startPanoramaWithCamera'](pm, pn);
+TDV["Tour"]["Script"]["setPanoramaCameraWithCurrentSpot"] = function (pl, pm) {
+  var pn = this["getActiveMediaWithViewer"](pm || this["getMainViewer"]());
+  if (
+    pn != undefined &&
+    (pn["get"]("class")["indexOf"]("Panorama") != -0x1 ||
+      pn["get"]("class") == "Video360")
+  ) {
+    var po = pl["get"]("media");
+    var pp = this["cloneCamera"](pl["get"]("camera"));
+    this["setCameraSameSpotAsMedia"](pp, pn);
+    this["startPanoramaWithCamera"](po, pp);
   }
 };
-TDV['Tour']['Script']['setPanoramaCameraWithSpot'] = function (po, pp, pq, pr, ps) {
-  var pt = po['get']('selectedIndex');
-  var pu = po['get']('items');
-  var pv = pp['get']('player');
-  if (pu[pt] == pp || pv['get']('rendererPanorama') == pp['get']('media')) {
-    if (pq === undefined) pq = pv['get']('yaw');
-    if (pr === undefined) pr = pv['get']('pitch');
-    if (ps === undefined) ps = pv['get']('hfov');
-    pv['moveTo'](pq, pr, pv['get']('roll'), ps);
+TDV["Tour"]["Script"]["setPanoramaCameraWithSpot"] = function (
+  pq,
+  pr,
+  ps,
+  pt,
+  pu
+) {
+  var pv = pq["get"]("selectedIndex");
+  var pw = pq["get"]("items");
+  var px = pr["get"]("player");
+  if (pw[pv] == pr || px["get"]("rendererPanorama") == pr["get"]("media")) {
+    if (ps === undefined) ps = px["get"]("yaw");
+    if (pt === undefined) pt = px["get"]("pitch");
+    if (pu === undefined) pu = px["get"]("hfov");
+    px["moveTo"](ps, pt, px["get"]("roll"), pu);
   } else {
-    var pw = pp['get']('media');
-    var px = this['cloneCamera'](pp['get']('camera'));
-    var py = px['get']('initialPosition');
-    if (pq !== undefined) py['set']('yaw', pq);
-    if (pr !== undefined) py['set']('pitch', pr);
-    if (ps !== undefined) py['set']('hfov', ps);
-    this['startPanoramaWithCamera'](pw, px);
+    var py = pr["get"]("media");
+    var pz = this["cloneCamera"](pr["get"]("camera"));
+    var pA = pz["get"]("initialPosition");
+    if (ps !== undefined) pA["set"]("yaw", ps);
+    if (pt !== undefined) pA["set"]("pitch", pt);
+    if (pu !== undefined) pA["set"]("hfov", pu);
+    this["startPanoramaWithCamera"](py, pz);
   }
 };
-TDV['Tour']['Script']['setSurfaceSelectionHotspotMode'] = function (pz) {
-  var pA = this['getByClassName']('HotspotPanoramaOverlay');
-  var pB = this['getByClassName']('PanoramaPlayer');
-  var pC = pz == 'hotspotEnabled';
-  var pD = pz == 'circleEnabled';
-  var pE = !!pz;
-  pA['forEach'](function (pF) {
-    var pG = pF['get']('data');
-    if (pG && pG['hasPanoramaAction'] == !![]) pF['set']('enabledInSurfaceSelection', pC);
+TDV["Tour"]["Script"]["setSurfaceSelectionHotspotMode"] = function (pB) {
+  var pC = this["getByClassName"]("HotspotPanoramaOverlay");
+  var pD = this["getByClassName"]("PanoramaPlayer");
+  var pE = pB == "hotspotEnabled";
+  var pF = pB == "circleEnabled";
+  var pG = !!pB;
+  pC["forEach"](function (pH) {
+    var pI = pH["get"]("data");
+    if (pI && pI["hasPanoramaAction"] == !![])
+      pH["set"]("enabledInSurfaceSelection", pE);
   });
-  pB['forEach'](function (pH) {
-    pH['set']('adjacentPanoramaPositionsEnabled', pD);
-    pH['set']('surfaceSelectionEnabled', pE);
+  pD["forEach"](function (pJ) {
+    pJ["set"]("adjacentPanoramaPositionsEnabled", pF);
+    pJ["set"]("surfaceSelectionEnabled", pG);
   });
-  this['get']('data')['surfaceSelectionHotspotMode'] = pz;
+  this["get"]("data")["surfaceSelectionHotspotMode"] = pB;
 };
-TDV['Tour']['Script']['setValue'] = function (pI, pJ, pK) {
+TDV["Tour"]["Script"]["setValue"] = function (pK, pL, pM) {
   try {
-    if ('set' in pI) pI['set'](pJ, pK);
-    else pI[pJ] = pK;
-  } catch (pL) { }
+    if ("set" in pK) pK["set"](pL, pM);
+    else pK[pL] = pM;
+  } catch (pN) { }
 };
-TDV['Tour']['Script']['setStartTimeVideo'] = function (pM, pN) {
-  var pO = this['getPlayListItems'](pM);
-  var pP = [];
-  var pQ = function () {
-    for (var pU = 0x0; pU < pO['length']; ++pU) {
-      var pV = pO[pU];
-      pV['set']('startTime', pP[pU]);
-      pV['unbind']('stop', pQ, this);
+TDV["Tour"]["Script"]["setStartTimeVideo"] = function (pO, pP) {
+  var pQ = this["getPlayListItems"](pO);
+  var pR = [];
+  var pS = function () {
+    for (var pW = 0x0; pW < pQ["length"]; ++pW) {
+      var pX = pQ[pW];
+      pX["set"]("startTime", pR[pW]);
+      pX["unbind"]("stop", pS, this);
     }
   };
-  for (var pR = 0x0; pR < pO['length']; ++pR) {
-    var pS = pO[pR];
-    var pT = pS['get']('player');
-    if (!pT) continue;
-    if (pT['get']('video') == pM && pT['get']('state') == 'playing') {
-      pT['seek'](pN);
+  for (var pT = 0x0; pT < pQ["length"]; ++pT) {
+    var pU = pQ[pT];
+    var pV = pU["get"]("player");
+    if (!pV) continue;
+    if (pV["get"]("video") == pO && pV["get"]("state") == "playing") {
+      pV["seek"](pP);
     } else {
-      pP['push'](pS['get']('startTime'));
-      pS['set']('startTime', pN);
-      pS['bind']('stop', pQ, this);
+      pR["push"](pU["get"]("startTime"));
+      pU["set"]("startTime", pP);
+      pU["bind"]("stop", pS, this);
     }
   }
 };
-TDV['Tour']['Script']['setStartTimeVideoSync'] = function (pW, pX) {
-  if (pW && pX) this['setStartTimeVideo'](pW, pX['get']('currentTime'));
+TDV["Tour"]["Script"]["setStartTimeVideoSync"] = function (pY, pZ) {
+  if (pY && pZ) this["setStartTimeVideo"](pY, pZ["get"]("currentTime"));
 };
-TDV['Tour']['Script']['skip3DTransitionOnce'] = function (pY) {
-  if (pY && pY['get']('class') == 'PanoramaPlayer') {
-    var pZ = pY['get']('viewerArea');
-    if (pZ && pZ['get']('translationTransitionEnabled') == !![]) {
-      var q0 = function () {
-        pY['unbind']('preloadMediaShow', q0, this);
-        pZ['set']('translationTransitionEnabled', !![]);
+TDV["Tour"]["Script"]["skip3DTransitionOnce"] = function (q0) {
+  if (q0 && q0["get"]("class") == "PanoramaPlayer") {
+    var q1 = q0["get"]("viewerArea");
+    if (q1 && q1["get"]("translationTransitionEnabled") == !![]) {
+      var q2 = function () {
+        q0["unbind"]("preloadMediaShow", q2, this);
+        q1["set"]("translationTransitionEnabled", !![]);
       };
-      pZ['set']('translationTransitionEnabled', ![]);
-      pY['bind']('preloadMediaShow', q0, this);
+      q1["set"]("translationTransitionEnabled", ![]);
+      q0["bind"]("preloadMediaShow", q2, this);
     }
   }
 };
-TDV['Tour']['Script']['shareSocial'] = function (q1, q2, q3, q4, q5, q6) {
-  if (q2 == undefined) {
-    q2 = location['href']['split'](location['search'] || location['hash'] || /[?#]/)[0x0];
+TDV["Tour"]["Script"]["shareSocial"] = function (q3, q4, q5, q6, q7, q8) {
+  if (q4 == undefined) {
+    q4 = location["href"]["split"](
+      location["search"] || location["hash"] || /[?#]/
+    )[0x0];
   }
-  if (q3) {
-    q2 += this['updateDeepLink'](q4, q5, ![]);
+  if (q5) {
+    q4 += this["updateDeepLink"](q6, q7, ![]);
   }
-  q2 = function (q8) {
-    switch (q8) {
-      case 'email':
-        return 'mailto:?body=' + encodeURIComponent(q2);
-      case 'facebook':
-        var q9 = q2['indexOf']('?') != -0x1;
-        q2 = q2['replace']('#', '?');
-        if (q9) {
-          var qa = q2['lastIndexOf']('?');
-          q2 = q2['substring'](0x0, qa) + '&' + q2['substring'](qa + 0x1);
+  q4 = (function (qa) {
+    switch (qa) {
+      case "email":
+        return "mailto:?body=" + encodeURIComponent(q4);
+      case "facebook":
+        var qb = q4["indexOf"]("?") != -0x1;
+        q4 = q4["replace"]("#", "?");
+        if (qb) {
+          var qc = q4["lastIndexOf"]("?");
+          q4 = q4["substring"](0x0, qc) + "&" + q4["substring"](qc + 0x1);
         }
-        return 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(q2);
-      case 'linkedin':
-        return 'https://www.linkedin.com/shareArticle?mini=true&url=' + encodeURIComponent(q2);
-      case 'pinterest':
-        return 'https://pinterest.com/pin/create/button/?url=' + q2;
-      case 'telegram':
-        return 'https://t.me/share/url?url=' + q2;
-      case 'twitter':
-        return 'https://twitter.com/intent/tweet?source=webclient&url=' + q2;
-      case 'whatsapp':
-        return 'https://api.whatsapp.com/send/?text=' + encodeURIComponent(q2);
+        return (
+          "https://www.facebook.com/sharer/sharer.php?u=" +
+          encodeURIComponent(q4)
+        );
+      case "linkedin":
+        return (
+          "https://www.linkedin.com/shareArticle?mini=true&url=" +
+          encodeURIComponent(q4)
+        );
+      case "pinterest":
+        return "https://pinterest.com/pin/create/button/?url=" + q4;
+      case "telegram":
+        return "https://t.me/share/url?url=" + q4;
+      case "twitter":
+        return "https://twitter.com/intent/tweet?source=webclient&url=" + q4;
+      case "whatsapp":
+        return "https://api.whatsapp.com/send/?text=" + encodeURIComponent(q4);
       default:
-        return q2;
+        return q4;
     }
-  }(q1);
-  if (q6) {
-    for (var q7 in q6) {
-      q2 += '&' + q7 + '=' + q6[q7];
+  })(q3);
+  if (q8) {
+    for (var q9 in q8) {
+      q4 += "&" + q9 + "=" + q8[q9];
     }
   }
-  if (q1 == 'clipboard') this['copyToClipboard'](q2);
-  else this['openLink'](q2, '_blank');
+  if (q3 == "clipboard") this["copyToClipboard"](q4);
+  else this["openLink"](q4, "_blank");
 };
-TDV['Tour']['Script']['showComponentsWhileMouseOver'] = function (qb, qc, qd, qe) {
-  var qf = function (qj) {
-    for (var qk = 0x0, ql = qc['length']; qk < ql; qk++) {
-      var qm = qc[qk];
-      if (!qe || qe(qm, qj)) qm['set']('visible', qj);
+TDV["Tour"]["Script"]["showComponentsWhileMouseOver"] = function (
+  qd,
+  qe,
+  qf,
+  qg
+) {
+  var qh = function (ql) {
+    for (var qm = 0x0, qn = qe["length"]; qm < qn; qm++) {
+      var qo = qe[qm];
+      if (!qg || qg(qo, ql)) qo["set"]("visible", ql);
     }
   };
-  if (this['get']('isMobile')) {
-    qf['call'](this, !![]);
+  if (this["get"]("isMobile")) {
+    qh["call"](this, !![]);
   } else {
-    var qg = -0x1;
-    var qh = function () {
-      qf['call'](this, !![]);
-      if (qg >= 0x0) clearTimeout(qg);
-      qb['bind']('rollOut', qi, this);
+    var qi = -0x1;
+    var qj = function () {
+      qh["call"](this, !![]);
+      if (qi >= 0x0) clearTimeout(qi);
+      qd["bind"]("rollOut", qk, this);
     };
-    var qi = function () {
-      var qn = function () {
-        qf['call'](this, ![]);
+    var qk = function () {
+      var qp = function () {
+        qh["call"](this, ![]);
       };
-      qb['unbind']('rollOut', qi, this);
-      qg = setTimeout(qn['bind'](this), qd);
+      qd["unbind"]("rollOut", qk, this);
+      qi = setTimeout(qp["bind"](this), qf);
     };
-    qb['bind']('rollOver', qh, this);
+    qd["bind"]("rollOver", qj, this);
   }
 };
-TDV['Tour']['Script']['showPopupMedia'] = function (qo, qp, qq, qr, qs, qt) {
-  var qu = this;
-  var qv = function () {
-    window['resumeAudiosBlocked'] = ![];
-    qq['set']('selectedIndex', -0x1);
-    qu['getMainViewer']()['set']('toolTipEnabled', !![]);
-    this['resumePlayers'](qA, !![]);
-    if (qz) {
-      this['unbind']('resize', qx, this);
-    }
-    qo['unbind']('close', qv, this);
-  };
-  var qw = function () {
-    qo['hide']();
-  };
+TDV["Tour"]["Script"]["showPopupMedia"] = function (qq, qr, qs, qt, qu, qv) {
+  var qw = this;
   var qx = function () {
-    var qB = function (qS) {
-      return qo['get'](qS) || 0x0;
+    window["resumeAudiosBlocked"] = ![];
+    qs["set"]("selectedIndex", -0x1);
+    qw["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+    this["resumePlayers"](qC, !![]);
+    if (qB) {
+      this["unbind"]("resize", qz, this);
+    }
+    qq["unbind"]("close", qx, this);
+  };
+  var qy = function () {
+    qq["hide"]();
+  };
+  var qz = function () {
+    var qD = function (qU) {
+      return qq["get"](qU) || 0x0;
     };
-    var qC = qu['get']('actualWidth');
-    var qD = qu['get']('actualHeight');
-    var qE = qu['getMediaWidth'](qp);
-    var qF = qu['getMediaHeight'](qp);
-    var qG = parseFloat(qr) / 0x64;
-    var qH = parseFloat(qs) / 0x64;
-    var qI = qG * qC;
-    var qJ = qH * qD;
-    var qK = qB('footerHeight');
-    var qL = qB('headerHeight');
-    if (!qL) {
-      var qM = qB('closeButtonIconHeight') + qB('closeButtonPaddingTop') + qB('closeButtonPaddingBottom');
-      var qN = qu['getPixels'](qB('titleFontSize')) + qB('titlePaddingTop') + qB('titlePaddingBottom');
-      qL = qM > qN ? qM : qN;
-      qL += qB('headerPaddingTop') + qB('headerPaddingBottom');
+    var qE = qw["get"]("actualWidth");
+    var qF = qw["get"]("actualHeight");
+    var qG = qw["getMediaWidth"](qr);
+    var qH = qw["getMediaHeight"](qr);
+    var qI = parseFloat(qt) / 0x64;
+    var qJ = parseFloat(qu) / 0x64;
+    var qK = qI * qE;
+    var qL = qJ * qF;
+    var qM = qD("footerHeight");
+    var qN = qD("headerHeight");
+    if (!qN) {
+      var qO =
+        qD("closeButtonIconHeight") +
+        qD("closeButtonPaddingTop") +
+        qD("closeButtonPaddingBottom");
+      var qP =
+        qw["getPixels"](qD("titleFontSize")) +
+        qD("titlePaddingTop") +
+        qD("titlePaddingBottom");
+      qN = qO > qP ? qO : qP;
+      qN += qD("headerPaddingTop") + qD("headerPaddingBottom");
     }
-    var qO = qI - qB('bodyPaddingLeft') - qB('bodyPaddingRight') - qB('paddingLeft') - qB('paddingRight');
-    var qP = qJ - qL - qK - qB('bodyPaddingTop') - qB('bodyPaddingBottom') - qB('paddingTop') - qB('paddingBottom');
-    var qQ = qO / qP;
-    var qR = qE / qF;
-    if (qQ > qR) {
-      qI = qP * qR + qB('bodyPaddingLeft') + qB('bodyPaddingRight') + qB('paddingLeft') + qB('paddingRight');
+    var qQ =
+      qK -
+      qD("bodyPaddingLeft") -
+      qD("bodyPaddingRight") -
+      qD("paddingLeft") -
+      qD("paddingRight");
+    var qR =
+      qL -
+      qN -
+      qM -
+      qD("bodyPaddingTop") -
+      qD("bodyPaddingBottom") -
+      qD("paddingTop") -
+      qD("paddingBottom");
+    var qS = qQ / qR;
+    var qT = qG / qH;
+    if (qS > qT) {
+      qK =
+        qR * qT +
+        qD("bodyPaddingLeft") +
+        qD("bodyPaddingRight") +
+        qD("paddingLeft") +
+        qD("paddingRight");
     } else {
-      qJ = qO / qR + qL + qK + qB('bodyPaddingTop') + qB('bodyPaddingBottom') + qB('paddingTop') + qB('paddingBottom');
+      qL =
+        qQ / qT +
+        qN +
+        qM +
+        qD("bodyPaddingTop") +
+        qD("bodyPaddingBottom") +
+        qD("paddingTop") +
+        qD("paddingBottom");
     }
-    if (qI > qC * qG) {
-      qI = qC * qG;
+    if (qK > qE * qI) {
+      qK = qE * qI;
     }
-    if (qJ > qD * qH) {
-      qJ = qD * qH;
+    if (qL > qF * qJ) {
+      qL = qF * qJ;
     }
-    qo['set']('width', qI);
-    qo['set']('height', qJ);
-    qo['set']('x', (qC - qB('actualWidth')) * 0.5);
-    qo['set']('y', (qD - qB('actualHeight')) * 0.5);
+    qq["set"]("width", qK);
+    qq["set"]("height", qL);
+    qq["set"]("x", (qE - qD("actualWidth")) * 0.5);
+    qq["set"]("y", (qF - qD("actualHeight")) * 0.5);
   };
-  if (qt) {
-    this['executeFunctionWhenChange'](qq, 0x0, qw);
+  if (qv) {
+    this["executeFunctionWhenChange"](qs, 0x0, qy);
   }
-  var qy = qp['get']('class');
-  var qz = qy == 'Video' || qy == 'Video360';
-  qq['set']('selectedIndex', 0x0);
-  if (qz) {
-    this['bind']('resize', qx, this);
-    qx();
-    qq['get']('items')[0x0]['get']('player')['play']();
+  var qA = qr["get"]("class");
+  var qB = qA == "Video" || qA == "Video360";
+  qs["set"]("selectedIndex", 0x0);
+  if (qB) {
+    this["bind"]("resize", qz, this);
+    qz();
+    qs["get"]("items")[0x0]["get"]("player")["play"]();
   } else {
-    qo['set']('width', qr);
-    qo['set']('height', qs);
+    qq["set"]("width", qt);
+    qq["set"]("height", qu);
   }
-  window['resumeAudiosBlocked'] = !![];
-  this['getMainViewer']()['set']('toolTipEnabled', ![]);
-  var qA = this['pauseCurrentPlayers'](!![]);
-  qo['bind']('close', qv, this);
-  qo['show'](this, !![]);
+  window["resumeAudiosBlocked"] = !![];
+  this["getMainViewer"]()["set"]("toolTipEnabled", ![]);
+  var qC = this["pauseCurrentPlayers"](!![]);
+  qq["bind"]("close", qx, this);
+  qq["show"](this, !![]);
 };
-TDV['Tour']['Script']['showPopupImage'] = function (qT, qU, qV, qW, qX, qY, qZ, r0, r1, r2, r3, r4) {
-  var r5 = ![];
-  var r6 = function () {
-    rn['unbind']('loaded', r9, this);
-    rd['call'](this);
-  };
-  var r7 = function () {
-    rn['unbind']('click', r7, this);
-    if (rr != undefined) {
-      clearTimeout(rr);
-    }
-  };
+TDV["Tour"]["Script"]["showPopupImage"] = function (
+  qV,
+  qW,
+  qX,
+  qY,
+  qZ,
+  r0,
+  r1,
+  r2,
+  r3,
+  r4,
+  r5,
+  r6
+) {
+  var r7 = ![];
   var r8 = function () {
-    setTimeout(rh, 0x0);
+    rp["unbind"]("loaded", rb, this);
+    rf["call"](this);
   };
   var r9 = function () {
-    this['unbind']('click', r6, this);
-    rm['set']('visible', !![]);
-    rh();
-    ro['set']('visible', !![]);
-    rn['unbind']('loaded', r9, this);
-    rn['bind']('resize', r8, this);
-    rr = setTimeout(ra['bind'](this), 0xc8);
+    rp["unbind"]("click", r9, this);
+    if (rt != undefined) {
+      clearTimeout(rt);
+    }
   };
   var ra = function () {
-    rr = undefined;
-    if (r0) {
-      rn['bind']('click', r7, this);
-      rc['call'](this);
-    }
-    rn['bind']('userInteractionStart', ri, this);
-    rn['bind']('userInteractionEnd', rj, this);
-    rn['bind']('backgroundClick', rd, this);
-    if (qU) {
-      rn['bind']('click', rf, this);
-      rn['set']('imageCursor', 'hand');
-    }
-    ro['bind']('click', rd, this);
-    if (r3) r3['call'](this);
+    setTimeout(rj, 0x0);
   };
   var rb = function () {
-    if (r0 && rr) {
-      clearTimeout(rr);
-      rr = undefined;
-    }
+    this["unbind"]("click", r8, this);
+    ro["set"]("visible", !![]);
+    rj();
+    rq["set"]("visible", !![]);
+    rp["unbind"]("loaded", rb, this);
+    rp["bind"]("resize", ra, this);
+    rt = setTimeout(rc["bind"](this), 0xc8);
   };
   var rc = function () {
-    if (r0) {
-      rb();
-      rr = setTimeout(rd['bind'](this), r0);
+    rt = undefined;
+    if (r2) {
+      rp["bind"]("click", r9, this);
+      re["call"](this);
     }
+    rp["bind"]("userInteractionStart", rk, this);
+    rp["bind"]("userInteractionEnd", rl, this);
+    rp["bind"]("backgroundClick", rf, this);
+    if (qW) {
+      rp["bind"]("click", rh, this);
+      rp["set"]("imageCursor", "hand");
+    }
+    rq["bind"]("click", rf, this);
+    if (r5) r5["call"](this);
   };
   var rd = function () {
-    this['getMainViewer']()['set']('toolTipEnabled', !![]);
-    r5 = !![];
-    if (rr) clearTimeout(rr);
-    if (rs) clearTimeout(rs);
-    if (r0) r7();
-    if (r4) r4['call'](this);
-    rn['set']('visible', ![]);
-    if (qY && qY['get']('duration') > 0x0) {
-      qY['bind']('end', re, this);
-    } else {
-      rn['set']('image', null);
-    }
-    ro['set']('visible', ![]);
-    rm['set']('visible', ![]);
-    this['unbind']('click', r6, this);
-    rn['unbind']('backgroundClick', rd, this);
-    rn['unbind']('userInteractionStart', ri, this);
-    rn['unbind']('userInteractionEnd', rj, this, !![]);
-    rn['unbind']('resize', r8, this);
-    if (qU) {
-      rn['unbind']('click', rf, this);
-      rn['set']('cursor', 'default');
-    }
-    ro['unbind']('click', rd, this);
-    this['resumePlayers'](rq, r1 == null || r2);
-    if (r2) {
-      this['resumeGlobalAudios']();
-    }
-    if (r1) {
-      this['stopGlobalAudio'](r1);
+    if (r2 && rt) {
+      clearTimeout(rt);
+      rt = undefined;
     }
   };
   var re = function () {
-    rn['set']('image', null);
-    qY['unbind']('end', re, this);
+    if (r2) {
+      rd();
+      rt = setTimeout(rf["bind"](this), r2);
+    }
   };
   var rf = function () {
-    rn['set']('image', rg() ? qT : qU);
+    this["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+    r7 = !![];
+    if (rt) clearTimeout(rt);
+    if (ru) clearTimeout(ru);
+    if (r2) r9();
+    if (r6) r6["call"](this);
+    rp["set"]("visible", ![]);
+    if (r0 && r0["get"]("duration") > 0x0) {
+      r0["bind"]("end", rg, this);
+    } else {
+      rp["set"]("image", null);
+    }
+    rq["set"]("visible", ![]);
+    ro["set"]("visible", ![]);
+    this["unbind"]("click", r8, this);
+    rp["unbind"]("backgroundClick", rf, this);
+    rp["unbind"]("userInteractionStart", rk, this);
+    rp["unbind"]("userInteractionEnd", rl, this, !![]);
+    rp["unbind"]("resize", ra, this);
+    if (qW) {
+      rp["unbind"]("click", rh, this);
+      rp["set"]("cursor", "default");
+    }
+    rq["unbind"]("click", rf, this);
+    this["resumePlayers"](rs, r3 == null || r4);
+    if (r4) {
+      this["resumeGlobalAudios"]();
+    }
+    if (r3) {
+      this["stopGlobalAudio"](r3);
+    }
   };
   var rg = function () {
-    return rn['get']('image') == qU;
+    rp["set"]("image", null);
+    r0["unbind"]("end", rg, this);
   };
   var rh = function () {
-    var rt = rn['get']('actualWidth') - rn['get']('imageLeft') - rn['get']('imageWidth') + 0xa;
-    var ru = rn['get']('imageTop') + 0xa;
-    if (rt < 0xa) rt = 0xa;
-    if (ru < 0xa) ru = 0xa;
-    ro['set']('right', rt);
-    ro['set']('top', ru);
+    rp["set"]("image", ri() ? qV : qW);
   };
   var ri = function () {
-    rb();
-    if (rs) {
-      clearTimeout(rs);
-      rs = undefined;
-    } else {
-      ro['set']('visible', ![]);
-    }
+    return rp["get"]("image") == qW;
   };
   var rj = function () {
-    rc['call'](this);
-    if (!r5) {
-      rs = setTimeout(rk, 0x12c);
-    }
+    var rv =
+      rp["get"]("actualWidth") -
+      rp["get"]("imageLeft") -
+      rp["get"]("imageWidth") +
+      0xa;
+    var rw = rp["get"]("imageTop") + 0xa;
+    if (rv < 0xa) rv = 0xa;
+    if (rw < 0xa) rw = 0xa;
+    rq["set"]("right", rv);
+    rq["set"]("top", rw);
   };
   var rk = function () {
-    rs = undefined;
-    ro['set']('visible', !![]);
-    rh();
+    rd();
+    if (ru) {
+      clearTimeout(ru);
+      ru = undefined;
+    } else {
+      rq["set"]("visible", ![]);
+    }
   };
-  var rl = function (rv) {
-    var rw = rv['get']('data');
-    if (rw && 'extraLevels' in rw) {
-      var rx = this['rootPlayer']['createInstance'](rv['get']('class'));
-      var ry = rw['extraLevels'];
-      for (var rz = 0x0; rz < ry['length']; rz++) {
-        var rA = ry[rz];
-        if (typeof rA == 'string') ry[rz] = this[rA['replace']('this.', '')];
+  var rl = function () {
+    re["call"](this);
+    if (!r7) {
+      ru = setTimeout(rm, 0x12c);
+    }
+  };
+  var rm = function () {
+    ru = undefined;
+    rq["set"]("visible", !![]);
+    rj();
+  };
+  var rn = function (rx) {
+    var ry = rx["get"]("data");
+    if (ry && "extraLevels" in ry) {
+      var rz = this["rootPlayer"]["createInstance"](rx["get"]("class"));
+      var rA = ry["extraLevels"];
+      for (var rB = 0x0; rB < rA["length"]; rB++) {
+        var rC = rA[rB];
+        if (typeof rC == "string") rA[rB] = this[rC["replace"]("this.", "")];
       }
-      rx['set']('levels', rv['get']('levels')['concat'](ry));
-      rv = rx;
+      rz["set"]("levels", rx["get"]("levels")["concat"](rA));
+      rx = rz;
     }
-    return rv;
+    return rx;
   };
-  this['getMainViewer']()['set']('toolTipEnabled', ![]);
-  var rm = this['veilPopupPanorama'];
-  var rn = this['zoomImagePopupPanorama'];
-  var ro = this['closeButtonPopupPanorama'];
-  if (qZ) {
-    for (var rp in qZ) {
-      ro['set'](rp, qZ[rp]);
-    }
-  }
-  var rq = this['pauseCurrentPlayers'](r1 == null || !r2);
-  if (r2) {
-    this['pauseGlobalAudios'](null, !![]);
-  }
+  this["getMainViewer"]()["set"]("toolTipEnabled", ![]);
+  var ro = this["veilPopupPanorama"];
+  var rp = this["zoomImagePopupPanorama"];
+  var rq = this["closeButtonPopupPanorama"];
   if (r1) {
-    this['playGlobalAudio'](r1, !![]);
+    for (var rr in r1) {
+      rq["set"](rr, r1[rr]);
+    }
   }
-  var rr = undefined;
-  var rs = undefined;
-  qT = rl['call'](this, qT);
-  if (qU) qU = rl['call'](this, qU);
-  rn['bind']('loaded', r9, this);
-  setTimeout(function () {
-    this['bind']('click', r6, this, ![]);
-  }['bind'](this), 0x0);
-  rn['set']('image', qT);
-  rn['set']('customWidth', qV);
-  rn['set']('customHeight', qW);
-  rn['set']('showEffect', qX);
-  rn['set']('hideEffect', qY);
-  rn['set']('visible', !![]);
-  return rn;
+  var rs = this["pauseCurrentPlayers"](r3 == null || !r4);
+  if (r4) {
+    this["pauseGlobalAudios"](null, !![]);
+  }
+  if (r3) {
+    this["playGlobalAudio"](r3, !![]);
+  }
+  var rt = undefined;
+  var ru = undefined;
+  qV = rn["call"](this, qV);
+  if (qW) qW = rn["call"](this, qW);
+  rp["bind"]("loaded", rb, this);
+  setTimeout(
+    function () {
+      this["bind"]("click", r8, this, ![]);
+    }["bind"](this),
+    0x0
+  );
+  rp["set"]("image", qV);
+  rp["set"]("customWidth", qX);
+  rp["set"]("customHeight", qY);
+  rp["set"]("showEffect", qZ);
+  rp["set"]("hideEffect", r0);
+  rp["set"]("visible", !![]);
+  return rp;
 };
-TDV['Tour']['Script']['showPopupPanoramaOverlay'] = function (rB, rC, rD, rE, rF, rG, rH, rI) {
-  var rJ = this['isCardboardViewMode']();
-  if (rB['get']('visible') || !rJ && this['zoomImagePopupPanorama']['get']('visible')) return;
-  this['getMainViewer']()['set']('toolTipEnabled', ![]);
-  if (!rJ) {
-    var rK = this['zoomImagePopupPanorama'];
-    var rL = rB['get']('showDuration');
-    var rM = rB['get']('hideDuration');
-    var rO = this['pauseCurrentPlayers'](rG == null || !rH);
-    var rP = rB['get']('popupMaxWidth');
-    var rQ = rB['get']('popupMaxHeight');
-    var rR = function () {
-      var rV = function () {
-        if (!this['isCardboardViewMode']()) rB['set']('visible', ![]);
-      };
-      rB['unbind']('showEnd', rR, this);
-      rB['set']('showDuration', 0x1);
-      rB['set']('hideDuration', 0x1);
-      this['showPopupImage'](rD, rE, rB['get']('popupMaxWidth'), rB['get']('popupMaxHeight'), null, null, rC, rF, rG, rH, rV, rS);
-    };
-    var rS = function () {
-      var rW = function () {
-        rB['unbind']('hideEnd', rW, this);
-        if (rI) rI();
-      };
-      var rX = function () {
-        rB['unbind']('showEnd', rX, this);
-        rB['bind']('hideEnd', rW, this, !![]);
-        rB['set']('visible', ![]);
-        rB['set']('showDuration', rL);
-        rB['set']('popupMaxWidth', rP);
-        rB['set']('popupMaxHeight', rQ);
-      };
-      this['resumePlayers'](rO, rG == null || !rH);
-      var rY = rK['get']('imageWidth');
-      var rZ = rK['get']('imageHeight');
-      rB['bind']('showEnd', rX, this, !![]);
-      rB['set']('showDuration', 0x1);
-      rB['set']('hideDuration', rM);
-      rB['set']('popupMaxWidth', rY);
-      rB['set']('popupMaxHeight', rZ);
-      if (rB['get']('visible')) rX();
-      else rB['set']('visible', !![]);
-      this['getMainViewer']()['set']('toolTipEnabled', !![]);
-      if (rI) rI();
-    };
-    rB['bind']('showEnd', rR, this, !![]);
-  } else {
+TDV["Tour"]["Script"]["showPopupPanoramaOverlay"] = function (
+  rD,
+  rE,
+  rF,
+  rG,
+  rH,
+  rI,
+  rJ,
+  rK
+) {
+  var rL = this["isCardboardViewMode"]();
+  if (
+    rD["get"]("visible") ||
+    (!rL && this["zoomImagePopupPanorama"]["get"]("visible"))
+  )
+    return;
+  this["getMainViewer"]()["set"]("toolTipEnabled", ![]);
+  if (!rL) {
+    var rM = this["zoomImagePopupPanorama"];
+    var rN = rD["get"]("showDuration");
+    var rO = rD["get"]("hideDuration");
+    var rQ = this["pauseCurrentPlayers"](rI == null || !rJ);
+    var rR = rD["get"]("popupMaxWidth");
+    var rS = rD["get"]("popupMaxHeight");
     var rT = function () {
-      this['resumePlayers'](rO, rG == null || rH);
-      if (rH) {
-        this['resumeGlobalAudios']();
-      }
-      if (rG) {
-        this['stopGlobalAudio'](rG);
-      }
-      if (rE) {
-        rB['set']('image', rD);
-        rB['unbind']('click', rU, this);
-      }
-      rB['unbind']('hideEnd', rT, this);
-      this['getMainViewer']()['set']('toolTipEnabled', !![]);
-      if (rI) rI();
+      var rX = function () {
+        if (!this["isCardboardViewMode"]()) rD["set"]("visible", ![]);
+      };
+      rD["unbind"]("showEnd", rT, this);
+      rD["set"]("showDuration", 0x1);
+      rD["set"]("hideDuration", 0x1);
+      this["showPopupImage"](
+        rF,
+        rG,
+        rD["get"]("popupMaxWidth"),
+        rD["get"]("popupMaxHeight"),
+        null,
+        null,
+        rE,
+        rH,
+        rI,
+        rJ,
+        rX,
+        rU
+      );
     };
     var rU = function () {
-      rB['set']('image', rB['get']('image') == rD ? rE : rD);
+      var rY = function () {
+        rD["unbind"]("hideEnd", rY, this);
+        if (rK) rK();
+      };
+      var rZ = function () {
+        rD["unbind"]("showEnd", rZ, this);
+        rD["bind"]("hideEnd", rY, this, !![]);
+        rD["set"]("visible", ![]);
+        rD["set"]("showDuration", rN);
+        rD["set"]("popupMaxWidth", rR);
+        rD["set"]("popupMaxHeight", rS);
+      };
+      this["resumePlayers"](rQ, rI == null || !rJ);
+      var s0 = rM["get"]("imageWidth");
+      var s1 = rM["get"]("imageHeight");
+      rD["bind"]("showEnd", rZ, this, !![]);
+      rD["set"]("showDuration", 0x1);
+      rD["set"]("hideDuration", rO);
+      rD["set"]("popupMaxWidth", s0);
+      rD["set"]("popupMaxHeight", s1);
+      if (rD["get"]("visible")) rZ();
+      else rD["set"]("visible", !![]);
+      this["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+      if (rK) rK();
     };
-    var rO = this['pauseCurrentPlayers'](rG == null || !rH);
-    if (rH) {
-      this['pauseGlobalAudios'](null, !![]);
+    rD["bind"]("showEnd", rT, this, !![]);
+  } else {
+    var rV = function () {
+      this["resumePlayers"](rQ, rI == null || rJ);
+      if (rJ) {
+        this["resumeGlobalAudios"]();
+      }
+      if (rI) {
+        this["stopGlobalAudio"](rI);
+      }
+      if (rG) {
+        rD["set"]("image", rF);
+        rD["unbind"]("click", rW, this);
+      }
+      rD["unbind"]("hideEnd", rV, this);
+      this["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+      if (rK) rK();
+    };
+    var rW = function () {
+      rD["set"]("image", rD["get"]("image") == rF ? rG : rF);
+    };
+    var rQ = this["pauseCurrentPlayers"](rI == null || !rJ);
+    if (rJ) {
+      this["pauseGlobalAudios"](null, !![]);
     }
-    if (rG) {
-      this['playGlobalAudio'](rG, !![]);
+    if (rI) {
+      this["playGlobalAudio"](rI, !![]);
     }
-    if (rE) rB['bind']('click', rU, this);
-    rB['bind']('hideEnd', rT, this, !![]);
+    if (rG) rD["bind"]("click", rW, this);
+    rD["bind"]("hideEnd", rV, this, !![]);
   }
-  rB['set']('visible', !![]);
+  rD["set"]("visible", !![]);
 };
-TDV['Tour']['Script']['showPopupPanoramaVideoOverlay'] = function (s0, s1, s2, s3, s4) {
-  var s5 = ![];
-  var s6 = function () {
-    s0['unbind']('showEnd', s6);
-    sa['bind']('click', s8, this);
-    s9();
-    sa['set']('visible', !![]);
-  }['bind'](this);
-  var s7 = function () {
-    s5 = !![];
-    if (!s0['get']('loop')) s8();
-  }['bind'](this);
+TDV["Tour"]["Script"]["showPopupPanoramaVideoOverlay"] = function (
+  s2,
+  s3,
+  s4,
+  s5,
+  s6
+) {
+  var s7 = ![];
   var s8 = function () {
-    window['resumeAudiosBlocked'] = ![];
-    this['getMainViewer']()['set']('toolTipEnabled', !![]);
-    s0['set']('visible', ![]);
-    sa['set']('visible', ![]);
-    sa['unbind']('click', s8, this);
-    s0['unbind']('end', s7, this);
-    s0['unbind']('hideEnd', s8, this, !![]);
-    this['resumePlayers'](sc, !![]);
-    if (s2) {
-      this['resumeGlobalAudios']();
-    }
-    if (s3) s3();
-    if (s4 && s5) s4();
-  }['bind'](this);
+    s2["unbind"]("showEnd", s8);
+    sc["bind"]("click", sa, this);
+    sb();
+    sc["set"]("visible", !![]);
+  }["bind"](this);
   var s9 = function () {
-    var sd = 0xa;
-    var se = 0xa;
-    sa['set']('right', sd);
-    sa['set']('top', se);
-  }['bind'](this);
-  this['getMainViewer']()['set']('toolTipEnabled', ![]);
-  var sa = this['closeButtonPopupPanorama'];
-  if (s1) {
-    for (var sb in s1) {
-      sa['set'](sb, s1[sb]);
+    s7 = !![];
+    if (!s2["get"]("loop")) sa();
+  }["bind"](this);
+  var sa = function () {
+    window["resumeAudiosBlocked"] = ![];
+    this["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+    s2["set"]("visible", ![]);
+    sc["set"]("visible", ![]);
+    sc["unbind"]("click", sa, this);
+    s2["unbind"]("end", s9, this);
+    s2["unbind"]("hideEnd", sa, this, !![]);
+    this["resumePlayers"](se, !![]);
+    if (s4) {
+      this["resumeGlobalAudios"]();
+    }
+    if (s5) s5();
+    if (s6 && s7) s6();
+  }["bind"](this);
+  var sb = function () {
+    var sf = 0xa;
+    var sg = 0xa;
+    sc["set"]("right", sf);
+    sc["set"]("top", sg);
+  }["bind"](this);
+  this["getMainViewer"]()["set"]("toolTipEnabled", ![]);
+  var sc = this["closeButtonPopupPanorama"];
+  if (s3) {
+    for (var sd in s3) {
+      sc["set"](sd, s3[sd]);
     }
   }
-  window['resumeAudiosBlocked'] = !![];
-  var sc = this['pauseCurrentPlayers'](!![]);
-  if (s2) {
-    this['pauseGlobalAudios']();
+  window["resumeAudiosBlocked"] = !![];
+  var se = this["pauseCurrentPlayers"](!![]);
+  if (s4) {
+    this["pauseGlobalAudios"]();
   }
-  s0['bind']('end', s7, this, !![]);
-  s0['bind']('showEnd', s6, this, !![]);
-  s0['bind']('hideEnd', s8, this, !![]);
-  s0['set']('visible', !![]);
+  s2["bind"]("end", s9, this, !![]);
+  s2["bind"]("showEnd", s8, this, !![]);
+  s2["bind"]("hideEnd", sa, this, !![]);
+  s2["set"]("visible", !![]);
 };
-TDV['Tour']['Script']['showWindow'] = function (sf, sg, sh) {
-  if (sf['get']('visible') == !![]) {
+TDV["Tour"]["Script"]["showWindow"] = function (sh, si, sj) {
+  if (sh["get"]("visible") == !![]) {
     return;
   }
-  var si = function () {
-    this['getMainViewer']()['set']('toolTipEnabled', !![]);
-    if (sh) {
-      this['resumeGlobalAudios']();
+  var sk = function () {
+    this["getMainViewer"]()["set"]("toolTipEnabled", !![]);
+    if (sj) {
+      this["resumeGlobalAudios"]();
     }
-    sj();
-    this['resumePlayers'](sm, !sh);
-    sf['unbind']('close', si, this);
+    sl();
+    this["resumePlayers"](so, !sj);
+    sh["unbind"]("close", sk, this);
   };
-  var sj = function () {
-    sf['unbind']('click', sj, this);
-    if (sk != undefined) {
-      clearTimeout(sk);
+  var sl = function () {
+    sh["unbind"]("click", sl, this);
+    if (sm != undefined) {
+      clearTimeout(sm);
     }
   };
-  var sk = undefined;
-  if (sg) {
-    var sl = function () {
-      sf['hide']();
+  var sm = undefined;
+  if (si) {
+    var sn = function () {
+      sh["hide"]();
     };
-    sf['bind']('click', sj, this);
-    sk = setTimeout(sl, sg);
+    sh["bind"]("click", sl, this);
+    sm = setTimeout(sn, si);
   }
-  this['getMainViewer']()['set']('toolTipEnabled', ![]);
-  if (sh) {
-    this['pauseGlobalAudios'](null, !![]);
+  this["getMainViewer"]()["set"]("toolTipEnabled", ![]);
+  if (sj) {
+    this["pauseGlobalAudios"](null, !![]);
   }
-  var sm = this['pauseCurrentPlayers'](!sh);
-  sf['bind']('close', si, this);
-  sf['show'](this, !![]);
+  var so = this["pauseCurrentPlayers"](!sj);
+  sh["bind"]("close", sk, this);
+  sh["show"](this, !![]);
 };
-TDV['Tour']['Script']['startPanoramaWithCamera'] = function (sn, so) {
-  var sp = this['getByClassName']('PlayList');
-  if (sp['length'] == 0x0) return;
-  var sq = window['currentPanoramasWithCameraChanged'] == undefined || !(sn['get']('id') in window['currentPanoramasWithCameraChanged']);
-  var sr = [];
-  for (var st = 0x0, su = sp['length']; st < su; ++st) {
-    var sv = sp[st];
-    var sw = sv['get']('items');
-    for (var sx = 0x0, sy = sw['length']; sx < sy; ++sx) {
-      var sA = sw[sx];
-      if (sA['get']('media') == sn && (sA['get']('class') == 'PanoramaPlayListItem' || sA['get']('class') == 'Video360PlayListItem')) {
-        if (sq) {
-          sr['push']({
-            'camera': sA['get']('camera'),
-            'item': sA
-          });
+TDV["Tour"]["Script"]["startPanoramaWithCamera"] = function (sp, sq) {
+  var sr = this["getByClassName"]("PlayList");
+  if (sr["length"] == 0x0) return;
+  var ss =
+    window["currentPanoramasWithCameraChanged"] == undefined ||
+    !(sp["get"]("id") in window["currentPanoramasWithCameraChanged"]);
+  var st = [];
+  for (var sv = 0x0, sw = sr["length"]; sv < sw; ++sv) {
+    var sx = sr[sv];
+    var sy = sx["get"]("items");
+    for (var sz = 0x0, sA = sy["length"]; sz < sA; ++sz) {
+      var sC = sy[sz];
+      if (
+        sC["get"]("media") == sp &&
+        (sC["get"]("class") == "PanoramaPlayListItem" ||
+          sC["get"]("class") == "Video360PlayListItem")
+      ) {
+        if (ss) {
+          st["push"]({ camera: sC["get"]("camera"), item: sC });
         }
-        sA['set']('camera', so);
+        sC["set"]("camera", sq);
       }
     }
   }
-  if (sr['length'] > 0x0) {
-    if (window['currentPanoramasWithCameraChanged'] == undefined) {
-      window['currentPanoramasWithCameraChanged'] = {};
+  if (st["length"] > 0x0) {
+    if (window["currentPanoramasWithCameraChanged"] == undefined) {
+      window["currentPanoramasWithCameraChanged"] = {};
     }
-    var sB = sn['get']('id');
-    window['currentPanoramasWithCameraChanged'][sB] = sr;
-    var sC = function () {
-      if (sB in window['currentPanoramasWithCameraChanged']) {
-        delete window['currentPanoramasWithCameraChanged'][sB];
+    var sD = sp["get"]("id");
+    window["currentPanoramasWithCameraChanged"][sD] = st;
+    var sE = function () {
+      if (sD in window["currentPanoramasWithCameraChanged"]) {
+        delete window["currentPanoramasWithCameraChanged"][sD];
       }
-      for (var sE = 0x0; sE < sr['length']; sE++) {
-        sr[sE]['item']['set']('camera', sr[sE]['camera']);
-        sr[sE]['item']['unbind']('end', sC, this);
+      for (var sG = 0x0; sG < st["length"]; sG++) {
+        st[sG]["item"]["set"]("camera", st[sG]["camera"]);
+        st[sG]["item"]["unbind"]("end", sE, this);
       }
     };
-    for (var st = 0x0; st < sr['length']; st++) {
-      var sD = sr[st];
-      var sA = sD['item'];
-      this['skip3DTransitionOnce'](sA['get']('player'));
-      sA['bind']('end', sC, this);
+    for (var sv = 0x0; sv < st["length"]; sv++) {
+      var sF = st[sv];
+      var sC = sF["item"];
+      this["skip3DTransitionOnce"](sC["get"]("player"));
+      sC["bind"]("end", sE, this);
     }
   }
 };
-TDV['Tour']['Script']['stopAndGoCamera'] = function (sF, sG) {
-  var sH = sF['get']('initialSequence');
-  sH['pause']();
-  var sI = function () {
-    sH['play']();
+TDV["Tour"]["Script"]["stopAndGoCamera"] = function (sH, sI) {
+  var sJ = sH["get"]("initialSequence");
+  sJ["pause"]();
+  var sK = function () {
+    sJ["play"]();
   };
-  setTimeout(sI, sG);
+  setTimeout(sK, sI);
 };
-TDV['Tour']['Script']['syncPlaylists'] = function (sJ) {
-  var sK = function (sS, sT) {
-    for (var sU = 0x0, sV = sJ['length']; sU < sV; ++sU) {
-      var sW = sJ[sU];
-      if (sW != sT) {
-        var sX = sW['get']('items');
-        for (var sY = 0x0, sZ = sX['length']; sY < sZ; ++sY) {
-          if (sX[sY]['get']('media') == sS) {
-            if (sW['get']('selectedIndex') != sY) {
-              sW['set']('selectedIndex', sY);
+TDV["Tour"]["Script"]["syncPlaylists"] = function (sL) {
+  var sM = function (sU, sV) {
+    for (var sW = 0x0, sX = sL["length"]; sW < sX; ++sW) {
+      var sY = sL[sW];
+      if (sY != sV) {
+        var sZ = sY["get"]("items");
+        for (var t0 = 0x0, t1 = sZ["length"]; t0 < t1; ++t0) {
+          if (sZ[t0]["get"]("media") == sU) {
+            if (sY["get"]("selectedIndex") != t0) {
+              sY["set"]("selectedIndex", t0);
             }
             break;
           }
@@ -3803,606 +4322,737 @@ TDV['Tour']['Script']['syncPlaylists'] = function (sJ) {
       }
     }
   };
-  var sL = function (t0) {
-    var t1 = t0['source'];
-    var t2 = t1['get']('selectedIndex');
-    if (t2 < 0x0) return;
-    var t3 = t1['get']('items')[t2]['get']('media');
-    sK(t3, t1);
+  var sN = function (t2) {
+    var t3 = t2["source"];
+    var t4 = t3["get"]("selectedIndex");
+    if (t4 < 0x0) return;
+    var t5 = t3["get"]("items")[t4]["get"]("media");
+    sM(t5, t3);
   };
-  var sM = function (t4) {
-    var t5 = t4['source']['get']('panoramaMapLocation');
-    if (t5) {
-      var t6 = t5['get']('map');
-      sK(t6);
+  var sO = function (t6) {
+    var t7 = t6["source"]["get"]("panoramaMapLocation");
+    if (t7) {
+      var t8 = t7["get"]("map");
+      sM(t8);
     }
   };
-  for (var sO = 0x0, sQ = sJ['length']; sO < sQ; ++sO) {
-    sJ[sO]['bind']('change', sL, this);
+  for (var sQ = 0x0, sS = sL["length"]; sQ < sS; ++sQ) {
+    sL[sQ]["bind"]("change", sN, this);
   }
-  var sR = this['getByClassName']('MapPlayer');
-  for (var sO = 0x0, sQ = sR['length']; sO < sQ; ++sO) {
-    sR[sO]['bind']('panoramaMapLocation_change', sM, this);
+  var sT = this["getByClassName"]("MapPlayer");
+  for (var sQ = 0x0, sS = sT["length"]; sQ < sS; ++sQ) {
+    sT[sQ]["bind"]("panoramaMapLocation_change", sO, this);
   }
 };
-TDV['Tour']['Script']['translate'] = function (t7) {
-  return this['get']('data')['localeManager']['trans'](t7);
+TDV["Tour"]["Script"]["translate"] = function (t9) {
+  return this["get"]("data")["localeManager"]["trans"](t9);
 };
-TDV['Tour']['Script']['triggerOverlay'] = function (t8, t9) {
-  if (t8['get']('areas') != undefined) {
-    var ta = t8['get']('areas');
-    for (var tb = 0x0; tb < ta['length']; ++tb) {
-      ta[tb]['trigger'](t9);
+TDV["Tour"]["Script"]["triggerOverlay"] = function (ta, tb) {
+  if (ta["get"]("areas") != undefined) {
+    var tc = ta["get"]("areas");
+    for (var td = 0x0; td < tc["length"]; ++td) {
+      tc[td]["trigger"](tb);
     }
   } else {
-    t8['trigger'](t9);
+    ta["trigger"](tb);
   }
 };
-TDV['Tour']['Script']['updateDeepLink'] = function (tc, td, te) {
-  var tf = this['mainPlayList']['get']('selectedIndex');
-  var tg;
-  var th;
-  if (tf >= 0x0) {
-    tg = '#media=' + (tf + 0x1);
-    th = this['mainPlayList']['get']('items')[tf]['get']('media');
+TDV["Tour"]["Script"]["updateDeepLink"] = function (te, tf, tg) {
+  var th = this["mainPlayList"]["get"]("selectedIndex");
+  var ti;
+  var tj;
+  if (th >= 0x0) {
+    ti = "#media=" + (th + 0x1);
+    tj = this["mainPlayList"]["get"]("items")[th]["get"]("media");
   } else {
-    th = this['getActiveMediaWithViewer'](this['getMainViewer']());
-    if (th != undefined) {
-      var tj = th['get']('data');
-      if (tj) {
-        tg = '#media-name=' + tj['label'];
+    tj = this["getActiveMediaWithViewer"](this["getMainViewer"]());
+    if (tj != undefined) {
+      var tl = tj["get"]("data");
+      if (tl) {
+        ti = "#media-name=" + tl["label"];
       }
     }
   }
-  if (th) {
-    if (tc) {
-      var tk = this['getActivePlayerWithViewer'](this['getMainViewer']());
-      if (tk && tk['get']('class') == 'PanoramaPlayer') {
-        var tl = tk['get']('yaw');
-        var tm = tk['get']('pitch');
-        if (!isNaN(tl) && !isNaN(tm)) tg += '&yaw=' + tl['toFixed'](0x2) + '&pitch=' + tm['toFixed'](0x2);
+  if (tj) {
+    if (te) {
+      var tm = this["getActivePlayerWithViewer"](this["getMainViewer"]());
+      if (tm && tm["get"]("class") == "PanoramaPlayer") {
+        var tn = tm["get"]("yaw");
+        var to = tm["get"]("pitch");
+        if (!isNaN(tn) && !isNaN(to))
+          ti += "&yaw=" + tn["toFixed"](0x2) + "&pitch=" + to["toFixed"](0x2);
       }
     }
-    if (td) {
-      var tn = this['getOverlays'](th);
-      var to = [];
-      var tp = [];
-      for (var tq = 0x0, tr = tn['length']; tq < tr; ++tq) {
-        var ts = tn[tq];
-        var tt = ts['get']('enabled');
-        var tj = ts['get']('data');
-        if (tt === undefined || !tj || !tj['label']) continue;
-        var tu = encodeURIComponent(tj['label']);
-        var tv = tj['group'];
-        if (tt != tj['defaultEnabledValue']) {
-          if (tt) {
-            to['push'](tu);
-          } else if (!tv) {
-            tp['push'](tu);
+    if (tf) {
+      var tp = this["getOverlays"](tj);
+      var tq = [];
+      var tr = [];
+      for (var ts = 0x0, tt = tp["length"]; ts < tt; ++ts) {
+        var tu = tp[ts];
+        var tv = tu["get"]("enabled");
+        var tl = tu["get"]("data");
+        if (tv === undefined || !tl || !tl["label"]) continue;
+        var tw = encodeURIComponent(tl["label"]);
+        var tx = tl["group"];
+        if (tv != tl["defaultEnabledValue"]) {
+          if (tv) {
+            tq["push"](tw);
+          } else if (!tx) {
+            tr["push"](tw);
           }
         }
       }
-      if (to['length'] > 0x0) tg += '&son=' + to['join'](',');
-      if (tp['length'] > 0x0) tg += '&hon=' + tp['join'](',');
+      if (tq["length"] > 0x0) ti += "&son=" + tq["join"](",");
+      if (tr["length"] > 0x0) ti += "&hon=" + tr["join"](",");
     }
   }
-  if (tg && te === !![]) {
-    location['hash'] = tg;
+  if (ti && tg === !![]) {
+    location["hash"] = ti;
   }
-  return tg;
+  return ti;
 };
-TDV['Tour']['Script']['updateMediaLabelFromPlayList'] = function (tw, tx, ty) {
-  var tz = function () {
-    var tB = tw['get']('selectedIndex');
-    if (tB >= 0x0) {
-      var tC = function () {
-        tF['unbind']('begin', tC);
-        tD(tB);
+TDV["Tour"]["Script"]["updateMediaLabelFromPlayList"] = function (ty, tz, tA) {
+  var tB = function () {
+    var tD = ty["get"]("selectedIndex");
+    if (tD >= 0x0) {
+      var tE = function () {
+        tH["unbind"]("begin", tE);
+        tF(tD);
       };
-      var tD = function (tG) {
-        var tH = tF['get']('media');
-        var tI = tH['get']('data');
-        var tJ = tI !== undefined ? tI['description'] : undefined;
-        tE(tJ);
+      var tF = function (tI) {
+        var tJ = tH["get"]("media");
+        var tK = tJ["get"]("data");
+        var tL = tK !== undefined ? tK["description"] : undefined;
+        tG(tL);
       };
-      var tE = function (tK) {
-        if (tK !== undefined) {
-          tx['set']('html', '<div\x20style=\x22text-align:left\x22><SPAN\x20STYLE=\x22color:#FFFFFF;font-size:12px;font-family:Verdana\x22><span\x20color=\x22white\x22\x20font-family=\x22Verdana\x22\x20font-size=\x2212px\x22>' + tK + '</SPAN></div>');
+      var tG = function (tM) {
+        if (tM !== undefined) {
+          tz["set"](
+            "html",
+            "<div\x20style=\x22text-align:left\x22><SPAN\x20STYLE=\x22color:#FFFFFF;font-size:12px;font-family:Verdana\x22><span\x20color=\x22white\x22\x20font-family=\x22Verdana\x22\x20font-size=\x2212px\x22>" +
+            tM +
+            "</SPAN></div>"
+          );
         } else {
-          tx['set']('html', '');
+          tz["set"]("html", "");
         }
-        var tL = tx['get']('html');
-        tx['set']('visible', tL !== undefined && tL);
+        var tN = tz["get"]("html");
+        tz["set"]("visible", tN !== undefined && tN);
       };
-      var tF = tw['get']('items')[tB];
-      if (tx['get']('html')) {
-        tE('Loading...');
-        tF['bind']('begin', tC);
+      var tH = ty["get"]("items")[tD];
+      if (tz["get"]("html")) {
+        tG("Loading...");
+        tH["bind"]("begin", tE);
       } else {
-        tD(tB);
+        tF(tD);
       }
     }
   };
-  var tA = function () {
-    tx['set']('html', undefined);
-    tw['unbind']('change', tz, this);
-    ty['unbind']('stop', tA, this);
+  var tC = function () {
+    tz["set"]("html", undefined);
+    ty["unbind"]("change", tB, this);
+    tA["unbind"]("stop", tC, this);
   };
-  if (ty) {
-    ty['bind']('stop', tA, this);
+  if (tA) {
+    tA["bind"]("stop", tC, this);
   }
-  tw['bind']('change', tz, this);
-  tz();
+  ty["bind"]("change", tB, this);
+  tB();
 };
-TDV['Tour']['Script']['updateVideoCues'] = function (tM, tN) {
-  var tO = tM['get']('items')[tN];
-  var tP = tO['get']('media');
-  if (tP['get']('cues')['length'] == 0x0) return;
-  var tQ = tO['get']('player');
-  var tR = [];
-  var tS = function () {
-    if (tM['get']('selectedIndex') != tN) {
-      tP['unbind']('cueChange', tT, this);
-      tM['unbind']('change', tS, this);
+TDV["Tour"]["Script"]["updateVideoCues"] = function (tO, tP) {
+  var tQ = tO["get"]("items")[tP];
+  var tR = tQ["get"]("media");
+  if (tR["get"]("cues")["length"] == 0x0) return;
+  var tS = tQ["get"]("player");
+  var tT = [];
+  var tU = function () {
+    if (tO["get"]("selectedIndex") != tP) {
+      tR["unbind"]("cueChange", tV, this);
+      tO["unbind"]("change", tU, this);
     }
   };
-  var tT = function (tU) {
-    var tV = tU['data']['activeCues'];
-    for (var tW = 0x0, tX = tR['length']; tW < tX; ++tW) {
-      var tY = tR[tW];
-      if (tV['indexOf'](tY) == -0x1 && (tY['get']('startTime') > tQ['get']('currentTime') || tY['get']('endTime') < tQ['get']('currentTime') + 0.5)) {
-        tY['trigger']('end');
+  var tV = function (tW) {
+    var tX = tW["data"]["activeCues"];
+    for (var tY = 0x0, tZ = tT["length"]; tY < tZ; ++tY) {
+      var u0 = tT[tY];
+      if (
+        tX["indexOf"](u0) == -0x1 &&
+        (u0["get"]("startTime") > tS["get"]("currentTime") ||
+          u0["get"]("endTime") < tS["get"]("currentTime") + 0.5)
+      ) {
+        u0["trigger"]("end");
       }
     }
-    tR = tV;
+    tT = tX;
   };
-  tP['bind']('cueChange', tT, this);
-  tM['bind']('change', tS, this);
+  tR["bind"]("cueChange", tV, this);
+  tO["bind"]("change", tU, this);
 };
-TDV['Tour']['Script']['visibleComponentsIfPlayerFlagEnabled'] = function (tZ, u0) {
-  var u1 = this['get'](u0);
-  for (var u2 in tZ) {
-    tZ[u2]['set']('visible', u1);
+TDV["Tour"]["Script"]["visibleComponentsIfPlayerFlagEnabled"] = function (
+  u1,
+  u2
+) {
+  var u3 = this["get"](u2);
+  for (var u4 in u1) {
+    u1[u4]["set"]("visible", u3);
   }
 };
-TDV['Tour']['Script']['quizStart'] = function () {
-  var u3 = this['get']('data')['quiz'];
-  return u3 ? u3['start']() : undefined;
+TDV["Tour"]["Script"]["quizStart"] = function () {
+  var u5 = this["get"]("data")["quiz"];
+  return u5 ? u5["start"]() : undefined;
 };
-TDV['Tour']['Script']['quizFinish'] = function () {
-  var u4 = this['get']('data')['quiz'];
-  return u4 ? u4['finish']() : undefined;
+TDV["Tour"]["Script"]["quizFinish"] = function () {
+  var u6 = this["get"]("data")["quiz"];
+  return u6 ? u6["finish"]() : undefined;
 };
-TDV['Tour']['Script']['quizPauseTimer'] = function () {
-  var u5 = this['get']('data')['quiz'];
-  return u5 ? u5['pauseTimer']() : undefined;
+TDV["Tour"]["Script"]["quizPauseTimer"] = function () {
+  var u7 = this["get"]("data")["quiz"];
+  return u7 ? u7["pauseTimer"]() : undefined;
 };
-TDV['Tour']['Script']['quizResumeTimer'] = function () {
-  var u6 = this['get']('data')['quiz'];
-  return u6 ? u6['continueTimer']() : undefined;
+TDV["Tour"]["Script"]["quizResumeTimer"] = function () {
+  var u8 = this["get"]("data")["quiz"];
+  return u8 ? u8["continueTimer"]() : undefined;
 };
-TDV['Tour']['Script']['quizSetItemFound'] = function (u7) {
-  var u8 = this['get']('data')['quiz'];
-  if (u8) u8['setItemFound'](u7);
+TDV["Tour"]["Script"]["quizSetItemFound"] = function (u9) {
+  var ua = this["get"]("data")["quiz"];
+  if (ua) ua["setItemFound"](u9);
 };
-TDV['Tour']['Script']['quizShowQuestion'] = function (u9) {
-  var ua = this['get']('data');
-  var ub = ua['quiz'];
-  var uc;
-  if (ub) {
-    var ud = this['pauseCurrentPlayers'](!![]);
-    var ue = this[u9];
-    var uf;
-    if (!ue['media']) {
-      uf = this['get']('isMobile') ? {
-        'theme': {
-          'window': {
-            'height': undefined,
-            'maxHeight': this['get']('actualHeight'),
-            'optionsContainer': {
-              'height': '100%'
-            }
-          }
-        }
-      } : {
-        'theme': {
-          'window': {
-            'width': '40%',
-            'height': undefined,
-            'maxHeight': 0x2bc,
-            'optionsContainer': {
-              'width': '100%'
-            }
-          }
-        }
-      };
-    } else if (this['get']('isMobile') && this['get']('orientation') == 'landscape') {
-      uf = {
-        'theme': {
-          'window': {
-            'bodyContainer': {
-              'layout': 'horizontal',
-              'paddingLeft': 0x1e,
-              'paddingRight': 0x1e
+TDV["Tour"]["Script"]["quizShowQuestion"] = function (ub) {
+  var uc = this["get"]("data");
+  var ud = uc["quiz"];
+  var ue;
+  if (ud) {
+    var uf = this["pauseCurrentPlayers"](!![]);
+    var ug = this[ub];
+    var uh;
+    if (!ug["media"]) {
+      uh = this["get"]("isMobile")
+        ? {
+          theme: {
+            window: {
+              height: undefined,
+              maxHeight: this["get"]("actualHeight"),
+              optionsContainer: { height: "100%" },
             },
-            'mediaContainer': {
-              'width': '60%',
-              'height': '100%'
-            },
-            'buttonsContainer': {
-              'paddingLeft': 0x14,
-              'paddingRight': 0x14
-            },
-            'optionsContainer': {
-              'width': '40%',
-              'height': '100%',
-              'paddingLeft': 0x0,
-              'paddingRight': 0x0
-            }
-          }
+          },
         }
+        : {
+          theme: {
+            window: {
+              width: "40%",
+              height: undefined,
+              maxHeight: 0x2bc,
+              optionsContainer: { width: "100%" },
+            },
+          },
+        };
+    } else if (
+      this["get"]("isMobile") &&
+      this["get"]("orientation") == "landscape"
+    ) {
+      uh = {
+        theme: {
+          window: {
+            bodyContainer: {
+              layout: "horizontal",
+              paddingLeft: 0x1e,
+              paddingRight: 0x1e,
+            },
+            mediaContainer: { width: "60%", height: "100%" },
+            buttonsContainer: { paddingLeft: 0x14, paddingRight: 0x14 },
+            optionsContainer: {
+              width: "40%",
+              height: "100%",
+              paddingLeft: 0x0,
+              paddingRight: 0x0,
+            },
+          },
+        },
       };
     }
-    if (this['get']('isMobile') && this['get']('orientation') == 'landscape') {
-      var ug = this['get']('data')['tour']['getNotchValue']();
-      if (ug > 0x0) {
-        uf = this['mixObject'](uf || {}, {
-          'theme': {
-            'window': {
-              'width': undefined,
-              'left': ug,
-              'right': ug
-            }
-          }
+    if (this["get"]("isMobile") && this["get"]("orientation") == "landscape") {
+      var ui = this["get"]("data")["tour"]["getNotchValue"]();
+      if (ui > 0x0) {
+        uh = this["mixObject"](uh || {}, {
+          theme: { window: { width: undefined, left: ui, right: ui } },
         });
       }
     }
-    var uh = this['get']('data')['textToSpeechConfig']['speechOnQuizQuestion'] && !!ue['title'];
-    if (uh) this['textToSpeech'](ue['title'], u9);
-    uc = ub['showQuestion'](u9, uf);
-    uc['then'](function (ui) {
-      if (uh) this['stopTextToSpeech']();
-      this['resumePlayers'](ud, !![]);
-    }['bind'](this));
+    var uj =
+      this["get"]("data")["textToSpeechConfig"]["speechOnQuizQuestion"] &&
+      !!ug["title"];
+    if (uj) this["textToSpeech"](ug["title"], ub);
+    ue = ud["showQuestion"](ub, uh);
+    ue["then"](
+      function (uk) {
+        if (uj) this["stopTextToSpeech"]();
+        this["resumePlayers"](uf, !![]);
+      }["bind"](this)
+    );
   }
-  return uc;
+  return ue;
 };
-TDV['Tour']['Script']['quizShowScore'] = function (uj) {
-  var uk = this['get']('data');
-  var ul = uk['quiz'];
-  if (ul) {
-    if (this['get']('isMobile')) {
-      uj = uj || {};
-      uj = this['mixObject'](uj, uk[this['get']('orientation') == 'portrait' ? 'scorePortraitConfig' : 'scoreLandscapeConfig']);
+TDV["Tour"]["Script"]["quizShowScore"] = function (ul) {
+  var um = this["get"]("data");
+  var un = um["quiz"];
+  if (un) {
+    if (this["get"]("isMobile")) {
+      ul = ul || {};
+      ul = this["mixObject"](
+        ul,
+        um[
+        this["get"]("orientation") == "portrait"
+          ? "scorePortraitConfig"
+          : "scoreLandscapeConfig"
+        ]
+      );
     }
-    return ul['showScore'](uj);
+    return un["showScore"](ul);
   }
 };
-TDV['Tour']['Script']['quizShowTimeout'] = function (um, un) {
-  var uo = this['get']('data');
-  var up = uo['quiz'];
-  if (up) {
-    if (this['get']('isMobile')) {
-      un = un || {};
-      un = this['mixObject'](un, uo[this['get']('orientation') == 'portrait' ? 'scorePortraitConfig' : 'scoreLandscapeConfig']);
+TDV["Tour"]["Script"]["quizShowTimeout"] = function (uo, up) {
+  var uq = this["get"]("data");
+  var ur = uq["quiz"];
+  if (ur) {
+    if (this["get"]("isMobile")) {
+      up = up || {};
+      up = this["mixObject"](
+        up,
+        uq[
+        this["get"]("orientation") == "portrait"
+          ? "scorePortraitConfig"
+          : "scoreLandscapeConfig"
+        ]
+      );
     }
-    up['showTimeout'](um, un);
+    ur["showTimeout"](uo, up);
   }
 };
-TDV['Tour']['Script']['stopTextToSpeech'] = function (uq) {
-  if (window['speechSynthesis'] && (uq == undefined || this['t2sLastID'] == uq)) {
-    var ur = window['speechSynthesis'];
-    if (ur['speaking']) {
-      ur['cancel']();
+TDV["Tour"]["Script"]["stopTextToSpeech"] = function (us) {
+  if (
+    window["speechSynthesis"] &&
+    (us == undefined || this["t2sLastID"] == us)
+  ) {
+    var ut = window["speechSynthesis"];
+    if (ut["speaking"]) {
+      ut["cancel"]();
     }
-    this['t2sLastID'] = undefined;
+    this["t2sLastID"] = undefined;
   }
 };
-TDV['Tour']['Script']['textToSpeech'] = function (us, ut, uu) {
-  if (this['get']('mute')) {
+TDV["Tour"]["Script"]["textToSpeech"] = function (uu, uv, uw) {
+  if (this["get"]("mute")) {
     return;
   }
-  var uv = this['get']('data');
-  var uw = uv['disableTTS'] || ![];
-  if (uw) return;
-  if (ut != undefined && this['t2sLastID'] != ut || ut == undefined) {
-    uu = uu || 0x0;
-    if (this['t2sLastID'] && uu > this['t2sLastPriority']) {
+  var ux = this["get"]("data");
+  var uy = ux["disableTTS"] || ![];
+  if (uy) return;
+  if ((uv != undefined && this["t2sLastID"] != uv) || uv == undefined) {
+    uw = uw || 0x0;
+    if (this["t2sLastID"] && uw > this["t2sLastPriority"]) {
       return;
     }
-    var ux = uv['tour'];
-    var uy = uv['textToSpeechConfig'];
-    var uz = uv['localeManager']['currentLocaleID'];
-    if (window['speechSynthesis']) {
-      var uA = window['speechSynthesis'];
-      if (uA['speaking']) {
-        uA['cancel']();
+    var uz = ux["tour"];
+    var uA = ux["textToSpeechConfig"];
+    var uB = ux["localeManager"]["currentLocaleID"];
+    if (window["speechSynthesis"]) {
+      var uC = window["speechSynthesis"];
+      if (uC["speaking"]) {
+        uC["cancel"]();
       }
-      var uB = new SpeechSynthesisUtterance(us);
-      if (uz) uB['lang'] = uz;
-      var uC;
-      if (uy) {
-        uB['volume'] = uy['volume'];
-        uB['pitch'] = uy['pitch'];
-        uB['rate'] = uy['rate'];
-        if (uy['stopBackgroundAudio']) this['pauseGlobalAudios'](null, !![]);
+      var uD = new SpeechSynthesisUtterance(uu);
+      if (uB) uD["lang"] = uB;
+      var uE;
+      if (uA) {
+        uD["volume"] = uA["volume"];
+        uD["pitch"] = uA["pitch"];
+        uD["rate"] = uA["rate"];
+        if (uA["stopBackgroundAudio"]) this["pauseGlobalAudios"](null, !![]);
       }
-      uB['onend'] = function () {
-        this['t2sLastID'] = null;
-        if (uC) clearInterval(uC);
-        if (uy['stopBackgroundAudio']) this['resumeGlobalAudios']();
-      }['bind'](this);
-      if (navigator['userAgent']['indexOf']('Chrome') != -0x1 && !this['get']('isMobile')) {
-        uC = setInterval(function () {
-          uA['pause']();
-          uA['resume']();
+      uD["onend"] = function () {
+        this["t2sLastID"] = null;
+        if (uE) clearInterval(uE);
+        if (uA["stopBackgroundAudio"]) this["resumeGlobalAudios"]();
+      }["bind"](this);
+      if (
+        navigator["userAgent"]["indexOf"]("Chrome") != -0x1 &&
+        !this["get"]("isMobile")
+      ) {
+        uE = setInterval(function () {
+          uC["pause"]();
+          uC["resume"]();
         }, 0xbb8);
       }
-      uA['speak'](uB);
-      this['t2sLastPriority'] = uu;
-      this['t2sLastID'] = ut;
-    } else if (ux['isMobileApp']()) {
-      if (!ux['isIOS']()) {
-        var uD = function (uE, uF) {
-          var uG = {
-            'command': 'tts',
-            'type': uE
-          };
-          if (uF) uG = this['mixObject'](uG, uF);
-          android['sendJSON'](JSON['stringify'](uG));
-        }['bind'](this);
-        android['onTTSEnd'] = function () {
-          this['t2sLastID'] = null;
-          if (uy['stopBackgroundAudio']) this['resumeGlobalAudios']();
-          android['onTTSEnd'] = undefined;
-        }['bind'](this);
-        uD('stop');
-        if (uy) {
-          uD('init', {
-            'volume': uy['volume'],
-            'pitch': uy['pitch'],
-            'rate': uy['rate'],
-            'language': uz
+      uC["speak"](uD);
+      this["t2sLastPriority"] = uw;
+      this["t2sLastID"] = uv;
+    } else if (uz["isMobileApp"]()) {
+      if (!uz["isIOS"]()) {
+        var uF = function (uG, uH) {
+          var uI = { command: "tts", type: uG };
+          if (uH) uI = this["mixObject"](uI, uH);
+          android["sendJSON"](JSON["stringify"](uI));
+        }["bind"](this);
+        android["onTTSEnd"] = function () {
+          this["t2sLastID"] = null;
+          if (uA["stopBackgroundAudio"]) this["resumeGlobalAudios"]();
+          android["onTTSEnd"] = undefined;
+        }["bind"](this);
+        uF("stop");
+        if (uA) {
+          uF("init", {
+            volume: uA["volume"],
+            pitch: uA["pitch"],
+            rate: uA["rate"],
+            language: uB,
           });
-          if (uy['stopBackgroundAudio']) this['pauseGlobalAudios'](null, !![]);
+          if (uA["stopBackgroundAudio"]) this["pauseGlobalAudios"](null, !![]);
         }
-        uD('play', {
-          'text': us,
-          'androidCallback': 'onTTSEnd'
-        });
+        uF("play", { text: uu, androidCallback: "onTTSEnd" });
       } else {
-        console['error']('Text\x20to\x20Speech\x20isn\x27t\x20supported\x20on\x20this\x20browser');
+        console["error"](
+          "Text\x20to\x20Speech\x20isn\x27t\x20supported\x20on\x20this\x20browser"
+        );
       }
     } else {
-      console['error']('Text\x20to\x20Speech\x20isn\x27t\x20supported\x20on\x20this\x20browser');
+      console["error"](
+        "Text\x20to\x20Speech\x20isn\x27t\x20supported\x20on\x20this\x20browser"
+      );
     }
   }
 };
-TDV['Tour']['Script']['textToSpeechComponent'] = function (uH) {
-  var uI = uH['get']('class');
-  var uJ;
-  if (uI == 'HTMLText') {
-    var uK = uH['get']('html');
-    if (uK) {
-      uJ = this['htmlToPlainText'](uK, {
-        'linkProcess': function (uL, uM) {
-          return uM;
-        }
+TDV["Tour"]["Script"]["textToSpeechComponent"] = function (uJ) {
+  var uK = uJ["get"]("class");
+  var uL;
+  if (uK == "HTMLText") {
+    var uM = uJ["get"]("html");
+    if (uM) {
+      uL = this["htmlToPlainText"](uM, {
+        linkProcess: function (uN, uO) {
+          return uO;
+        },
       });
     }
-  } else if (uI == 'BaseButton') {
-    uJ = uH['get']('label');
-  } else if (uI == 'Label') {
-    uJ = uH['get']('text');
+  } else if (uK == "BaseButton") {
+    uL = uJ["get"]("label");
+  } else if (uK == "Label") {
+    uL = uJ["get"]("text");
   }
-  if (uJ) {
-    this['textToSpeech'](uJ, uH['get']('id'));
+  if (uL) {
+    this["textToSpeech"](uL, uJ["get"]("id"));
   }
 };
-TDV['Tour']['Script']['_initTTSTooltips'] = function () {
-  function uN(uP) {
-    var uQ = uP['source'];
-    this['textToSpeech'](uQ['get']('toolTip'), uQ['get']('id'), 0x1);
+TDV["Tour"]["Script"]["_initTTSTooltips"] = function () {
+  function uP(uR) {
+    var uS = uR["source"];
+    this["textToSpeech"](uS["get"]("toolTip"), uS["get"]("id"), 0x1);
   }
-
-  function uO(uR) {
-    var uS = uR['source'];
-    this['stopTextToSpeech'](uS['get']('id'));
+  function uQ(uT) {
+    var uU = uT["source"];
+    this["stopTextToSpeech"](uU["get"]("id"));
   }
-  setTimeout(function () {
-    var uT = this['getByClassName']('UIComponent');
-    for (var uU = 0x0, uV = uT['length']; uU < uV; ++uU) {
-      var uW = uT[uU];
-      var uX = uW['get']('toolTip');
-      if (!!uX || uW['get']('class') == 'ViewerArea') {
-        uW['bind']('toolTipShow', uN, this);
-        uW['bind']('toolTipHide', uO, this);
+  setTimeout(
+    function () {
+      var uV = this["getByClassName"]("UIComponent");
+      for (var uW = 0x0, uX = uV["length"]; uW < uX; ++uW) {
+        var uY = uV[uW];
+        var uZ = uY["get"]("toolTip");
+        if (!!uZ || uY["get"]("class") == "ViewerArea") {
+          uY["bind"]("toolTipShow", uP, this);
+          uY["bind"]("toolTipHide", uQ, this);
+        }
       }
-    }
-  }['bind'](this), 0x0);
+    }["bind"](this),
+    0x0
+  );
 };
-TDV['Tour']['Script']['takeScreenshot'] = function (uY) {
-  var uZ = this['getActivePlayerWithViewer'](uY);
-  if (uZ && uZ['get']('class') == 'PanoramaPlayer') uZ['saveScreenshot']();
+TDV["Tour"]["Script"]["takeScreenshot"] = function (v0) {
+  var v1 = this["getActivePlayerWithViewer"](v0);
+  if (v1 && v1["get"]("class") == "PanoramaPlayer") v1["saveScreenshot"]();
 };
-TDV['Tour']['Script']['htmlToPlainText'] = function htmlToPlainText(v0, v1) {
-  var v2 = function (vg, vh) {
-    var vi = '';
-    for (var vj = 0x0; vj < vh; vj += 0x1) {
-      vi += vg;
+TDV["Tour"]["Script"]["htmlToPlainText"] = function htmlToPlainText(v2, v3) {
+  var v4 = function (vi, vj) {
+    var vk = "";
+    for (var vl = 0x0; vl < vj; vl += 0x1) {
+      vk += vi;
     }
-    return vi;
+    return vk;
   };
-  var v3 = null;
-  var v4 = null;
-  var v5 = 'underline';
-  var v6 = 'indention';
-  var v7 = '-';
-  var v8 = 0x3;
-  var v9 = '-';
-  var va = ![];
-  if (!!v1) {
-    if (typeof v1['linkProcess'] === 'function') {
-      v3 = v1['linkProcess'];
+  var v5 = null;
+  var v6 = null;
+  var v7 = "underline";
+  var v8 = "indention";
+  var v9 = "-";
+  var va = 0x3;
+  var vb = "-";
+  var vc = ![];
+  if (!!v3) {
+    if (typeof v3["linkProcess"] === "function") {
+      v5 = v3["linkProcess"];
     }
-    if (typeof v1['imgProcess'] === 'function') {
-      v4 = v1['imgProcess'];
+    if (typeof v3["imgProcess"] === "function") {
+      v6 = v3["imgProcess"];
     }
-    if (!!v1['headingStyle']) {
-      v5 = v1['headingStyle'];
+    if (!!v3["headingStyle"]) {
+      v7 = v3["headingStyle"];
     }
-    if (!!v1['listStyle']) {
-      v6 = v1['listStyle'];
+    if (!!v3["listStyle"]) {
+      v8 = v3["listStyle"];
     }
-    if (!!v1['uIndentionChar']) {
-      v7 = v1['uIndentionChar'];
+    if (!!v3["uIndentionChar"]) {
+      v9 = v3["uIndentionChar"];
     }
-    if (!!v1['listIndentionTabs']) {
-      v8 = v1['listIndentionTabs'];
+    if (!!v3["listIndentionTabs"]) {
+      va = v3["listIndentionTabs"];
     }
-    if (!!v1['oIndentionChar']) {
-      v9 = v1['oIndentionChar'];
+    if (!!v3["oIndentionChar"]) {
+      vb = v3["oIndentionChar"];
     }
-    if (!!v1['keepNbsps']) {
-      va = v1['keepNbsps'];
+    if (!!v3["keepNbsps"]) {
+      vc = v3["keepNbsps"];
     }
   }
-  var vb = v2(v7, v8);
-  var vc = String(v0)['replace'](/\n|\r/g, '\x20');
-  const vd = vc['match'](/<\/body>/i);
-  if (vd) {
-    vc = vc['substring'](0x0, vd['index']);
+  var vd = v4(v9, va);
+  var ve = String(v2)["replace"](/\n|\r/g, "\x20");
+  const vf = ve["match"](/<\/body>/i);
+  if (vf) {
+    ve = ve["substring"](0x0, vf["index"]);
   }
-  const ve = vc['match'](/<body[^>]*>/i);
-  if (ve) {
-    vc = vc['substring'](ve['index'] + ve[0x0]['length'], vc['length']);
+  const vg = ve["match"](/<body[^>]*>/i);
+  if (vg) {
+    ve = ve["substring"](vg["index"] + vg[0x0]["length"], ve["length"]);
   }
-  vc = vc['replace'](/<(script|style)( [^>]*)*>((?!<\/\1( [^>]*)*>).)*<\/\1>/gi, '');
-  vc = vc['replace'](/<(\/)?((?!h[1-6]( [^>]*)*>)(?!img( [^>]*)*>)(?!a( [^>]*)*>)(?!ul( [^>]*)*>)(?!ol( [^>]*)*>)(?!li( [^>]*)*>)(?!p( [^>]*)*>)(?!div( [^>]*)*>)(?!td( [^>]*)*>)(?!br( [^>]*)*>)[^>\/])[^<>]*>/gi, '');
-  vc = vc['replace'](/<img([^>]*)>/gi, function (vk, vl) {
-    var vm = '';
-    var vn = '';
-    var vo = /src="([^"]*)"/i['exec'](vl);
-    var vp = /alt="([^"]*)"/i['exec'](vl);
-    if (vo !== null) {
-      vm = vo[0x1];
+  ve = ve["replace"](
+    /<(script|style)( [^>]*)*>((?!<\/\1( [^>]*)*>).)*<\/\1>/gi,
+    ""
+  );
+  ve = ve["replace"](
+    /<(\/)?((?!h[1-6]( [^>]*)*>)(?!img( [^>]*)*>)(?!a( [^>]*)*>)(?!ul( [^>]*)*>)(?!ol( [^>]*)*>)(?!li( [^>]*)*>)(?!p( [^>]*)*>)(?!div( [^>]*)*>)(?!td( [^>]*)*>)(?!br( [^>]*)*>)[^>\/])[^<>]*>/gi,
+    ""
+  );
+  ve = ve["replace"](/<img([^>]*)>/gi, function (vm, vn) {
+    var vo = "";
+    var vp = "";
+    var vq = /src="([^"]*)"/i["exec"](vn);
+    var vr = /alt="([^"]*)"/i["exec"](vn);
+    if (vq !== null) {
+      vo = vq[0x1];
     }
-    if (vp !== null) {
-      vn = vp[0x1];
+    if (vr !== null) {
+      vp = vr[0x1];
     }
-    if (typeof v4 === 'function') {
-      return v4(vm, vn);
+    if (typeof v6 === "function") {
+      return v6(vo, vp);
     }
-    if (vn === '') {
-      return '![image]\x20(' + vm + ')';
+    if (vp === "") {
+      return "![image]\x20(" + vo + ")";
     }
-    return '![' + vn + ']\x20(' + vm + ')';
+    return "![" + vp + "]\x20(" + vo + ")";
   });
-
-  function vf() {
-    return function (vq, vr, vs, vt) {
-      var vu = 0x0;
-      if (vs && /start="([0-9]+)"/i['test'](vs)) {
-        vu = /start="([0-9]+)"/i['exec'](vs)[0x1] - 0x1;
+  function vh() {
+    return function (vs, vt, vu, vv) {
+      var vw = 0x0;
+      if (vu && /start="([0-9]+)"/i["test"](vu)) {
+        vw = /start="([0-9]+)"/i["exec"](vu)[0x1] - 0x1;
       }
-      var vv = '<p>' + vt['replace'](/<li[^>]*>(((?!<li[^>]*>)(?!<\/li>).)*)<\/li>/gi, function (vw, vx) {
-        var vy = 0x0;
-        var vz = vx['replace'](/(^|(<br \/>))(?!<p>)/gi, function () {
-          if (vr === 'o' && vy === 0x0) {
-            vu += 0x1;
-            vy += 0x1;
-            return '<br\x20/>' + vu + v2(v9, v8 - String(vu)['length']);
+      var vx =
+        "<p>" +
+        vv["replace"](
+          /<li[^>]*>(((?!<li[^>]*>)(?!<\/li>).)*)<\/li>/gi,
+          function (vy, vz) {
+            var vA = 0x0;
+            var vB = vz["replace"](/(^|(<br \/>))(?!<p>)/gi, function () {
+              if (vt === "o" && vA === 0x0) {
+                vw += 0x1;
+                vA += 0x1;
+                return "<br\x20/>" + vw + v4(vb, va - String(vw)["length"]);
+              }
+              return "<br\x20/>" + vd;
+            });
+            return vB;
           }
-          return '<br\x20/>' + vb;
-        });
-        return vz;
-      }) + '</p>';
-      return vv;
+        ) +
+        "</p>";
+      return vx;
     };
   }
-  if (v6 === 'linebreak') {
-    vc = vc['replace'](/<\/?ul[^>]*>|<\/?ol[^>]*>|<\/?li[^>]*>/gi, '\x0a');
-  } else if (v6 === 'indention') {
-    while (/<(o|u)l[^>]*>(.*)<\/\1l>/gi['test'](vc)) {
-      vc = vc['replace'](/<(o|u)l([^>]*)>(((?!<(o|u)l[^>]*>)(?!<\/(o|u)l>).)*)<\/\1l>/gi, vf());
+  if (v8 === "linebreak") {
+    ve = ve["replace"](/<\/?ul[^>]*>|<\/?ol[^>]*>|<\/?li[^>]*>/gi, "\x0a");
+  } else if (v8 === "indention") {
+    while (/<(o|u)l[^>]*>(.*)<\/\1l>/gi["test"](ve)) {
+      ve = ve["replace"](
+        /<(o|u)l([^>]*)>(((?!<(o|u)l[^>]*>)(?!<\/(o|u)l>).)*)<\/\1l>/gi,
+        vh()
+      );
     }
   }
-  if (v5 === 'linebreak') {
-    vc = vc['replace'](/<h([1-6])[^>]*>([^<]*)<\/h\1>/gi, '\x0a$2\x0a');
-  } else if (v5 === 'underline') {
-    vc = vc['replace'](/<h1[^>]*>(((?!<\/h1>).)*)<\/h1>/gi, function (vA, vB) {
-      return '\x0a&nbsp;\x0a' + vB + '\x0a' + v2('=', vB['length']) + '\x0a&nbsp;\x0a';
+  if (v7 === "linebreak") {
+    ve = ve["replace"](/<h([1-6])[^>]*>([^<]*)<\/h\1>/gi, "\x0a$2\x0a");
+  } else if (v7 === "underline") {
+    ve = ve["replace"](/<h1[^>]*>(((?!<\/h1>).)*)<\/h1>/gi, function (vC, vD) {
+      return (
+        "\x0a&nbsp;\x0a" +
+        vD +
+        "\x0a" +
+        v4("=", vD["length"]) +
+        "\x0a&nbsp;\x0a"
+      );
     });
-    vc = vc['replace'](/<h2[^>]*>(((?!<\/h2>).)*)<\/h2>/gi, function (vC, vD) {
-      return '\x0a&nbsp;\x0a' + vD + '\x0a' + v2('-', vD['length']) + '\x0a&nbsp;\x0a';
+    ve = ve["replace"](/<h2[^>]*>(((?!<\/h2>).)*)<\/h2>/gi, function (vE, vF) {
+      return (
+        "\x0a&nbsp;\x0a" +
+        vF +
+        "\x0a" +
+        v4("-", vF["length"]) +
+        "\x0a&nbsp;\x0a"
+      );
     });
-    vc = vc['replace'](/<h([3-6])[^>]*>(((?!<\/h\1>).)*)<\/h\1>/gi, function (vE, vF, vG) {
-      return '\x0a&nbsp;\x0a' + vG + '\x0a&nbsp;\x0a';
-    });
-  } else if (v5 === 'hashify') {
-    vc = vc['replace'](/<h([1-6])[^>]*>([^<]*)<\/h\1>/gi, function (vH, vI, vJ) {
-      return '\x0a&nbsp;\x0a' + v2('#', vI) + '\x20' + vJ + '\x0a&nbsp;\x0a';
-    });
+    ve = ve["replace"](
+      /<h([3-6])[^>]*>(((?!<\/h\1>).)*)<\/h\1>/gi,
+      function (vG, vH, vI) {
+        return "\x0a&nbsp;\x0a" + vI + "\x0a&nbsp;\x0a";
+      }
+    );
+  } else if (v7 === "hashify") {
+    ve = ve["replace"](
+      /<h([1-6])[^>]*>([^<]*)<\/h\1>/gi,
+      function (vJ, vK, vL) {
+        return "\x0a&nbsp;\x0a" + v4("#", vK) + "\x20" + vL + "\x0a&nbsp;\x0a";
+      }
+    );
   }
-  vc = vc['replace'](/<br( [^>]*)*>|<p( [^>]*)*>|<\/p( [^>]*)*>|<div( [^>]*)*>|<\/div( [^>]*)*>|<td( [^>]*)*>|<\/td( [^>]*)*>/gi, '\x0a');
-  vc = vc['replace'](/<a[^>]*href="([^"]*)"[^>]*>([^<]+)<\/a[^>]*>/gi, function (vK, vL, vM) {
-    if (typeof v3 === 'function') {
-      return v3(vL, vM);
+  ve = ve["replace"](
+    /<br( [^>]*)*>|<p( [^>]*)*>|<\/p( [^>]*)*>|<div( [^>]*)*>|<\/div( [^>]*)*>|<td( [^>]*)*>|<\/td( [^>]*)*>/gi,
+    "\x0a"
+  );
+  ve = ve["replace"](
+    /<a[^>]*href="([^"]*)"[^>]*>([^<]+)<\/a[^>]*>/gi,
+    function (vM, vN, vO) {
+      if (typeof v5 === "function") {
+        return v5(vN, vO);
+      }
+      return "\x20[" + vO + "]\x20(" + vN + ")\x20";
     }
-    return '\x20[' + vM + ']\x20(' + vL + ')\x20';
-  });
-  vc = vc['replace'](/\n[ \t\f]*/gi, '\x0a');
-  vc = vc['replace'](/\n\n+/gi, '\x0a');
-  if (va) {
-    vc = vc['replace'](/( |\t)+/gi, '\x20');
-    vc = vc['replace'](/&nbsp;/gi, '\x20');
+  );
+  ve = ve["replace"](/\n[ \t\f]*/gi, "\x0a");
+  ve = ve["replace"](/\n\n+/gi, "\x0a");
+  if (vc) {
+    ve = ve["replace"](/( |\t)+/gi, "\x20");
+    ve = ve["replace"](/&nbsp;/gi, "\x20");
   } else {
-    vc = vc['replace'](/( |&nbsp;|\t)+/gi, '\x20');
+    ve = ve["replace"](/( |&nbsp;|\t)+/gi, "\x20");
   }
-  vc = vc['replace'](/\n +/gi, '\x0a');
-  vc = vc['replace'](/^ +/gi, '');
-  while (vc['indexOf']('\x0a') === 0x0) {
-    vc = vc['substring'](0x1);
+  ve = ve["replace"](/\n +/gi, "\x0a");
+  ve = ve["replace"](/^ +/gi, "");
+  while (ve["indexOf"]("\x0a") === 0x0) {
+    ve = ve["substring"](0x1);
   }
-  if (vc['length'] === 0x0 || vc['lastIndexOf']('\x0a') !== vc['length'] - 0x1) {
-    vc += '\x0a';
+  if (
+    ve["length"] === 0x0 ||
+    ve["lastIndexOf"]("\x0a") !== ve["length"] - 0x1
+  ) {
+    ve += "\x0a";
   }
-  return vc;
+  return ve;
 };
-TDV['Tour']['Script']['openEmbeddedPDF'] = function (vN, vO) {
-  var vP = !!window['MSInputMethodContext'] && !!document['documentMode'];
-  if (vP) {
-    this['openLink'](vO, '_blank');
+TDV["Tour"]["Script"]["openEmbeddedPDF"] = function (vP, vQ) {
+  var vR = !!window["MSInputMethodContext"] && !!document["documentMode"];
+  if (vR) {
+    this["openLink"](vQ, "_blank");
     return;
   }
-  var vQ = vN['get']('class');
-  var vR = !new RegExp('^(?:[a-z]+:)?//', 'i')['test'](vO);
-  if (vR && vQ == 'WebFrame') {
-    var vS = location['origin'] + location['pathname'];
-    vN['set']('url', 'lib/pdfjs/web/viewer.html?file=' + encodeURIComponent(vS['substring'](0x0, vS['lastIndexOf']('/')) + '/' + vO));
+  var vS = vP["get"]("class");
+  var vT = !new RegExp("^(?:[a-z]+:)?//", "i")["test"](vQ);
+  if (vT && vS == "WebFrame") {
+    var vU = location["origin"] + location["pathname"];
+    vP["set"](
+      "url",
+      "lib/pdfjs/web/viewer.html?file=" +
+      encodeURIComponent(
+        vU["substring"](0x0, vU["lastIndexOf"]("/")) + "/" + vQ
+      )
+    );
   } else {
-    var vT = location['origin'] == new URL(vO)['origin'];
-    var vU = '<iframe\x20\x20id=\x27googleViewer\x27\x20src=\x27https://docs.google.com/viewer?url=[url]&embedded=true\x27\x20width=\x27100%\x27\x20height=\x27100%\x27\x20frameborder=\x270\x27>' + '<p>This\x20browser\x20does\x20not\x20support\x20inline\x20PDFs.\x20Please\x20download\x20the\x20PDF\x20to\x20view\x20it:\x20<a\x20href=\x27[url]\x27>Download\x20PDF</a></p>' + '</iframe>';
-    var vV = /^((?!chrome|android|crios|ipad|iphone).)*safari/i['test'](navigator['userAgent']);
-    var vW = '<div\x20id=\x22content\x22\x20style=\x22width:100%;height:100%;position:absolute;left:0;top:0;\x22></div>' + '<script\x20type=\x22text/javascript\x22>' + '!function(root,factory){\x22function\x22==typeof\x20define&&define.amd?define([],factory):\x22object\x22==typeof\x20module&&module.exports?module.exports=factory():root.PDFObject=factory()}(this,function(){\x22use\x20strict\x22;if(void\x200===window||void\x200===window.navigator||void\x200===window.navigator.userAgent||void\x200===window.navigator.mimeTypes)return!1;let\x20nav=window.navigator,ua=window.navigator.userAgent,isIE=\x22ActiveXObject\x22in\x20window,isModernBrowser=void\x200!==window.Promise,supportsPdfMimeType=void\x200!==nav.mimeTypes[\x22application/pdf\x22],isMobileDevice=void\x200!==nav.platform&&\x22MacIntel\x22===nav.platform&&void\x200!==nav.maxTouchPoints&&nav.maxTouchPoints>1||/Mobi|Tablet|Android|iPad|iPhone/.test(ua),isSafariDesktop=!isMobileDevice&&void\x200!==nav.vendor&&/Apple/.test(nav.vendor)&&/Safari/.test(ua),isFirefoxWithPDFJS=!(isMobileDevice||!/irefox/.test(ua))&&parseInt(ua.split(\x22rv:\x22)[1].split(\x22.\x22)[0],10)>18,createAXO=function(type){var\x20ax;try{ax=new\x20ActiveXObject(type)}catch(e){ax=null}return\x20ax},supportsPDFs=!isMobileDevice&&(isFirefoxWithPDFJS||supportsPdfMimeType||isIE&&!(!createAXO(\x22AcroPDF.PDF\x22)&&!createAXO(\x22PDF.PdfCtrl\x22))),embedError=function(msg,suppressConsole){return\x20suppressConsole||console.log(\x22[PDFObject]\x20\x22+msg),!1},emptyNodeContents=function(node){for(;node.firstChild;)node.removeChild(node.firstChild)},generatePDFJSMarkup=function(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles){emptyNodeContents(targetNode);let\x20fullURL=PDFJS_URL+\x22?file=\x22+encodeURIComponent(url)+pdfOpenFragment,div=document.createElement(\x22div\x22),iframe=document.createElement(\x22iframe\x22);return\x20iframe.src=fullURL,iframe.className=\x22pdfobject\x22,iframe.type=\x22application/pdf\x22,iframe.frameborder=\x220\x22,id&&(iframe.id=id),omitInlineStyles||(div.style.cssText=\x22position:\x20absolute;\x20top:\x200;\x20right:\x200;\x20bottom:\x200;\x20left:\x200;\x22,iframe.style.cssText=\x22border:\x20none;\x20width:\x20100%;\x20height:\x20100%;\x22,/*targetNode.style.position=\x22relative\x22,*/targetNode.style.overflow=\x22auto\x22),div.appendChild(iframe),targetNode.appendChild(div),targetNode.classList.add(\x22pdfobject-container\x22),targetNode.getElementsByTagName(\x22iframe\x22)[0]},embed=function(url,targetSelector,options){let\x20selector=targetSelector||!1,opt=options||{},id=\x22string\x22==typeof\x20opt.id?opt.id:\x22\x22,page=opt.page||!1,pdfOpenParams=opt.pdfOpenParams||{},fallbackLink=opt.fallbackLink||!0,width=opt.width||\x22100%\x22,height=opt.height||\x22100%\x22,assumptionMode=\x22boolean\x22!=typeof\x20opt.assumptionMode||opt.assumptionMode,forcePDFJS=\x22boolean\x22==typeof\x20opt.forcePDFJS&&opt.forcePDFJS,supportRedirect=\x22boolean\x22==typeof\x20opt.supportRedirect&&opt.supportRedirect,omitInlineStyles=\x22boolean\x22==typeof\x20opt.omitInlineStyles&&opt.omitInlineStyles,suppressConsole=\x22boolean\x22==typeof\x20opt.suppressConsole&&opt.suppressConsole,forceIframe=\x22boolean\x22==typeof\x20opt.forceIframe&&opt.forceIframe,PDFJS_URL=opt.PDFJS_URL||!1,targetNode=function(targetSelector){let\x20targetNode=document.body;return\x22string\x22==typeof\x20targetSelector?targetNode=document.querySelector(targetSelector):void\x200!==window.jQuery&&targetSelector\x20instanceof\x20jQuery&&targetSelector.length?targetNode=targetSelector.get(0):void\x200!==targetSelector.nodeType&&1===targetSelector.nodeType&&(targetNode=targetSelector),targetNode}(selector),fallbackHTML=\x22\x22,pdfOpenFragment=\x22\x22;if(\x22string\x22!=typeof\x20url)return\x20embedError(\x22URL\x20is\x20not\x20valid\x22,suppressConsole);if(!targetNode)return\x20embedError(\x22Target\x20element\x20cannot\x20be\x20determined\x22,suppressConsole);if(page&&(pdfOpenParams.page=page),pdfOpenFragment=function(pdfParams){let\x20prop,string=\x22\x22;if(pdfParams){for(prop\x20in\x20pdfParams)pdfParams.hasOwnProperty(prop)&&(string+=encodeURIComponent(prop)+\x22=\x22+encodeURIComponent(pdfParams[prop])+\x22&\x22);string&&(string=(string=\x22#\x22+string).slice(0,string.length-1))}return\x20string}(pdfOpenParams),forcePDFJS&&PDFJS_URL)return\x20generatePDFJSMarkup(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles);if(supportsPDFs||assumptionMode&&isModernBrowser&&!isMobileDevice){return\x20function(embedType,targetNode,targetSelector,url,pdfOpenFragment,width,height,id,omitInlineStyles){emptyNodeContents(targetNode);let\x20embed=document.createElement(embedType);if(embed.src=url+pdfOpenFragment,embed.className=\x22pdfobject\x22,embed.type=\x22application/pdf\x22,id&&(embed.id=id),!omitInlineStyles){let\x20style=\x22embed\x22===embedType?\x22overflow:\x20auto;\x22:\x22border:\x20none;\x22;targetSelector&&targetSelector!==document.body?style+=\x22width:\x20\x22+width+\x22;\x20height:\x20\x22+height+\x22;\x22:style+=\x22position:\x20absolute;\x20top:\x200;\x20right:\x200;\x20bottom:\x200;\x20left:\x200;\x20width:\x20100%;\x20height:\x20100%;\x22,embed.style.cssText=style}return\x20targetNode.classList.add(\x22pdfobject-container\x22),targetNode.appendChild(embed),targetNode.getElementsByTagName(embedType)[0]}(forceIframe||supportRedirect&&isSafariDesktop?\x22iframe\x22:\x22embed\x22,targetNode,targetSelector,url,pdfOpenFragment,width,height,id,omitInlineStyles)}return\x20PDFJS_URL?generatePDFJSMarkup(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles):(fallbackLink&&(fallbackHTML=\x22string\x22==typeof\x20fallbackLink?fallbackLink:\x22<p>This\x20browser\x20does\x20not\x20support\x20inline\x20PDFs.\x20Please\x20download\x20the\x20PDF\x20to\x20view\x20it:\x20<a\x20href=\x27[url]\x27>Download\x20PDF</a></p>\x22,targetNode.innerHTML=fallbackHTML.replace(/\x5c[url\x5c]/g,url)),embedError(\x22This\x20browser\x20does\x20not\x20support\x20embedded\x20PDFs\x22,suppressConsole))};return{embed:function(a,b,c){return\x20embed(a,b,c)},pdfobjectversion:\x222.2.3\x22,supportsPDFs:supportsPDFs}});' + 'if\x20(typeof\x20module\x20===\x20\x22object\x22\x20&&\x20module.exports)\x20{' + 'this.PDFObject\x20=\x20module.exports;' + '}' + 'PDFObject.embed(\x22' + vO + '\x22,\x20\x22#content\x22,\x20{' + (vT ? '\x22PDFJS_URL\x22:\x20\x22' + new URL('lib/pdfjs/web/viewer.html', document['baseURI'])['href'] + '\x22,\x20' : '') + '\x22fallbackLink\x22:\x20\x22' + vU + '\x22,' + '\x22forcePDFJS\x22:\x20' + vV + '});' + 'if(!PDFObject.supportsPDFs\x20&&\x20!' + vT + '){' + '\x20var\x20iframeTimerId;' + '\x20function\x20startTimer(){' + '\x20\x20\x20\x20iframeTimerId\x20=\x20window.setTimeout(checkIframeLoaded,\x202000);' + '\x20}' + '\x20function\x20checkIframeLoaded(){\x20\x20' + '\x20\x20\x20\x20var\x20iframe\x20=\x20document.getElementById(\x22googleViewer\x22);' + '\x20\x20\x20\x20iframe.src\x20=\x20iframe.src;' + '\x20\x20\x20\x20iframeTimerId\x20=\x20window.setTimeout(checkIframeLoaded,\x202000);' + '\x20}' + '\x20document.getElementById(\x22googleViewer\x22).addEventListener(\x22load\x22,\x20function(){' + '\x20\x20\x20clearInterval(iframeTimerId);\x20' + '\x20});' + '\x20startTimer();' + '}' + '</script>';
-    if (vQ == 'WebFrame') {
-      vN['set']('url', 'data:text/html;charset=utf-8,' + encodeURIComponent('<!DOCTYPE\x20html>' + '<html>' + '<head></head>' + '<body\x20style=\x22height:100%;width:100%;overflow:hidden;margin:0px;background-color:rgb(82,\x2086,\x2089);\x22>' + vW + '</body>' + '</html>'));
-    } else if (vQ == 'HTML') {
-      vN['set']('content', 'data:text/html;charset=utf-8,' + encodeURIComponent(vW));
+    var vV = location["origin"] == new URL(vQ)["origin"];
+    var vW =
+      "<iframe\x20\x20id=\x27googleViewer\x27\x20src=\x27https://docs.google.com/viewer?url=[url]&embedded=true\x27\x20width=\x27100%\x27\x20height=\x27100%\x27\x20frameborder=\x270\x27>" +
+      "<p>This\x20browser\x20does\x20not\x20support\x20inline\x20PDFs.\x20Please\x20download\x20the\x20PDF\x20to\x20view\x20it:\x20<a\x20href=\x27[url]\x27>Download\x20PDF</a></p>" +
+      "</iframe>";
+    var vX = /^((?!chrome|android|crios|ipad|iphone).)*safari/i["test"](
+      navigator["userAgent"]
+    );
+    var vY =
+      "<div\x20id=\x22content\x22\x20style=\x22width:100%;height:100%;position:absolute;left:0;top:0;\x22></div>" +
+      "<script\x20type=\x22text/javascript\x22>" +
+      "!function(root,factory){\x22function\x22==typeof\x20define&&define.amd?define([],factory):\x22object\x22==typeof\x20module&&module.exports?module.exports=factory():root.PDFObject=factory()}(this,function(){\x22use\x20strict\x22;if(void\x200===window||void\x200===window.navigator||void\x200===window.navigator.userAgent||void\x200===window.navigator.mimeTypes)return!1;let\x20nav=window.navigator,ua=window.navigator.userAgent,isIE=\x22ActiveXObject\x22in\x20window,isModernBrowser=void\x200!==window.Promise,supportsPdfMimeType=void\x200!==nav.mimeTypes[\x22application/pdf\x22],isMobileDevice=void\x200!==nav.platform&&\x22MacIntel\x22===nav.platform&&void\x200!==nav.maxTouchPoints&&nav.maxTouchPoints>1||/Mobi|Tablet|Android|iPad|iPhone/.test(ua),isSafariDesktop=!isMobileDevice&&void\x200!==nav.vendor&&/Apple/.test(nav.vendor)&&/Safari/.test(ua),isFirefoxWithPDFJS=!(isMobileDevice||!/irefox/.test(ua))&&parseInt(ua.split(\x22rv:\x22)[1].split(\x22.\x22)[0],10)>18,createAXO=function(type){var\x20ax;try{ax=new\x20ActiveXObject(type)}catch(e){ax=null}return\x20ax},supportsPDFs=!isMobileDevice&&(isFirefoxWithPDFJS||supportsPdfMimeType||isIE&&!(!createAXO(\x22AcroPDF.PDF\x22)&&!createAXO(\x22PDF.PdfCtrl\x22))),embedError=function(msg,suppressConsole){return\x20suppressConsole||console.log(\x22[PDFObject]\x20\x22+msg),!1},emptyNodeContents=function(node){for(;node.firstChild;)node.removeChild(node.firstChild)},generatePDFJSMarkup=function(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles){emptyNodeContents(targetNode);let\x20fullURL=PDFJS_URL+\x22?file=\x22+encodeURIComponent(url)+pdfOpenFragment,div=document.createElement(\x22div\x22),iframe=document.createElement(\x22iframe\x22);return\x20iframe.src=fullURL,iframe.className=\x22pdfobject\x22,iframe.type=\x22application/pdf\x22,iframe.frameborder=\x220\x22,id&&(iframe.id=id),omitInlineStyles||(div.style.cssText=\x22position:\x20absolute;\x20top:\x200;\x20right:\x200;\x20bottom:\x200;\x20left:\x200;\x22,iframe.style.cssText=\x22border:\x20none;\x20width:\x20100%;\x20height:\x20100%;\x22,/*targetNode.style.position=\x22relative\x22,*/targetNode.style.overflow=\x22auto\x22),div.appendChild(iframe),targetNode.appendChild(div),targetNode.classList.add(\x22pdfobject-container\x22),targetNode.getElementsByTagName(\x22iframe\x22)[0]},embed=function(url,targetSelector,options){let\x20selector=targetSelector||!1,opt=options||{},id=\x22string\x22==typeof\x20opt.id?opt.id:\x22\x22,page=opt.page||!1,pdfOpenParams=opt.pdfOpenParams||{},fallbackLink=opt.fallbackLink||!0,width=opt.width||\x22100%\x22,height=opt.height||\x22100%\x22,assumptionMode=\x22boolean\x22!=typeof\x20opt.assumptionMode||opt.assumptionMode,forcePDFJS=\x22boolean\x22==typeof\x20opt.forcePDFJS&&opt.forcePDFJS,supportRedirect=\x22boolean\x22==typeof\x20opt.supportRedirect&&opt.supportRedirect,omitInlineStyles=\x22boolean\x22==typeof\x20opt.omitInlineStyles&&opt.omitInlineStyles,suppressConsole=\x22boolean\x22==typeof\x20opt.suppressConsole&&opt.suppressConsole,forceIframe=\x22boolean\x22==typeof\x20opt.forceIframe&&opt.forceIframe,PDFJS_URL=opt.PDFJS_URL||!1,targetNode=function(targetSelector){let\x20targetNode=document.body;return\x22string\x22==typeof\x20targetSelector?targetNode=document.querySelector(targetSelector):void\x200!==window.jQuery&&targetSelector\x20instanceof\x20jQuery&&targetSelector.length?targetNode=targetSelector.get(0):void\x200!==targetSelector.nodeType&&1===targetSelector.nodeType&&(targetNode=targetSelector),targetNode}(selector),fallbackHTML=\x22\x22,pdfOpenFragment=\x22\x22;if(\x22string\x22!=typeof\x20url)return\x20embedError(\x22URL\x20is\x20not\x20valid\x22,suppressConsole);if(!targetNode)return\x20embedError(\x22Target\x20element\x20cannot\x20be\x20determined\x22,suppressConsole);if(page&&(pdfOpenParams.page=page),pdfOpenFragment=function(pdfParams){let\x20prop,string=\x22\x22;if(pdfParams){for(prop\x20in\x20pdfParams)pdfParams.hasOwnProperty(prop)&&(string+=encodeURIComponent(prop)+\x22=\x22+encodeURIComponent(pdfParams[prop])+\x22&\x22);string&&(string=(string=\x22#\x22+string).slice(0,string.length-1))}return\x20string}(pdfOpenParams),forcePDFJS&&PDFJS_URL)return\x20generatePDFJSMarkup(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles);if(supportsPDFs||assumptionMode&&isModernBrowser&&!isMobileDevice){return\x20function(embedType,targetNode,targetSelector,url,pdfOpenFragment,width,height,id,omitInlineStyles){emptyNodeContents(targetNode);let\x20embed=document.createElement(embedType);if(embed.src=url+pdfOpenFragment,embed.className=\x22pdfobject\x22,embed.type=\x22application/pdf\x22,id&&(embed.id=id),!omitInlineStyles){let\x20style=\x22embed\x22===embedType?\x22overflow:\x20auto;\x22:\x22border:\x20none;\x22;targetSelector&&targetSelector!==document.body?style+=\x22width:\x20\x22+width+\x22;\x20height:\x20\x22+height+\x22;\x22:style+=\x22position:\x20absolute;\x20top:\x200;\x20right:\x200;\x20bottom:\x200;\x20left:\x200;\x20width:\x20100%;\x20height:\x20100%;\x22,embed.style.cssText=style}return\x20targetNode.classList.add(\x22pdfobject-container\x22),targetNode.appendChild(embed),targetNode.getElementsByTagName(embedType)[0]}(forceIframe||supportRedirect&&isSafariDesktop?\x22iframe\x22:\x22embed\x22,targetNode,targetSelector,url,pdfOpenFragment,width,height,id,omitInlineStyles)}return\x20PDFJS_URL?generatePDFJSMarkup(targetNode,url,pdfOpenFragment,PDFJS_URL,id,omitInlineStyles):(fallbackLink&&(fallbackHTML=\x22string\x22==typeof\x20fallbackLink?fallbackLink:\x22<p>This\x20browser\x20does\x20not\x20support\x20inline\x20PDFs.\x20Please\x20download\x20the\x20PDF\x20to\x20view\x20it:\x20<a\x20href=\x27[url]\x27>Download\x20PDF</a></p>\x22,targetNode.innerHTML=fallbackHTML.replace(/\x5c[url\x5c]/g,url)),embedError(\x22This\x20browser\x20does\x20not\x20support\x20embedded\x20PDFs\x22,suppressConsole))};return{embed:function(a,b,c){return\x20embed(a,b,c)},pdfobjectversion:\x222.2.3\x22,supportsPDFs:supportsPDFs}});" +
+      "if\x20(typeof\x20module\x20===\x20\x22object\x22\x20&&\x20module.exports)\x20{" +
+      "this.PDFObject\x20=\x20module.exports;" +
+      "}" +
+      "PDFObject.embed(\x22" +
+      vQ +
+      "\x22,\x20\x22#content\x22,\x20{" +
+      (vV
+        ? "\x22PDFJS_URL\x22:\x20\x22" +
+        new URL("lib/pdfjs/web/viewer.html", document["baseURI"])["href"] +
+        "\x22,\x20"
+        : "") +
+      "\x22fallbackLink\x22:\x20\x22" +
+      vW +
+      "\x22," +
+      "\x22forcePDFJS\x22:\x20" +
+      vX +
+      "});" +
+      "if(!PDFObject.supportsPDFs\x20&&\x20!" +
+      vV +
+      "){" +
+      "\x20var\x20iframeTimerId;" +
+      "\x20function\x20startTimer(){" +
+      "\x20\x20\x20\x20iframeTimerId\x20=\x20window.setTimeout(checkIframeLoaded,\x202000);" +
+      "\x20}" +
+      "\x20function\x20checkIframeLoaded(){\x20\x20" +
+      "\x20\x20\x20\x20var\x20iframe\x20=\x20document.getElementById(\x22googleViewer\x22);" +
+      "\x20\x20\x20\x20iframe.src\x20=\x20iframe.src;" +
+      "\x20\x20\x20\x20iframeTimerId\x20=\x20window.setTimeout(checkIframeLoaded,\x202000);" +
+      "\x20}" +
+      "\x20document.getElementById(\x22googleViewer\x22).addEventListener(\x22load\x22,\x20function(){" +
+      "\x20\x20\x20clearInterval(iframeTimerId);\x20" +
+      "\x20});" +
+      "\x20startTimer();" +
+      "}" +
+      "</script>";
+    if (vS == "WebFrame") {
+      vP["set"](
+        "url",
+        "data:text/html;charset=utf-8," +
+        encodeURIComponent(
+          "<!DOCTYPE\x20html>" +
+          "<html>" +
+          "<head></head>" +
+          "<body\x20style=\x22height:100%;width:100%;overflow:hidden;margin:0px;background-color:rgb(82,\x2086,\x2089);\x22>" +
+          vY +
+          "</body>" +
+          "</html>"
+        )
+      );
+    } else if (vS == "HTML") {
+      vP["set"](
+        "content",
+        "data:text/html;charset=utf-8," + encodeURIComponent(vY)
+      );
     }
   }
 };
-TDV['Tour']['Script']['getKey'] = function (vX) {
-  return window[vX];
+TDV["Tour"]["Script"]["getKey"] = function (vZ) {
+  return window[vZ];
 };
-TDV['Tour']['Script']['registerKey'] = function (vY, vZ) {
-  window[vY] = vZ;
+TDV["Tour"]["Script"]["registerKey"] = function (w0, w1) {
+  window[w0] = w1;
 };
-TDV['Tour']['Script']['unregisterKey'] = function (w0) {
-  delete window[w0];
+TDV["Tour"]["Script"]["unregisterKey"] = function (w2) {
+  delete window[w2];
 };
-TDV['Tour']['Script']['existsKey'] = function (w1) {
-  return w1 in window;
+TDV["Tour"]["Script"]["existsKey"] = function (w3) {
+  return w3 in window;
 };
-//# sourceMappingURL=script_v2022.1.30.js.map
-//Generated with v2022.1.30, Fri Oct 21 2022
+//# sourceMappingURL=script_v2022.1.31.js.map
+//Generated with v2022.1.31, Thu Dec 1 2022
