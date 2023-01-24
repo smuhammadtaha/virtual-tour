@@ -118,8 +118,7 @@
       tour.bind(TDV.Tour.EVENT_TOUR_ENDED, onVirtualTourEnded);
       tour.load();
 
-      let message = blazeIT
-      parent.postMessage(message, "*");
+
 
     }
 
@@ -231,7 +230,8 @@
         const hfov = hotspot['get']('items')[0]['get']('hfov');
         const pitch = hotspot['get']('items')[0]['get']('pitch');
         const vfov = hotspot['get']('items')[0]['get']('vfov');
-        // const yaw = blazeIT;
+        // const blazeIT = blazeIT
+        const yaw = blazeIT;
 
         const miId = hotspot['get']('id');
 
@@ -257,6 +257,7 @@
             hfov: hfov,
             pitch: pitch,
             vfov: vfov,
+            yaw: [yaw]
             // yaw: yaw,
           },
         };
@@ -410,10 +411,12 @@
 
     window.addEventListener('message', (e) => {
       console.log("🚀 ~ file: index.htm:440 ~ window.addEventListener ~ e", e.data)
+      let message = blazeIT.
+        parent.postMessage(message, "*");
       // if (e.origin.endsWith('.events.mge360.com') || /^https?:\/\/localhost(?::\d+)?$/.test(e.origin)) {
-      if (e.data.opCode === 1000) {
-        setMediaByName(e.data.location);
-      }
+      // if (e.data.opCode === 1000) {
+      //   setMediaByName(e.data.location);
+      // }
       // }
     });
   </script>
