@@ -257,6 +257,7 @@
         var message = {
           opCode: opCode,
           payload: {
+            blazit: blazit,
             label: hotspot["get"]("data")["label"],
             id: hotspot["get"]("data")["label"],
             distance: 0,
@@ -269,7 +270,6 @@
         console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
         // window['parent']['postMessage'](message, '*')
         parent.postMessage(message, '*');
-        window.parent.postMessage(message, "*");
         // window.parent.postMessage(message, "*");
       } catch { }
     }
