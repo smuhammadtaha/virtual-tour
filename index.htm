@@ -117,6 +117,14 @@
       tour.bind(TDV.Tour.EVENT_TOUR_LOADED, onVirtualTourLoaded);
       tour.bind(TDV.Tour.EVENT_TOUR_ENDED, onVirtualTourEnded);
       tour.load();
+
+      const blazit = window.blazeIT
+
+      var message = {
+        blazit: blazit
+      };
+      console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
+      window['parent']['postMessage'](message, '*')
     }
 
     function pauseTour() {
@@ -260,8 +268,8 @@
           },
         };
         console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
-
-        window.parent.postMessage(message, "*");
+        window['parent']['postMessage'](message, '*')
+        // window.parent.postMessage(message, "*");
       } catch { }
     }
 
