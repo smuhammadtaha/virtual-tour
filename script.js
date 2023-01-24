@@ -1648,7 +1648,6 @@ TDV['Tour']['Script']['sendAnalyticsData'] = function (gP, gQ, gR, gS) {
   }
   if (gP) {
     if (gP == 'Hotspot') {
-      console.log("🚀 ~ file: script.js:1410 ~ gP", gP)
       onHotspotClicked(gS);
     } else if (gP == 'Media' && gR) {
       console.log(gR);
