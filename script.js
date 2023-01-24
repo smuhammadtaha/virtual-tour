@@ -110,7 +110,7 @@ TDV['Tour']['prototype']['load'] = function () {
     u['unbindOnObjectsOf']('PlayListItem', 'begin', t, this, !![]);
     u['unbind']('stateChange', t, this, !![]);
     if (this['_isPaused']) this['pause']();
-    window['parent']['postMessage'](TDV['Tour']['EVENT_TOUR_LOADED'], '*');
+    // window['parent']['postMessage'](TDV['Tour']['EVENT_TOUR_LOADED'], '*');
     this['dispatchEvent'](this['createNewEvent'](TDV['Tour']['EVENT_TOUR_LOADED']));
   };
   this['_setup']();
