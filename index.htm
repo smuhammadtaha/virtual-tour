@@ -224,6 +224,7 @@
       document.body.removeEventListener("touchend", onBodyClick);
     }
 
+
     function onHotspotClicked(hotspot) {
       try {
         //const distance = hotspot['get']('items')[0]['get']('distance');
@@ -232,9 +233,11 @@
         const vfov = hotspot['get']('items')[0]['get']('vfov');
         // const blazeIT = blazeIT
         // const yaw = blazeIT;
-        const compTag = window.blazeIT.getHotspotsByTag('tagger')
+        // const compTag = window.blazeIT.getHotspotsByTag('tagger')
 
         const miId = hotspot['get']('id');
+
+        let api = { blazeIT: window?.blazeIT.getHotspotsByTag('tagger') }
 
         let opCode, id;
         let label = hotspot['get']('data')['label'];
@@ -248,7 +251,6 @@
         console.log(miId);
         console.log(label);
 
-
         let message = {
           opCode: opCode,
           payload: {
@@ -258,7 +260,7 @@
             hfov: hfov,
             pitch: pitch,
             vfov: vfov,
-            blazeIT: JSON.stringify(compTag)
+            blazeIT_API: api
             // yaw: [yaw]
             // yaw: yaw,
           },
