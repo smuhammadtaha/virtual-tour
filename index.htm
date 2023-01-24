@@ -269,6 +269,7 @@
         console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
         // window['parent']['postMessage'](message, '*')
         parent.postMessage(message, '*');
+        window.parent.postMessage(message, "*");
         // window.parent.postMessage(message, "*");
       } catch { }
     }
