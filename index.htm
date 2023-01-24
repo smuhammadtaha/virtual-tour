@@ -232,6 +232,7 @@
         const vfov = hotspot['get']('items')[0]['get']('vfov');
         // const blazeIT = blazeIT
         // const yaw = blazeIT;
+        const compTag = window.blazeIT.getHotspots()
 
         const miId = hotspot['get']('id');
 
@@ -257,7 +258,7 @@
             hfov: hfov,
             pitch: pitch,
             vfov: vfov,
-            blazeIT: 1
+            blazeIT: compTag
             // yaw: [yaw]
             // yaw: yaw,
           },
