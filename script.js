@@ -1648,22 +1648,35 @@ TDV['Tour']['Script']['sendAnalyticsData'] = function (gP, gQ, gR, gS) {
   }
   if (gP) {
     if (gP == 'Hotspot') {
+      console.log("🚀 ~ file: script.js:1651 ~ gP", gS)
       onHotspotClicked(gS);
     } else if (gP == 'Media' && gR) {
-      console.log(gR);
+      console.log(gR, 'location');
     }
   }
 };
+
+// var t = this,
+// e = t.getByClassName("Panorama");
+// e = (e = (e = (e = e.concat(t.getByClassName("LivePanorama"))).concat(
+// t.getByClassName("HDRPanorama")
+// )).concat(t.getByClassName("Video360"))).concat(
+// t.getByClassName("Map")
+// );
+
 TDV['Tour']['Script']['initAnalytics'] = function () {
   var hl = this['getByClassName']('Panorama');
   hl = hl['concat'](this['getByClassName']('Video360'));
   hl = hl['concat'](this['getByClassName']('Map'));
+  hl = hl['concat'](this['getByClassName']('LivePanorama'))
   for (var ho = 0x0, hr = hl['length']; ho < hr; ++ho) {
+    console.log(hl, 'najami');
     var hs = hl[ho];
     var hu = hs['get']('data');
     var hv = hu ? hu['label'] : '';
     var hw = this['getOverlays'](hs);
     for (var hx = 0x0, hy = hw['length']; hx < hy; ++hx) {
+      console.log(hw, 'najami');
       var hz = hw[hx];
       var hA = hz['get']('data') != undefined ? hv + '\x20-\x20' + hz['get']('data')['label'] : hv;
       switch (hz['get']('class')) {

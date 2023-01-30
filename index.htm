@@ -229,6 +229,7 @@
       try {
         //const distance = hotspot['get']('items')[0]['get']('distance');
         const hfov = hotspot['get']('items')[0]['get']('hfov');
+        const all = hotspot['get']('items');
         const pitch = hotspot['get']('items')[0]['get']('pitch');
         const vfov = hotspot['get']('items')[0]['get']('vfov');
         // const blazeIT = blazeIT
@@ -237,7 +238,7 @@
 
         const miId = hotspot['get']('id');
 
-        let api = window?.blazeIT.getHotspotsByTag('tagger')
+        // let api = blazeIT.getHotspotsByTag('tagger')
 
         let opCode, id;
         let label = hotspot['get']('data')['label'];
@@ -260,11 +261,11 @@
             hfov: hfov,
             pitch: pitch,
             vfov: vfov,
-            blazeIT_API: api
             // yaw: [yaw]
             // yaw: yaw,
           },
         };
+        setMediaByName('Visit Baltimore')
         console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
         // window['parent']['postMessage'](message, '*')
         parent.postMessage(message, '*');

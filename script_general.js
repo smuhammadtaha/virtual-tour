@@ -1012,7 +1012,7 @@
                 duration: 5000,
                 width: 880,
                 class: "Photo",
-                data: { label: "Palm Beaches Florida" },
+                data: { label: "Palm Beaches Florida", tags: ['tagger'] },
                 thumbnailUrl:
                     "media/album_966EB78F_89DA_B0D2_41E1_0BD9C3D1A2D5_3_t.png",
                 id: "album_966EB78F_89DA_B0D2_41E1_0BD9C3D1A2D5_3",
