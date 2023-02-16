@@ -252,7 +252,7 @@
           opCode,
           hotspots: abc
         }
-        parent.postMessage(obj, "*");
+        parent.postMessage(JSON.stringify(obj), "*");
       } catch { }
     }
 
