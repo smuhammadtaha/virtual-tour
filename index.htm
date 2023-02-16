@@ -235,7 +235,6 @@
           let hotspotlabel = temp[i]['get']('overlays');
           hotspotlabel?.map((e) => {
             let hotspot = e['get']('data')
-            console.log("🚀 ~ file: index.htm:238 ~ hotspotlabel?.map ~ hotspot", hotspot)
             if (hotspot?.hasPanoramaAction === undefined) {
               let panoramaName = label?.label
               let hotspotName = hotspot?.label
@@ -247,6 +246,7 @@
             }
           })
         }
+        console.log(abc)
         let opCode = 5000
         const obj = {
           opCode,
