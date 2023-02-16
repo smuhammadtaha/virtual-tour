@@ -139,6 +139,7 @@
         document.title = this.trans("tour.name");
       };
 
+
       tour.locManager.bind(
         TDV.Tour.LocaleManager.EVENT_LOCALE_CHANGED,
         updateTexts.bind(tour.locManager)
@@ -150,6 +151,7 @@
 
     function onVirtualTourLoaded() {
       disposePreloader();
+      sendHotspots()
     }
 
     function onVirtualTourEnded() { }
@@ -224,6 +226,37 @@
       document.body.removeEventListener("touchend", onBodyClick);
     }
 
+    const sendHotspots = () => {
+      try {
+        var abc = []
+        let temp = window.blazeIT.getPanoramas();
+        for (i = 0; i < temp.length; i++) {
+          let label = temp[i]['get']('data');
+          let hotspotlabel = temp[i]['get']('overlays');
+          hotspotlabel?.map((e) => {
+            let hotspot = e['get']('data')
+            console.log("🚀 ~ file: index.htm:238 ~ hotspotlabel?.map ~ hotspot", hotspot)
+            if (hotspot?.hasPanoramaAction === undefined) {
+              let panoramaName = label?.label
+              let hotspotName = hotspot?.label
+
+              abc.push({
+                hotspotLabel: hotspotName,
+                panoramaLabel: panoramaName
+              })
+            }
+          })
+        }
+        let opCode = 5000
+        const obj = {
+          opCode,
+          hotspots: abc
+        }
+        parent.postMessage(JSON.stringify(obj), "*");
+      } catch { }
+    }
+
+
 
     function onHotspotClicked(hotspot) {
       try {
@@ -266,10 +299,7 @@
           },
         };
         setMediaByName('Visit Baltimore')
-        console.log("🚀 ~ file: index.htm:262 ~ onHotspotClicked ~ message", message)
-        // window['parent']['postMessage'](message, '*')
         parent.postMessage(message, '*');
-        // window.parent.postMessage(message, "*");
       } catch { }
     }
 
@@ -315,6 +345,7 @@
 
       showPreloader();
       loadTour();
+
     }
 
     function playVideo(video, autoplayMuted, clickComponent) {
@@ -415,14 +446,9 @@
     document.addEventListener("DOMContentLoaded", onLoad);
 
     window.addEventListener('message', (e) => {
-      console.log("🚀 ~ file: index.htm:440 ~ window.addEventListener ~ e", e.data)
-      let message = blazeIT.
-        parent.postMessage(message, "*");
-      // if (e.origin.endsWith('.events.mge360.com') || /^https?:\/\/localhost(?::\d+)?$/.test(e.origin)) {
-      // if (e.data.opCode === 1000) {
-      //   setMediaByName(e.data.location);
-      // }
-      // }
+      if (e.data.opCode === 1000) {
+        setMediaByName(e.data.location);
+      }
     });
   </script>
   <style type="text/css">

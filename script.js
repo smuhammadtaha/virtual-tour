@@ -1656,13 +1656,6 @@ TDV['Tour']['Script']['sendAnalyticsData'] = function (gP, gQ, gR, gS) {
   }
 };
 
-// var t = this,
-// e = t.getByClassName("Panorama");
-// e = (e = (e = (e = e.concat(t.getByClassName("LivePanorama"))).concat(
-// t.getByClassName("HDRPanorama")
-// )).concat(t.getByClassName("Video360"))).concat(
-// t.getByClassName("Map")
-// );
 
 TDV['Tour']['Script']['initAnalytics'] = function () {
   var hl = this['getByClassName']('Panorama');
@@ -1670,13 +1663,13 @@ TDV['Tour']['Script']['initAnalytics'] = function () {
   hl = hl['concat'](this['getByClassName']('Map'));
   hl = hl['concat'](this['getByClassName']('LivePanorama'))
   for (var ho = 0x0, hr = hl['length']; ho < hr; ++ho) {
-    console.log(hl, 'najami');
+    // console.log(hl, 'najami');
     var hs = hl[ho];
     var hu = hs['get']('data');
     var hv = hu ? hu['label'] : '';
     var hw = this['getOverlays'](hs);
     for (var hx = 0x0, hy = hw['length']; hx < hy; ++hx) {
-      console.log(hw, 'najami');
+      // console.log(hw, 'najami');
       var hz = hw[hx];
       var hA = hz['get']('data') != undefined ? hv + '\x20-\x20' + hz['get']('data')['label'] : hv;
       switch (hz['get']('class')) {
@@ -1738,6 +1731,8 @@ TDV['Tour']['Script']['initAnalytics'] = function () {
     }['bind'](this));
   }
 };
+
+
 TDV["Tour"]["Script"]["initQuiz"] = function (hQ, hR, hS) {
   var hT = {
     score: {
